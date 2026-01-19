@@ -1,6 +1,7 @@
 // dashboard/dashboard_screen.dart
+import 'package:clwb_crm/screens/dashboard/widgets/dashboard_header.dart';
+import 'package:clwb_crm/screens/dashboard/widgets/dashboard_kpi_row.dart';
 import 'package:flutter/material.dart';
-import 'widgets/sku_health_table.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -8,15 +9,15 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
-            Text('SKU Health Dashboard', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 12),
-            SKUHealthTable(),
+            DashboardHeader(),
+            SizedBox(height: 24),
+            DashboardKpiRow(),
+            SizedBox(height: 24),
           ],
         ),
       ),
