@@ -26,6 +26,7 @@ enum SidebarMenu {
   orders,
   deliveries,
   clients,
+  leads,
   inventory,
   sales,
 }

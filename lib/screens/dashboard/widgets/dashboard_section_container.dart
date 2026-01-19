@@ -5,17 +5,19 @@ class DashboardSectionContainer extends StatelessWidget {
   final String title;
   final Widget child;
   final Widget? trailing;
+  final double? width;
 
   const DashboardSectionContainer({
     super.key,
     required this.title,
     required this.child,
-    this.trailing,
+    this.trailing, this.width,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: width,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,

@@ -7,7 +7,7 @@ class DashboardController extends GetxController {
 
   // lib/features/dashboard/dashboard_controller.dart (ADD THESE)
   final totalBottles = 12450.obs;
-  final newOrdersCount = 8.obs;
+  final newOrdersCount = 580.obs;
   final weeklySalesAmount = 8920.0.obs;
   final newLeadsCount = 24.obs;
   final lowStockSkuCount = 6.obs;
@@ -121,7 +121,7 @@ class DashboardController extends GetxController {
   ),
   InventoryWarning(
   displayName: 'Round Bottle',
-  sizeCode: '1',
+  sizeCode: '1L',
   due: 800,
   stock: 600,isBottle: true,
   ),InventoryWarning(
@@ -138,13 +138,13 @@ class DashboardController extends GetxController {
   ),
   InventoryWarning(
   displayName: 'Elite Dine Label',
-  sizeCode: 'S',
+  sizeCode: '500 ML',
   due: 400,isBottle: false,
   stock: 250,
   ),
   InventoryWarning(
   displayName: 'Ocean Breeze Label',
-  sizeCode: 'S',
+  sizeCode: '500 ML',
   due: 300,isBottle: false,
   stock: 120,
   ),
@@ -166,6 +166,71 @@ class DashboardController extends GetxController {
   inventoryWarnings.fold(0, (s, e) => s + e.shortfall);
 
 
+
+  // gragh card
+// lib/features/dashboard/dashboard_controller.dart (ADD)
+
+
+  int get maxWeeklyTotal {
+    return weeklyBars
+        .map((e) => e.delivered + e.scheduled)
+        .fold(0, (a, b) => a > b ? a : b);
+  }
+
+
+  final weekDelivered = 350.obs;
+  final weekScheduled = 900.obs;
+  final weekNewOrders = 1250.obs;
+
+  final weeklyBars = <WeeklyBarData>[
+  WeeklyBarData(day: 'Mon', delivered: 40, scheduled: 30, ),
+  WeeklyBarData(day: 'Tue', delivered: 50, scheduled: 20, ),
+  WeeklyBarData(day: 'Wed', delivered: 60, scheduled: 40, ),
+  WeeklyBarData(day: 'Thu', delivered: 70, scheduled: 50, ),
+  WeeklyBarData(day: 'Fri', delivered: 60, scheduled: 120, ),
+  WeeklyBarData(day: 'Sat', delivered: 80, scheduled: 60, ),
+  WeeklyBarData(day: 'Sun', delivered: 90, scheduled: 80, ),
+  ].obs;
+
+}
+
+
+
+
+
+// ✅ DOMAIN MODEL (NOT UI-BASED, FUNCTIONAL MEANING FIXED)
+enum RecurringCycle { weekly, monthly }
+
+
+
+class WeeklyBarData {
+  final String day;
+  final int delivered;
+  final int scheduled;
+
+  WeeklyBarData({
+    required this.day,
+    required this.delivered,
+    required this.scheduled,
+  });
+}
+
+
+
+class StandingOrderSummary {
+  final String client;
+  final RecurringCycle cycle; // 🔥 weekly / monthly
+  final int committedQty;     // total expected for the cycle
+  final int fulfilledQty;     // shipped so far
+  final bool isActive;
+
+  StandingOrderSummary({
+    required this.client,
+    required this.cycle,
+    required this.committedQty,
+    required this.fulfilledQty,
+    required this.isActive,
+  });
 }
 
 
@@ -197,27 +262,6 @@ class DueDeliveryToday {
     required this.completed,
   });
 }
-
-// ✅ DOMAIN MODEL (NOT UI-BASED, FUNCTIONAL MEANING FIXED)
-enum RecurringCycle { weekly, monthly }
-
-class StandingOrderSummary {
-  final String client;
-  final RecurringCycle cycle; // 🔥 weekly / monthly
-  final int committedQty;     // total expected for the cycle
-  final int fulfilledQty;     // shipped so far
-  final bool isActive;
-
-  StandingOrderSummary({
-    required this.client,
-    required this.cycle,
-    required this.committedQty,
-    required this.fulfilledQty,
-    required this.isActive,
-  });
-}
-
-
 
 class InventoryWarning {
   final String displayName; // Bottle shape OR Brand name

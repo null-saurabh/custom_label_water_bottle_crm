@@ -34,9 +34,9 @@ class DashboardKpiRow extends GetView<DashboardController> {
                   ),
                   SizedBox(width: 20,),
                   _KpiCard(
-                    title: 'New Orders',
+                    title: 'Total Orders',
                     value: '${controller.newOrdersCount.value}',
-                    suffix: 'Orders',
+                    suffix: 'Orders This Week',
                     icon: Icons.shopping_cart_outlined,
                     gradient: const LinearGradient(
                       colors: [Color(0xFFE6F4EA), Color(0xFFDFF3EA)],
