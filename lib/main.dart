@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       title: 'Custom Label Water Bottle Crm',
       debugShowCheckedModeBanner: false,
       initialBinding: InitialBinding(),
-      initialRoute: AppRoutes.dashboard,
+      initialRoute: AppRoutes.shell,
       getPages: AppPages.pages,
       defaultTransition: Transition.fade,
     );

@@ -11,7 +11,7 @@ class DashboardKpiRow extends GetView<DashboardController> {
     
       return LayoutBuilder(
         builder: (context, constraints) {
-          const double cardHeight = 125;
+          const double cardHeight = 110;
 
           // Responsive width with a cap, so cards don't get huge on wide screens
           final double cardWidth =
@@ -138,7 +138,7 @@ class _KpiCard extends StatelessWidget {
 
     return Container(
       width: 280,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         gradient: gradient,
         borderRadius: BorderRadius.circular(16),
@@ -181,7 +181,7 @@ class _KpiCard extends StatelessWidget {
 
             ],
           ),
-          SizedBox(height: 12,),
+          SizedBox(height: 10,),
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Row(

@@ -4,11 +4,12 @@ import 'package:clwb_crm/screens/inventory/inventory_screen.dart';
 import 'package:get/get.dart';
 
 import '../../screens/dashboard/dashboard_controller.dart';
+import '../layouts/shell_screen.dart';
 
 
 abstract class AppRoutes {
 
-
+  static const shell = '/';
   static const login = '/login';
   static const dashboard = '/dashboard';
   static const inventory = '/inventory';
@@ -18,31 +19,34 @@ abstract class AppRoutes {
 
 
 
-
 class AppPages {
   static final pages = [
-    // GetPage(
-    //   name: AppRoutes.login,
-    //   page: () => LoginView(),
-    //   binding: BindingsBuilder(() {
-    //     Get.put(AuthController());
-    //   }),
-    // ),
     GetPage(
-      name: AppRoutes.dashboard,
-      page: () => DashboardScreen(),
-      binding: BindingsBuilder(() {
-        Get.lazyPut(() => DashboardController());
+      name: AppRoutes.shell,
+      page: () => const ShellView(),
+      participatesInRootNavigator: true,
+      children: [
+        GetPage(
+          name: AppRoutes.dashboard,
+          page: () => DashboardScreen(),
+          binding: BindingsBuilder(() {
+            Get.lazyPut(() => DashboardController());
 
 
-      }),
-    ),
-    GetPage(
-      name: AppRoutes.inventory,
-      page: () => InventoryScreen(),
-      binding: BindingsBuilder(() {
-        Get.lazyPut(() => InventoryController());
-      }),
+          }),
+        ),
+        GetPage(
+          name: AppRoutes.inventory,
+          page: () => InventoryScreen(),
+          binding: BindingsBuilder(() {
+            Get.lazyPut(() => InventoryController());
+          }),
+        ),
+        // more pages...
+      ],
     ),
   ];
 }
+
+
+

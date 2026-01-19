@@ -52,28 +52,29 @@ class DashboardHeader extends StatelessWidget {
           ],
         ),
 
-        const SizedBox(height: 24),
-
-        // 👋 WELCOME TEXT
-        Obx(
-          () => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Welcome back, ${appController.userName.value}!',
-                style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                appController.todayFormatted,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-              ),
-            ],
-          ),
-        ),
+        // const SizedBox(height: 20),
+        //
+        // // 👋 WELCOME TEXT
+        // Obx(
+        //   () =>
+    // Column(
+          //   crossAxisAlignment: CrossAxisAlignment.start,
+          //   children: [
+          //     Text(
+          //       'Welcome back, ${appController.userName.value}!',
+          //       style: const TextStyle(
+          //         fontSize: 22,
+          //         fontWeight: FontWeight.w700,
+          //       ),
+          //     ),
+          //     const SizedBox(height: 4),
+          //     Text(
+          //       appController.todayFormatted,
+          //       style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          //     ),
+          //   ],
+          // ),
+        // ),
       ],
     );
   }
