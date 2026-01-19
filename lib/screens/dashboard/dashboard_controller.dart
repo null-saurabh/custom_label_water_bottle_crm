@@ -105,6 +105,67 @@ class DashboardController extends GetxController {
   ].obs;
 
 
+
+  // inventory warning
+// lib/features/dashboard/dashboard_controller.dart (ADD)
+
+
+
+  final inventoryWarnings = <InventoryWarning>[
+  InventoryWarning(
+  displayName: 'Round Bottle',
+  sizeCode: '500 ML',
+  due: 1200,
+  stock: 900,isBottle: true
+
+  ),
+  InventoryWarning(
+  displayName: 'Round Bottle',
+  sizeCode: '1',
+  due: 800,
+  stock: 600,isBottle: true,
+  ),InventoryWarning(
+  displayName: 'Square Bottle',
+  sizeCode: '1L',
+  due: 800,
+  stock: 600,isBottle: false,
+  ),
+  InventoryWarning(
+  displayName: 'Hotel Luxtay Label',
+  sizeCode: '1L',
+  due: 450,
+  stock: 150,isBottle: false,
+  ),
+  InventoryWarning(
+  displayName: 'Elite Dine Label',
+  sizeCode: 'S',
+  due: 400,isBottle: false,
+  stock: 250,
+  ),
+  InventoryWarning(
+  displayName: 'Ocean Breeze Label',
+  sizeCode: 'S',
+  due: 300,isBottle: false,
+  stock: 120,
+  ),
+  InventoryWarning(
+  displayName: 'Cafe Venezia Label',
+  sizeCode: 'L',
+  due: 350,
+  stock: 200, isBottle: false,
+  ),
+  ].obs;
+
+  int get totalInventoryDue =>
+  inventoryWarnings.fold(0, (s, e) => s + e.due);
+
+  int get totalInventoryStock =>
+  inventoryWarnings.fold(0, (s, e) => s + e.stock);
+
+  int get totalInventoryShortfall =>
+  inventoryWarnings.fold(0, (s, e) => s + e.shortfall);
+
+
 }
 
 
@@ -157,4 +218,22 @@ class StandingOrderSummary {
 }
 
 
+
+class InventoryWarning {
+  final String displayName; // Bottle shape OR Brand name
+  final String sizeCode;    // S / L
+  final bool isBottle;    // S / L
+  final int due;
+  final int stock;
+
+  InventoryWarning({
+    required this.isBottle,
+    required this.displayName,
+    required this.sizeCode,
+    required this.due,
+    required this.stock,
+  });
+
+  int get shortfall => (due - stock) > 0 ? (due - stock) : 0;
+}
 
