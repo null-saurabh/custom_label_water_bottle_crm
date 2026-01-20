@@ -50,10 +50,8 @@ class LeadFilters extends GetView<LeadsController> {
 
           const Spacer(),
 
-          _AddLeadButton(
-            onPressed: () {
-              // TODO: open add lead modal/page
-            },
+          HeaderActionButton(
+             text: 'Add Lead', onTap: () {  },
           ),
         ],
       );
@@ -94,7 +92,7 @@ class _FilterPill extends StatelessWidget {
       colors: [Color(0xFFF4F7FF), Color(0xFFEEF2FF)],
     );
 
-    final textColor = selected ? const Color(0xFF1F2A44) : const Color(0xFF2E3A59);
+    final textColor = selected ? const Color(0xFF1F2A44) : Colors.grey;
     final muted = selected ? const Color(0xFF5B677A) : const Color(0xFF6B7A90);
 
     return Material(
@@ -103,6 +101,7 @@ class _FilterPill extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(18),
         child: Container(
+          width: 180,
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           decoration: BoxDecoration(
             gradient: bgGradient,
@@ -120,7 +119,7 @@ class _FilterPill extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 18, color: muted),
+                Icon(icon, size: 22, color: muted),
                 const SizedBox(width: 10),
               ],
               Text(
@@ -131,7 +130,7 @@ class _FilterPill extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 20),
               Text(
                 count.toString(),
                 style: TextStyle(
@@ -141,7 +140,8 @@ class _FilterPill extends StatelessWidget {
                 ),
               ),
               if (selected && showChevronWhenSelected) ...[
-                const SizedBox(width: 10),
+               Spacer(),
+                // const SizedBox(width: 10),
                 Icon(Icons.chevron_right, size: 20, color: muted),
               ],
             ],
@@ -151,6 +151,63 @@ class _FilterPill extends StatelessWidget {
     );
   }
 }
+
+
+class HeaderActionButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onTap;
+
+  const HeaderActionButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(28),
+        child: Container(
+          height: 48,
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          decoration: BoxDecoration(
+            color: const Color(0xFF3558C9),
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF3558C9).withOpacity(0.25),
+                blurRadius: 14,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.add,color: Colors.white,),
+              SizedBox(width: 8,),
+              Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
 
 class _AddLeadButton extends StatelessWidget {
   final VoidCallback onPressed;

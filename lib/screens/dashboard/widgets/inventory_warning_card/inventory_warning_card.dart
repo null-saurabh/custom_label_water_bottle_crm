@@ -1,5 +1,8 @@
 // lib/features/dashboard/widgets/inventory_warning_card.dart
 
+
+
+import 'package:clwb_crm/screens/dashboard/widgets/inventory_warning_card/widgets/inventory_warning_row.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../dashboard_controller.dart';
@@ -25,7 +28,7 @@ class InventoryWarningCard extends GetView<DashboardController> {
                   (w) => InventoryWarningRow(data:w ),
             ),
             // const SizedBox(height: 12),
-            // _SummaryRow(
+            // _SummaryRow(z
             //   totalDue: controller.totalInventoryDue,
             //   totalStock: controller.totalInventoryStock,
             //   totalShortfall: controller.totalInventoryShortfall,

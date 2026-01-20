@@ -17,11 +17,14 @@ class LeadTable extends GetView<LeadsController> {
         ),
         child: DataTable(
           headingRowHeight: 56,
-          dataRowHeight: 64,
+          dataRowHeight: 98,
+          columnSpacing: 22, // overall spacing between columns
+          horizontalMargin: 18,
           columns: const [
             DataColumn(label: Text('Name')),
             DataColumn(label: Text('Company')),
             DataColumn(label: Text('Status')),
+            DataColumn(label: Text('Follow up')),
             DataColumn(label: Text('Interest')),
             DataColumn(label: Text('Activity')),
             DataColumn(label: Text('')),
@@ -29,17 +32,144 @@ class LeadTable extends GetView<LeadsController> {
           rows: controller.filteredLeads.map((l) {
             return DataRow(
               cells: [
-                DataCell(Text(l.name)),
-                DataCell(Text(l.company)),
-                DataCell(_StatusChip(status: l.status)),
+                // NAME (a bit wider + padding to increase gap before company)
+                DataCell(
+                  Padding(
+                    padding: const EdgeInsets.only(right: 28),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(l.name),
+                        SizedBox(height: 4,),
+                        Text(l.number)
+                      ],
+                    ),
+                  ),
+                ),
+
+                // COMPANY
+                DataCell(Padding(
+                  padding: const EdgeInsets.only(right: 28),
+
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(l.company),
+                      SizedBox(height: 4,),
+                      Text(l.area)
+                    ],
+                  ),
+                )),
+
+                // STATUS (editable dropdown)
+                DataCell(
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: _StatusDropdown(
+                      status: l.status,
+                      onChanged: (newStatus) {
+                        if (newStatus == null) return;
+                        controller.updateLeadStatus(l, newStatus);
+                      },
+                    ),
+                  ),
+                ),
+
+                // FOLLOW UP / NOTE (add note)
+                DataCell(
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          (l.followUpNote ?? '').isEmpty
+                              ? 'Add note'
+                              : l.followUpNote!,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: 'Add/Edit follow up',
+                        icon: const Icon(Icons.note_add_outlined, size: 20),
+                        onPressed: () => controller.openFollowUpDialog(l),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // INTEREST
                 DataCell(Text(l.interest)),
+
+                // ACTIVITY
                 DataCell(Text(l.activity)),
-                const DataCell(
-                  Text('View', style: TextStyle(color: Color(0xFF4C6FFF))),
+
+                // ACTION ICONS (view/edit/delete)
+                DataCell(
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        tooltip: 'Call',
+                        icon: const Icon(Icons.call_outlined, size: 20),
+                        onPressed: () => controller.viewLead(l),
+                      ),
+                      IconButton(
+                        tooltip: 'Edit',
+                        icon: const Icon(Icons.edit_outlined, size: 20),
+                        onPressed: () => controller.editLead(l),
+                      ),
+                      IconButton(
+                        tooltip: 'Delete',
+                        icon: const Icon(Icons.delete_outline, size: 20),
+                        onPressed: () => controller.deleteLead(l),
+                      ),
+                      IconButton(
+                        tooltip: 'View',
+                        icon: const Icon(Icons.visibility_outlined, size: 20),
+                        onPressed: () => controller.viewLead(l),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             );
           }).toList(),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusDropdown extends StatelessWidget {
+  final LeadStatus status;
+  final ValueChanged<LeadStatus?> onChanged;
+
+  const _StatusDropdown({required this.status, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 36,
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<LeadStatus>(
+          value: status,
+          isDense: true,
+          alignment: Alignment.centerLeft,
+          icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 20),
+          borderRadius: BorderRadius.circular(12),
+          menuMaxHeight: 220,
+          items: LeadStatus.values.map((s) {
+            return DropdownMenuItem(
+              value: s,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: _StatusChip(status: s),
+              ),
+            );
+          }).toList(),
+          onChanged: onChanged,
         ),
       ),
     );
@@ -65,6 +195,10 @@ class _StatusChip extends StatelessWidget {
         bg = const Color(0xFFE6F4EA);
         label = 'Contacted';
         break;
+        case LeadStatus.followUp:
+        bg = const Color(0xFFF1F1EB);
+        label = 'Follow Up';
+        break;
       case LeadStatus.converted:
         bg = const Color(0xFFE0ECFF);
         label = 'Converted';
@@ -72,7 +206,8 @@ class _StatusChip extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      height: 80,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(12),

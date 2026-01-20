@@ -1,9 +1,9 @@
 // lib/features/dashboard/widgets/inventory_warning_row.dart
 
+import 'package:clwb_crm/screens/dashboard/widgets/inventory_warning_card/inventory_warning_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../dashboard_controller.dart';
 
 class InventoryWarningRow extends StatelessWidget {
   final InventoryWarning data;
