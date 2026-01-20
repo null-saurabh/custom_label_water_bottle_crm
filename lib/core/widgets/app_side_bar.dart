@@ -149,7 +149,7 @@ class AppSidebar extends StatelessWidget {
                     controller.selectedMenu.value ==
                         SidebarMenu.leads,
                     onTap: () =>
-                        controller.selectMenu(SidebarMenu.clients),
+                        controller.selectMenu(SidebarMenu.leads),
                   ),
                   _SidebarItem(
                     icon: Icons.inventory_2_outlined,
