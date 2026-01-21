@@ -1,5 +1,6 @@
 // lib/features/leads/widgets/lead_table.dart
 
+import 'package:clwb_crm/core/utils/date_time_to_string.dart';
 import 'package:clwb_crm/screens/leads/add_lead_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -57,9 +58,9 @@ class LeadTable extends GetView<LeadsController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(l.businessName),
-                      SizedBox(height: 4,),
-                      Text(l.deliveryLocation)
+                      Text(l.businessName == "" ? "N/A":l.businessName),
+                      SizedBox(height:l.businessName == "" ?0:4,),
+                      l.businessName == "" ?SizedBox():Text(l.deliveryLocation)
                     ],
                   ),
                 )),
@@ -72,7 +73,9 @@ class LeadTable extends GetView<LeadsController> {
                       status: l.status,
                       onChanged: (newStatus) {
                         if (newStatus == null) return;
-                        controller.updateLeadStatus(l, newStatus);
+                        controller.changeStatus(l, newStatus);
+
+                        // controller.updateLeadStatus(l, newStatus);
                       },
                     ),
                   ),
@@ -101,10 +104,21 @@ class LeadTable extends GetView<LeadsController> {
                 ),
 
                 // INTEREST
-                DataCell(Text(l.bottleSizes.toString())),
+                DataCell(
+                  Text(l.bottleSizes.join(', ')),
+                ),
+
 
                 // ACTIVITY
-                DataCell(Text(l.lastActivityAt.toString())),
+                DataCell(
+                  Text(
+                    l.lastActivityAt != null
+                        ? controller.lastActivityLabel(l)
+                        // ? dateTimeToString(l.lastActivityAt!)
+                        : '—',
+                  ),
+                ),
+
 
                 // ACTION ICONS (view/edit/delete)
                 DataCell(
@@ -114,7 +128,7 @@ class LeadTable extends GetView<LeadsController> {
                       IconButton(
                         tooltip: 'Call',
                         icon: const Icon(Icons.call_outlined, size: 20),
-                        onPressed: () => controller.viewLead(l),
+                        onPressed: () => controller.onCallPressed(l),
                       ),
                       IconButton(
                         tooltip: 'Edit',
@@ -124,7 +138,7 @@ class LeadTable extends GetView<LeadsController> {
                       IconButton(
                         tooltip: 'Delete',
                         icon: const Icon(Icons.delete_outline, size: 20),
-                        onPressed: () => controller.deleteLead(l),
+                        onPressed: () => controller.deleteLead(l.id),
                       ),
                       IconButton(
                         tooltip: 'View',

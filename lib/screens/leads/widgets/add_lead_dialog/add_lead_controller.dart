@@ -1,6 +1,6 @@
 import 'package:clwb_crm/screens/leads/add_lead_model.dart';
-import 'package:clwb_crm/screens/leads/widgets/add_lead_dialog/firebase/lead_activity_repo.dart';
-import 'package:clwb_crm/screens/leads/widgets/add_lead_dialog/firebase/lead_firebase_repo.dart';
+import 'package:clwb_crm/screens/leads/firebase/lead_activity_repo.dart';
+import 'package:clwb_crm/screens/leads/firebase/lead_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

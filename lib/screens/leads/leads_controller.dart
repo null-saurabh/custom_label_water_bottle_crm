@@ -1,8 +1,10 @@
 // lib/features/leads/leads_controller.dart
 
 import 'package:clwb_crm/screens/leads/add_lead_model.dart';
-import 'package:clwb_crm/screens/leads/widgets/add_lead_dialog/firebase/lead_firebase_repo.dart';
+import 'package:clwb_crm/screens/leads/firebase/lead_activity_repo.dart';
+import 'package:clwb_crm/screens/leads/firebase/lead_repo.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 
@@ -12,14 +14,15 @@ class LeadsController extends GetxController {
 
 
   final repo = LeadRepository();
+  final activityRepo = LeadActivityRepository();
 
   final leads = <LeadModel>[].obs;
 
   @override
   void onInit() {
-    print("a");
+    // print("a");
     repo.watchLeads().listen(leads.assignAll);
-    print("aaa");
+    // print("aaa");
     super.onInit();
   }
 
@@ -72,7 +75,45 @@ class LeadsController extends GetxController {
 
   void viewLead(LeadModel lead) {}
   void editLead(LeadModel lead) {}
-  void deleteLead(LeadModel lead) {}
+
+
+  Future<void> changeStatus(LeadModel lead, LeadStatus status) async {
+    await repo.updateLeadStatus(leadId: lead.id, status: status);
+    await activityRepo.logStatusChange(leadId: lead.id, status: status);
+  }
+  Future<void> addFollowUp(LeadModel lead, String note) async {
+    await repo.updateFollowUpNote(leadId: lead.id, note: note);
+    await activityRepo.logFollowUp(leadId: lead.id, note: note);
+  }
+  Future<void> deleteLead(String leadId) async {
+    await repo.deleteLead(leadId);
+  }
+
+
+  // in LeadsController
+
+  void onCallPressed(LeadModel lead) {
+    final phone = lead.phone.trim();
+    if (phone.isEmpty) return;
+
+    // log activity (fire-and-forget)
+    activityRepo.addActivity(
+      lead.id,
+      LeadActivity(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        type: LeadActivityType.call,
+        title: 'Call Initiated',
+        note: 'Call initiated to $phone',
+        at: DateTime.now(),
+      ),
+    );
+
+    // open dialer (web + mobile safe)
+    final uri = Uri.parse('tel:$phone');
+    launchUrl(uri);
+  }
+
+
 
 
 
