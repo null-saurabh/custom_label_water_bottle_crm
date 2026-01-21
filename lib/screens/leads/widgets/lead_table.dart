@@ -1,5 +1,6 @@
 // lib/features/leads/widgets/lead_table.dart
 
+import 'package:clwb_crm/screens/leads/add_lead_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../leads_controller.dart';
@@ -40,9 +41,9 @@ class LeadTable extends GetView<LeadsController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(l.name),
+                        Text(l.contactName),
                         SizedBox(height: 4,),
-                        Text(l.number)
+                        Text(l.phone)
                       ],
                     ),
                   ),
@@ -56,9 +57,9 @@ class LeadTable extends GetView<LeadsController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(l.company),
+                      Text(l.businessName),
                       SizedBox(height: 4,),
-                      Text(l.area)
+                      Text(l.deliveryLocation)
                     ],
                   ),
                 )),
@@ -83,9 +84,9 @@ class LeadTable extends GetView<LeadsController> {
                     children: [
                       Expanded(
                         child: Text(
-                          (l.followUpNote ?? '').isEmpty
+                          (l.followUpNotes ?? '').isEmpty
                               ? 'Add note'
-                              : l.followUpNote!,
+                              : l.followUpNotes!,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
@@ -100,10 +101,10 @@ class LeadTable extends GetView<LeadsController> {
                 ),
 
                 // INTEREST
-                DataCell(Text(l.interest)),
+                DataCell(Text(l.bottleSizes.toString())),
 
                 // ACTIVITY
-                DataCell(Text(l.activity)),
+                DataCell(Text(l.lastActivityAt.toString())),
 
                 // ACTION ICONS (view/edit/delete)
                 DataCell(
@@ -199,10 +200,19 @@ class _StatusChip extends StatelessWidget {
         bg = const Color(0xFFF1F1EB);
         label = 'Follow Up';
         break;
+        case LeadStatus.qualified:
+        bg = const Color(0xFFF1F1EB);
+        label = 'Follow Up';
+        break;
       case LeadStatus.converted:
         bg = const Color(0xFFE0ECFF);
         label = 'Converted';
         break;
+        case LeadStatus.lost:
+        bg = Colors.grey;
+        label = 'Converted';
+        break;
+
     }
 
     return Container(

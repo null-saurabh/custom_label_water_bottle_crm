@@ -14,22 +14,22 @@ class LeadsView extends GetView<LeadsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Leads",style: TextStyle(fontSize: 32,fontWeight: FontWeight.bold),),
-                const SizedBox(height: 16),
-                const LeadFilters(),
-                const SizedBox(height: 16),
-                LeadTable(),
-              ],
+      return Scaffold(
+        body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Leads",style: TextStyle(fontSize: 32,fontWeight: FontWeight.bold),),
+                  const SizedBox(height: 16),
+                  const LeadFilters(),
+                  const SizedBox(height: 16),
+                  LeadTable(),
+                ],
+              ),
             ),
-          ),
       ),
     );
   }

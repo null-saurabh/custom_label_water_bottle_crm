@@ -1,4 +1,7 @@
 // lib/features/leads/widgets/lead_filters.dart
+import 'package:clwb_crm/screens/leads/add_lead_model.dart';
+import 'package:clwb_crm/screens/leads/widgets/add_lead_dialog/add_lead_controller.dart';
+import 'package:clwb_crm/screens/leads/widgets/add_lead_dialog/add_lead_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../leads_controller.dart';
@@ -51,7 +54,25 @@ class LeadFilters extends GetView<LeadsController> {
           const Spacer(),
 
           HeaderActionButton(
-             text: 'Add Lead', onTap: () {  },
+             text: 'Add Lead', onTap: () {
+
+            Get.lazyPut(() => AddLeadController());
+
+            Get.dialog(
+              const AddLeadDialog(),
+              barrierDismissible: false,
+            );
+
+            // .then((_) {
+            //   if (Get.isRegistered<AddLeadController>()) {
+            //     Get.delete<AddLeadController>();
+            //   }
+            // });
+
+
+
+
+          },
           ),
         ],
       );

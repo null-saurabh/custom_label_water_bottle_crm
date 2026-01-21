@@ -1,87 +1,78 @@
 // lib/features/leads/leads_controller.dart
 
+import 'package:clwb_crm/screens/leads/add_lead_model.dart';
+import 'package:clwb_crm/screens/leads/widgets/add_lead_dialog/firebase/lead_firebase_repo.dart';
 import 'package:get/get.dart';
 
-enum LeadStatus { newLead, contacted,followUp, converted }
-
-class Lead {
-  final String name;
-  final String number;
-  final String area;
-  final String company;
-  LeadStatus status;
-  final String interest;
-  final String activity;
-  String? followUpNote;
 
 
-  Lead( {
-    required this.name,required this.number,
-    required this.company,
-    required this.status,
-    required this.area,
-    required this.interest,
-    required this.activity,
-    this.followUpNote,
-  });
-}
+
 
 class LeadsController extends GetxController {
 
-  final selectedFilter = Rxn<LeadStatus>(); // null means "All"
 
-  // final selectedFilter = LeadStatus.newLead.obs;
+  final repo = LeadRepository();
 
-  final leads = <Lead>[
-    Lead(
-      name: 'Carlos Mendoza',
-      number: '9876543210',
-      area: "Patna",
-      company: 'The Green Garden',
-      status: LeadStatus.newLead,
-      interest: '500ml water bottles',
-      activity: '30 mins ago',
-    ),
-    Lead(
-      name: 'Jacob Ross',
-      number: '9876543210',
-      area: "Gaya",
+  final leads = <LeadModel>[].obs;
 
-      company: 'Hotel LuxStay',
-      status: LeadStatus.contacted,
-      interest: 'Private labeling',
-      activity: '1h ago',
-    ),
-    Lead(
-      name: 'David Wong',
-      number: '9876543210',
-      area: "Patna",
+  @override
+  void onInit() {
+    print("a");
+    repo.watchLeads().listen(leads.assignAll);
+    print("aaa");
+    super.onInit();
+  }
 
-      company: 'Café Venezia',
-      status: LeadStatus.converted,
-      interest: 'Custom labeling',
-      activity: '2 days ago',
-    ),
-  ].obs;
+  String lastActivityLabel(LeadModel lead) {
+    if (lead.lastActivityAt == null) return 'No activity';
+    final diff = DateTime.now().difference(lead.lastActivityAt ?? DateTime.now());
+    if (diff.inDays > 0) return '${diff.inDays}d ago';
+    if (diff.inHours > 0) return '${diff.inHours}h ago';
+    return '${diff.inMinutes}m ago';
+  }
 
-  List<Lead> get filteredLeads =>
+
+
+  final selectedFilter = Rxn<LeadStatus>(LeadStatus.newLead); // null means "All"
+
+  List<LeadModel> get filteredLeads =>
       selectedFilter.value == null
           ? leads
           : leads.where((l) => l.status == selectedFilter.value).toList();
 
-  void updateLeadStatus(Lead lead, LeadStatus status) {
-    lead.status = status;
-    leads.refresh(); // if leads is RxList
+
+
+  void updateLeadStatus(LeadModel lead, LeadStatus newStatus) {
+    final updatedLead = lead.copyWith(
+      status: newStatus,
+      lastActivityAt: DateTime.now(),
+      activities: [
+        ...lead.activities,
+        LeadActivity(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          type: LeadActivityType.statusChanged,
+          title: 'Status changed',
+          note: 'Status changed to ${newStatus.name}',
+          at: DateTime.now(),
+        ),
+      ],
+    );
+
+    final index = leads.indexWhere((l) => l.id == lead.id);
+    if (index != -1) {
+      leads[index] = updatedLead;
+    }
   }
 
 
-  void openFollowUpDialog(Lead lead) {
+
+  void openFollowUpDialog(LeadModel lead) {
     // showDialog with TextField and save to lead.followUpNote, then leads.refresh()
   }
 
-  void viewLead(Lead lead) {}
-  void editLead(Lead lead) {}
-  void deleteLead(Lead lead) {}
+  void viewLead(LeadModel lead) {}
+  void editLead(LeadModel lead) {}
+  void deleteLead(LeadModel lead) {}
 
 
 
