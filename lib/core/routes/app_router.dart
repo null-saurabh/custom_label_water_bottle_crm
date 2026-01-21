@@ -34,8 +34,6 @@ class AppPages {
           page: () => DashboardScreen(),
           binding: BindingsBuilder(() {
             Get.lazyPut(() => DashboardController());
-
-
           }),
         ),
 

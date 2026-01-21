@@ -12,15 +12,20 @@ class AppController extends GetxController {
 
   void selectMenu(SidebarMenu menu) {
 
-    // if (selectedMenu.value == menu) return;
+
+    if (selectedMenu.value == menu) return;
 
     selectedMenu.value = menu;
 
-    Get.offNamed(
-      menu.route,
-      // id: 1, // 🔥 IMPORTANT for AppShell navigation
-    );
+    Get.rootDelegate.toNamed(menu.route); // ✅ FIX
+    //
+    // selectedMenu.value = menu;
+    // Get.rootDelegate.offNamed(
+    //   menu.route,
+    // );
+
   }
+
 
 
   // Dashboard Header
