@@ -134,14 +134,7 @@ class AddLeadController extends GetxController {
       );
     } finally {
       isSubmitting.value = false; // 🔥 ALWAYS
-      businessCtrl.dispose();
-      contactCtrl.dispose();
-      phoneCtrl.dispose();
-      emailCtrl.dispose();
-      cityCtrl.dispose();
-      stateCtrl.dispose();
-      areaCtrl.dispose();
-      notesCtrl.dispose();
+
     }
   }
 

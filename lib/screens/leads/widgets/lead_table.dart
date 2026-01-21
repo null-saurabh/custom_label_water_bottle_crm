@@ -1,10 +1,11 @@
 // lib/features/leads/widgets/lead_table.dart
 
-import 'package:clwb_crm/core/utils/date_time_to_string.dart';
 import 'package:clwb_crm/screens/leads/add_lead_model.dart';
+import 'package:clwb_crm/screens/leads/widgets/delete_confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../leads_controller.dart';
+import 'package:clwb_crm/screens/leads/leads_controller.dart';
+
 
 class LeadTable extends GetView<LeadsController> {
   const LeadTable({super.key});
@@ -20,7 +21,7 @@ class LeadTable extends GetView<LeadsController> {
         child: DataTable(
           headingRowHeight: 56,
           dataRowHeight: 98,
-          columnSpacing: 22, // overall spacing between columns
+          columnSpacing: 22,
           horizontalMargin: 18,
           columns: const [
             DataColumn(label: Text('Name')),
@@ -43,27 +44,30 @@ class LeadTable extends GetView<LeadsController> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(l.contactName),
-                        SizedBox(height: 4,),
-                        Text(l.phone)
+                        SizedBox(height: 4),
+                        Text(l.phone),
                       ],
                     ),
                   ),
                 ),
 
                 // COMPANY
-                DataCell(Padding(
-                  padding: const EdgeInsets.only(right: 28),
-
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(l.businessName == "" ? "N/A":l.businessName),
-                      SizedBox(height:l.businessName == "" ?0:4,),
-                      l.businessName == "" ?SizedBox():Text(l.deliveryLocation)
-                    ],
+                DataCell(
+                  Padding(
+                    padding: const EdgeInsets.only(right: 28),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(l.businessName == "" ? "N/A" : l.businessName),
+                        SizedBox(height: l.businessName == "" ? 0 : 4),
+                        l.businessName == ""
+                            ? SizedBox()
+                            : Text(l.deliveryLocation),
+                      ],
+                    ),
                   ),
-                )),
+                ),
 
                 // STATUS (editable dropdown)
                 DataCell(
@@ -74,7 +78,6 @@ class LeadTable extends GetView<LeadsController> {
                       onChanged: (newStatus) {
                         if (newStatus == null) return;
                         controller.changeStatus(l, newStatus);
-
                         // controller.updateLeadStatus(l, newStatus);
                       },
                     ),
@@ -89,7 +92,7 @@ class LeadTable extends GetView<LeadsController> {
                         child: Text(
                           (l.followUpNotes ?? '').isEmpty
                               ? 'Add note'
-                              : l.followUpNotes!,
+                              : l.followUpNotes,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
@@ -104,10 +107,7 @@ class LeadTable extends GetView<LeadsController> {
                 ),
 
                 // INTEREST
-                DataCell(
-                  Text(l.bottleSizes.join(', ')),
-                ),
-
+                DataCell(Text(l.bottleSizes.join(', '))),
 
                 // ACTIVITY
                 DataCell(
@@ -118,7 +118,6 @@ class LeadTable extends GetView<LeadsController> {
                         : '—',
                   ),
                 ),
-
 
                 // ACTION ICONS (view/edit/delete)
                 DataCell(
@@ -138,8 +137,14 @@ class LeadTable extends GetView<LeadsController> {
                       IconButton(
                         tooltip: 'Delete',
                         icon: const Icon(Icons.delete_outline, size: 20),
-                        onPressed: () => controller.deleteLead(l.id),
+                        onPressed: () {
+                          Get.dialog(
+                            DeleteConfirmationDialog(controller: controller, lead: l),
+                            barrierDismissible: false,
+                          );
+                        },
                       ),
+
                       IconButton(
                         tooltip: 'View',
                         icon: const Icon(Icons.visibility_outlined, size: 20),
@@ -156,6 +161,8 @@ class LeadTable extends GetView<LeadsController> {
     );
   }
 }
+
+
 
 class _StatusDropdown extends StatelessWidget {
   final LeadStatus status;
@@ -210,11 +217,11 @@ class _StatusChip extends StatelessWidget {
         bg = const Color(0xFFE6F4EA);
         label = 'Contacted';
         break;
-        case LeadStatus.followUp:
+      case LeadStatus.followUp:
         bg = const Color(0xFFF1F1EB);
         label = 'Follow Up';
         break;
-        case LeadStatus.qualified:
+      case LeadStatus.qualified:
         bg = const Color(0xFFF1F1EB);
         label = 'Follow Up';
         break;
@@ -222,11 +229,10 @@ class _StatusChip extends StatelessWidget {
         bg = const Color(0xFFE0ECFF);
         label = 'Converted';
         break;
-        case LeadStatus.lost:
+      case LeadStatus.lost:
         bg = Colors.grey;
         label = 'Converted';
         break;
-
     }
 
     return Container(
@@ -240,3 +246,7 @@ class _StatusChip extends StatelessWidget {
     );
   }
 }
+
+
+
+

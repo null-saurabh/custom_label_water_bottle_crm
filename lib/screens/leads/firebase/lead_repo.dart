@@ -33,6 +33,17 @@ class LeadRepository {
   }
 
 
+  Future<void> updateLead({
+    required String leadId,
+    required Map<String, dynamic> data,
+  }) async {
+    await _db.collection('leads').doc(leadId).update({
+      ...data,
+      'lastActivityAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  
 
   Future<void> updateLeadStatus({
     required String leadId,

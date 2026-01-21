@@ -3,6 +3,8 @@
 import 'package:clwb_crm/screens/leads/add_lead_model.dart';
 import 'package:clwb_crm/screens/leads/firebase/lead_activity_repo.dart';
 import 'package:clwb_crm/screens/leads/firebase/lead_repo.dart';
+import 'package:clwb_crm/screens/leads/widgets/edit_lead/edit_lead.dart';
+import 'package:clwb_crm/screens/leads/widgets/edit_lead/edit_lead_controller.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -74,7 +76,17 @@ class LeadsController extends GetxController {
   }
 
   void viewLead(LeadModel lead) {}
-  void editLead(LeadModel lead) {}
+
+  void editLead(LeadModel lead) {
+    if (Get.isRegistered<EditLeadController>()) {
+      Get.delete<EditLeadController>();
+    }
+
+    Get.put(EditLeadController(lead), permanent: false);
+
+    Get.dialog(const EditLeadDialog());
+  }
+
 
 
   Future<void> changeStatus(LeadModel lead, LeadStatus status) async {
@@ -85,8 +97,28 @@ class LeadsController extends GetxController {
     await repo.updateFollowUpNote(leadId: lead.id, note: note);
     await activityRepo.logFollowUp(leadId: lead.id, note: note);
   }
+
+
+  final isDeleting = false.obs;
+
+  // Future<void> deleteLead(String leadId) async {
+  //   await repo.deleteLead(leadId);
+  // }
+
+
   Future<void> deleteLead(String leadId) async {
-    await repo.deleteLead(leadId);
+    if (isDeleting.value) return;
+    try {
+      isDeleting.value = true;
+      await repo.deleteLead(leadId);
+
+      if (Get.isDialogOpen == true) Get.back(); // ✅ close dialog
+      Get.snackbar('Deleted', 'Lead removed', snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to delete lead', snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isDeleting.value = false;
+    }
   }
 
 
