@@ -2,10 +2,10 @@
 
 import 'package:clwb_crm/screens/leads/add_lead_model.dart';
 import 'package:clwb_crm/screens/leads/widgets/delete_confirmation_dialog.dart';
+import 'package:clwb_crm/screens/leads/widgets/follow_up_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:clwb_crm/screens/leads/leads_controller.dart';
-
 
 class LeadTable extends GetView<LeadsController> {
   const LeadTable({super.key});
@@ -43,9 +43,9 @@ class LeadTable extends GetView<LeadsController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(l.contactName),
+                        Text(l.contactName, style: TextStyle(fontSize: 14),),
                         SizedBox(height: 4),
-                        Text(l.phone),
+                        Text(l.phone, style: TextStyle(fontSize: 10),),
                       ],
                     ),
                   ),
@@ -59,11 +59,11 @@ class LeadTable extends GetView<LeadsController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(l.businessName == "" ? "N/A" : l.businessName),
+                        Text(l.businessName == "" ? "N/A" : l.businessName, style: TextStyle(fontSize: 16),),
                         SizedBox(height: l.businessName == "" ? 0 : 4),
                         l.businessName == ""
                             ? SizedBox()
-                            : Text(l.deliveryLocation),
+                            : Text(l.area, style: TextStyle(fontSize: 10),),
                       ],
                     ),
                   ),
@@ -88,26 +88,70 @@ class LeadTable extends GetView<LeadsController> {
                 DataCell(
                   Row(
                     children: [
-                      Expanded(
-                        child: Text(
-                          (l.followUpNotes ?? '').isEmpty
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 180, // cap only, not fixed
+                        ),
+                        child: Tooltip(
+                          message: l.followUpNotes.trim().isEmpty
                               ? 'Add note'
-                              : l.followUpNotes,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                              : l.followUpNotes.trim(),
+                          waitDuration: const Duration(milliseconds: 400),
+                          child: Text(
+                            l.followUpNotes.trim().isEmpty
+                                ? 'Add note'
+                                : l.followUpNotes.trim(),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
                         ),
                       ),
                       IconButton(
                         tooltip: 'Add/Edit follow up',
                         icon: const Icon(Icons.note_add_outlined, size: 20),
-                        onPressed: () => controller.openFollowUpDialog(l),
+                        onPressed: () {
+                          Get.dialog(
+                            ShowFollowUpDialog(
+                              leadId: l.id,
+                              leadName: l.businessName.isNotEmpty
+                                  ? l.businessName
+                                  : l.contactName,
+                              initialNote: l.followUpNotes,
+                              onSave: (note) => controller.saveFollowUpNote(
+                                leadId: l.id,
+                                note: note,
+                              ),
+                              isSaving: controller.isSavingFollowUp, // RxBool
+                            ),
+                            barrierDismissible: false,
+                          );
+                        },
                       ),
                     ],
                   ),
                 ),
 
                 // INTEREST
-                DataCell(Text(l.bottleSizes.join(', '))),
+                DataCell(
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 160, // tweak: 140–200 depending on your table
+                    ),
+                    child: Tooltip(
+                      message: l.bottleSizes.isNotEmpty
+                          ? l.bottleSizes.join(', ')
+                          : '—',
+                      waitDuration: const Duration(milliseconds: 400),
+                      child: Text(
+                        l.bottleSizes.isNotEmpty
+                            ? l.bottleSizes.join(', ')
+                            : '—',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ),
+                ),
 
                 // ACTIVITY
                 DataCell(
@@ -139,7 +183,10 @@ class LeadTable extends GetView<LeadsController> {
                         icon: const Icon(Icons.delete_outline, size: 20),
                         onPressed: () {
                           Get.dialog(
-                            DeleteConfirmationDialog(controller: controller, lead: l),
+                            DeleteConfirmationDialog(
+                              controller: controller,
+                              lead: l,
+                            ),
                             barrierDismissible: false,
                           );
                         },
@@ -161,8 +208,6 @@ class LeadTable extends GetView<LeadsController> {
     );
   }
 }
-
-
 
 class _StatusDropdown extends StatelessWidget {
   final LeadStatus status;
@@ -246,7 +291,3 @@ class _StatusChip extends StatelessWidget {
     );
   }
 }
-
-
-
-

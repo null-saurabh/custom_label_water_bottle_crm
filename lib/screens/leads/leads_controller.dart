@@ -70,11 +70,6 @@ class LeadsController extends GetxController {
   }
 
 
-
-  void openFollowUpDialog(LeadModel lead) {
-    // showDialog with TextField and save to lead.followUpNote, then leads.refresh()
-  }
-
   void viewLead(LeadModel lead) {}
 
   void editLead(LeadModel lead) {
@@ -87,6 +82,41 @@ class LeadsController extends GetxController {
     Get.dialog(const EditLeadDialog());
   }
 
+
+
+  final isSavingFollowUp = false.obs;
+
+  Future<void> saveFollowUpNote({
+    required String leadId,
+    required String note,
+  })
+  async {
+    if (isSavingFollowUp.value) return;
+
+    try {
+      isSavingFollowUp.value = true;
+
+      await repo.updateFollowUpNote(leadId: leadId, note: note);
+
+      // add activity
+      final activity = LeadActivity(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        type: LeadActivityType.followUp,
+        title: 'Follow up note',
+        note: note.isEmpty ? '(cleared)' : note,
+        at: DateTime.now(),
+      );
+
+      await activityRepo.addActivity(leadId, activity);
+      if (Get.isDialogOpen == true) Get.back(); // ✅ close dialog
+
+      Get.snackbar('Saved', 'Follow up updated', snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to save follow up', snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isSavingFollowUp.value = false;
+    }
+  }
 
 
   Future<void> changeStatus(LeadModel lead, LeadStatus status) async {
