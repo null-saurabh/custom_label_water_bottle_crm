@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1023430264697",
+    "project_id": "custom-label-bottle-crm",
+    "storage_bucket": "custom-label-bottle-crm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1023430264697:android:aab393fface31ee2d391a8",
+        "android_client_info": {
+          "package_name": "com.example.clwb_crm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBD6MOT72n266hchSRcFwjv4mKdUf1eDcs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
