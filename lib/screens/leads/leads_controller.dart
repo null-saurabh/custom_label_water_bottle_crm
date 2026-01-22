@@ -5,6 +5,7 @@ import 'package:clwb_crm/screens/leads/firebase/lead_activity_repo.dart';
 import 'package:clwb_crm/screens/leads/firebase/lead_repo.dart';
 import 'package:clwb_crm/screens/leads/widgets/edit_lead/edit_lead.dart';
 import 'package:clwb_crm/screens/leads/widgets/edit_lead/edit_lead_controller.dart';
+import 'package:clwb_crm/screens/leads/widgets/lead_activity/widgets/lead_activity_dialog.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -70,7 +71,13 @@ class LeadsController extends GetxController {
   }
 
 
-  void viewLead(LeadModel lead) {}
+  void viewLead(LeadModel lead) {
+    Get.dialog(
+      LeadActivityDialog(lead: lead),
+      barrierDismissible: true,
+    );
+  }
+
 
   void editLead(LeadModel lead) {
     if (Get.isRegistered<EditLeadController>()) {

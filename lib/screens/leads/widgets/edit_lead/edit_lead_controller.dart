@@ -93,7 +93,7 @@ class EditLeadController extends GetxController {
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         type: LeadActivityType.note,
         title: 'Lead Updated',
-        note: 'Lead details updated from CRM',
+        note: _buildUpdateNote(lead),
         at: DateTime.now(),
       );
 
@@ -109,6 +109,39 @@ class EditLeadController extends GetxController {
       if (!isClosed) isSubmitting.value = false;
     }
   }
+
+
+  String _buildUpdateNote(LeadModel oldLead) {
+    final changes = <String>[];
+
+    void check(String label, String oldVal, String newVal) {
+      if (oldVal.trim() != newVal.trim()) {
+        changes.add('$label: "$oldVal" → "$newVal"');
+      }
+    }
+
+    check('Business name', oldLead.businessName, businessCtrl.text);
+    check('Contact name', oldLead.contactName, contactCtrl.text);
+    check('Phone', oldLead.phone, phoneCtrl.text);
+    check('Email', oldLead.email, emailCtrl.text);
+    check('Business type', oldLead.businessType, selectedBusinessType.value);
+    check('Monthly qty', oldLead.monthlyQuantity, monthlyQuantity.value);
+    check('City', oldLead.city, cityCtrl.text);
+    check('State', oldLead.state, stateCtrl.text);
+    check('Area', oldLead.area, areaCtrl.text);
+
+    // bottle sizes (list compare)
+    final oldSizes = oldLead.bottleSizes.join(', ');
+    final newSizes = bottleSizes.join(', ');
+    if (oldSizes != newSizes) {
+      changes.add('Bottle sizes: "$oldSizes" → "$newSizes"');
+    }
+
+    if (changes.isEmpty) return 'Lead updated (no visible changes)';
+
+    return changes.join('\n');
+  }
+
 
   @override
   void onClose() {

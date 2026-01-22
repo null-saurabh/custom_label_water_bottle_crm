@@ -1,3 +1,5 @@
+import 'package:clwb_crm/screens/client/client_controller.dart';
+import 'package:clwb_crm/screens/client/client_split_screen.dart';
 import 'package:clwb_crm/screens/dashboard/dashboard_screen.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/inventory_screen.dart';
@@ -17,6 +19,7 @@ abstract class AppRoutes {
   static const inventory = '/inventory';
   static const orders = '/orders';
   static const leads = '/leads';
+  static const clients = '/clients';
 }
 
 
@@ -42,6 +45,14 @@ class AppPages {
           page: () => const LeadsView(),
           binding: BindingsBuilder(() {
             Get.lazyPut(() => LeadsController());
+          }),
+        ),
+
+        GetPage(
+          name: AppRoutes.clients,
+          page: () => const ClientsSplitScreen(),
+          binding: BindingsBuilder(() {
+            Get.lazyPut(() => ClientsController());
           }),
         ),
 

@@ -1,8 +1,8 @@
 // lib/features/leads/widgets/lead_table.dart
 
 import 'package:clwb_crm/screens/leads/add_lead_model.dart';
-import 'package:clwb_crm/screens/leads/widgets/delete_confirmation_dialog.dart';
-import 'package:clwb_crm/screens/leads/widgets/follow_up_dialog.dart';
+import 'package:clwb_crm/screens/leads/widgets/lead_table/widgets/delete_confirmation_dialog.dart';
+import 'package:clwb_crm/screens/leads/widgets/lead_table/widgets/follow_up_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:clwb_crm/screens/leads/leads_controller.dart';

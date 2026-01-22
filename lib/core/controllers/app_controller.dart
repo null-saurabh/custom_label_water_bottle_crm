@@ -56,7 +56,7 @@ extension SidebarMenuRoute on SidebarMenu {
       case SidebarMenu.deliveries:
         return AppRoutes.dashboard;
       case SidebarMenu.clients:
-        return AppRoutes.dashboard;
+        return AppRoutes.clients;
       case SidebarMenu.leads:
         return AppRoutes.leads;
       case SidebarMenu.inventory:
