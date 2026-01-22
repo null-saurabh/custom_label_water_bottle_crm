@@ -18,6 +18,7 @@ class ClientModel {
   final String contactRole;
   final String phone;
   final String email;
+  final String notes;
 
   // Status
   final bool isActive;
@@ -58,6 +59,7 @@ class ClientModel {
     required this.contactRole,
     required this.phone,
     required this.email,
+    required this.notes,
     required this.isActive,
     required this.isPriority,
     required this.paymentMode,
@@ -93,6 +95,7 @@ class ClientModel {
       contactRole: data['contactRole'] ?? '',
       phone: data['phone'] ?? '',
       email: data['email'] ?? '',
+      notes: data['notes'] ?? '',
 
       isActive: data['isActive'] ?? true,
       isPriority: data['isPriority'] ?? false,
@@ -139,6 +142,7 @@ class ClientModel {
       'contactRole': contactRole,
       'phone': phone,
       'email': email,
+      'notes': notes,
 
       // status
       'isActive': isActive,
@@ -196,6 +200,7 @@ class ClientModel {
       contactRole: json['contactRole'] ?? '',
       phone: json['phone'] ?? '',
       email: json['email'] ?? '',
+      notes: json['notes'] ?? '',
 
       isActive: json['isActive'] ?? true,
       isPriority: json['isPriority'] ?? false,

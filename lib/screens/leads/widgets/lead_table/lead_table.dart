@@ -232,7 +232,8 @@ class _StatusDropdown extends StatelessWidget {
               value: s,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
-                child: _StatusChip(status: s),
+                child:
+                _StatusChip(status: s),
               ),
             );
           }).toList(),

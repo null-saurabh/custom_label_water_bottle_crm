@@ -1,5 +1,4 @@
 import 'package:clwb_crm/screens/client/client_controller.dart';
-import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_activity_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'widgets/client_header.dart';

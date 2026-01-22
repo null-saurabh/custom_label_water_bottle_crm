@@ -1,4 +1,5 @@
 import 'package:clwb_crm/screens/client/models/client_model.dart';
+import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_stat_widget/client_stat_widget.dart';
 import 'package:clwb_crm/screens/client/screens/client_detail_panel/widgets/client_recent_activity.dart';
 import 'package:flutter/material.dart';
 
@@ -25,34 +26,41 @@ class ClientOverviewTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        Row(
-          children: [
-            _infoCard('Status', client.isActive ? 'Active' : 'Inactive'),
-            const SizedBox(width: 16),
-            _infoCard(
-              'Orders',
-              '${client.deliveredOrdersCount} / ${client.deliveredOrdersCount}',
-            ),
-            const SizedBox(width: 16),
-            _infoCard(
-              'Outstanding',
-              '₹${client.outstandingAmount.toStringAsFixed(0)}',
-            ),
-            const SizedBox(width: 16),
-            _infoCard(
-              'Credit Days',
-              '${client.creditDays} days',
-            ),
-
-          ],
-        ),
-        const SizedBox(height: 24),
-        RecentActivityList(clientId: client.id,),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _infoCard('Status', client.isActive ? 'Active' : 'Inactive'),
+              const SizedBox(width: 16),
+              _infoCard(
+                'Orders',
+                '${client.deliveredOrdersCount} / ${client.deliveredOrdersCount}',
+              ),
+              const SizedBox(width: 16),
+              _infoCard(
+                'Outstanding',
+                '₹${client.outstandingAmount.toStringAsFixed(0)}',
+              ),
+              const SizedBox(width: 16),
+              _infoCard(
+                'Credit Days',
+                '${client.creditDays} days',
+              ),
+      
+            ],
+          ),
+          const SizedBox(height: 24),
+          ClientStatSection(client: client,),
+          const SizedBox(height: 24),
+          RecentActivityList(clientId: client.id,),
+        ],
+      ),
     );
   }
+
+
 
   Widget _infoCard(String title, String value) {
     return Container(

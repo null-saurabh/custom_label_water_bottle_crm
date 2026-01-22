@@ -3,7 +3,7 @@ class ClientLocation {
   final String address;
   final String googleMapsLink;
   final String city;
-  final String state;
+  final String area;
   final bool isPrimary;
 
   const ClientLocation({
@@ -11,7 +11,7 @@ class ClientLocation {
     required this.address,
     required this.googleMapsLink,
     required this.city,
-    required this.state,
+    required this.area,
     required this.isPrimary,
   });
 
@@ -21,7 +21,7 @@ class ClientLocation {
     'address': address,
     'googleMapsLink': googleMapsLink,
     'city': city,
-    'state': state,
+    'area': area,
     'isPrimary': isPrimary,
   };
 
@@ -32,7 +32,7 @@ class ClientLocation {
       address: (map['address'] ?? '') as String,
       googleMapsLink: (map['googleMapsLink'] ?? '') as String,
       city: (map['city'] ?? '') as String,
-      state: (map['state'] ?? '') as String,
+      area: (map['area'] ?? '') as String,
       isPrimary: (map['isPrimary'] ?? false) as bool,
     );
   }

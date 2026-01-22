@@ -125,7 +125,7 @@ class ClientsController extends GetxController {
     // if (existing.docs.isNotEmpty) return; // already seeded
     print("dum a");
 
-    await repo.seedDemoClients();
+    // await repo.seedDemoClients();
     print("dum 1a");
 
   }

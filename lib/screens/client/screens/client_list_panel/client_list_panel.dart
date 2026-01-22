@@ -1,5 +1,7 @@
 import 'package:clwb_crm/screens/client/client_controller.dart';
 import 'package:clwb_crm/screens/client/models/client_model.dart';
+import 'package:clwb_crm/screens/client/screens/add_client/add_client_dialog.dart';
+import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_stat_widget/client_status_card.dart';
 import 'package:clwb_crm/screens/client/screens/client_list_panel/widgets/client_list_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,25 +14,41 @@ class ClientListPanel extends GetView<ClientsController> {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(
-          right: BorderSide(color: Color(0xFFE5E7EB)),
-        ),
+        border: Border(right: BorderSide(color: Color(0xFFE5E7EB))),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          InkWell(onTap:(){
-            controller.seedOnce();
-          },child: Text("Clients",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              InkWell(
+                onTap: () {
+                  // controller.seedOnce();
+                },
+                child: Text(
+                  "Clients",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              IconButton(onPressed: (){
+                Get.dialog(
+                  const AddClientDialog(),
+                  barrierDismissible: false,
+                );
+              }, icon: const Icon(Icons.add,color: Colors.blue,)),
+
+            ],
+          ),
           const SizedBox(height: 20),
-          
+
           _searchBar(),
 
           const SizedBox(height: 12),
           const ClientFilters(),
           const SizedBox(height: 12),
-      Obx(() => Expanded(child: _clientList()),),
+          Obx(() => Expanded(child: _clientList())),
         ],
       ),
     );
@@ -54,20 +72,17 @@ class ClientListPanel extends GetView<ClientsController> {
 
   Widget _clientList() {
     // return Obx(() {
-      final clients = controller.searchedClients;
+    final clients = controller.searchedClients;
 
-      if (clients.isEmpty) {
-        return const Center(
-          child: Text(
-            'No clients found',
-            style: TextStyle(color: Colors.grey),
-          ),
-        );
-      }
+    if (clients.isEmpty) {
+      return const Center(
+        child: Text('No clients found', style: TextStyle(color: Colors.grey)),
+      );
+    }
 
-      return Obx(() {
-        final selectedId = controller.selectedClientId.value;
-        return ListView.separated(
+    return Obx(() {
+      final selectedId = controller.selectedClientId.value;
+      return ListView.separated(
         itemCount: clients.length,
         separatorBuilder: (_, __) => const SizedBox(height: 6),
         itemBuilder: (context, index) {
@@ -78,15 +93,13 @@ class ClientListPanel extends GetView<ClientsController> {
             client: client,
             isSelected: selectedId == client.id,
             onTap: () => controller.selectClient(client.id),
-
           );
         },
-      );}  );
-    // });
+      );
+    });
+
   }
 }
-
-
 
 class _ClientTile extends StatelessWidget {
   final ClientModel client;
@@ -101,8 +114,7 @@ class _ClientTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    return Material (
+    return Material(
       color: isSelected ? const Color(0xFFEFF6FF) : Colors.transparent,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
@@ -127,23 +139,18 @@ class _ClientTile extends StatelessWidget {
                   children: [
                     Text(
                       client.businessName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       client.businessType,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 8),
-              _statusChip(client.isActive),
+              ActiveStatusChip(active: client.isActive),
             ],
           ),
         ),
@@ -151,19 +158,20 @@ class _ClientTile extends StatelessWidget {
     );
   }
 
-  Widget _statusChip(bool isActive) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: isActive
-            ? const Color(0xFFD1FAE5)
-            : const Color(0xFFFEE2E2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        isActive ? 'Active' : 'Inactive',
-        style: const TextStyle(fontSize: 12),
-      ),
-    );
-  }
+  //   Widget _statusChip(bool isActive) {
+  //     return Container(
+  //       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+  //       decoration: BoxDecoration(
+  //         color: isActive
+  //             ? const Color(0xFFD1FAE5)
+  //             : const Color(0xFFFEE2E2),
+  //         borderRadius: BorderRadius.circular(12),
+  //       ),
+  //       child: Text(
+  //         isActive ? 'Active' : 'Inactive',
+  //         style: const TextStyle(fontSize: 12),
+  //       ),
+  //     );
+  //   }
 }
+

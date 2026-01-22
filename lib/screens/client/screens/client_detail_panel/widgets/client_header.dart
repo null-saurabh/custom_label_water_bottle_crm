@@ -1,5 +1,8 @@
 import 'package:clwb_crm/screens/client/models/client_model.dart';
+import 'package:clwb_crm/screens/client/screens/add_client/add_client_dialog.dart';
+import 'package:clwb_crm/screens/client/screens/edit_client/edit_client_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ClientHeader extends StatelessWidget {
   final ClientModel client;
@@ -21,13 +24,26 @@ class ClientHeader extends StatelessWidget {
         const SizedBox(width: 12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          // mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
-              client.businessName,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Text(
+                  client.businessName,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(onPressed: (){
+                  Get.dialog(
+                    EditClientDialog(
+                      client: client, // 👈 pass client
+                    ),
+                    barrierDismissible: false,
+                  );
+                }, icon: Icon(Icons.edit,color: Colors.grey,size: 20,))
+              ],
             ),
             Text(
               '${client.contactName} · ${client.contactRole}',
@@ -35,6 +51,19 @@ class ClientHeader extends StatelessWidget {
             ),Text(
               '+91 ${client.phone}',
               style: const TextStyle(color: Colors.grey),
+            ),Row(
+              // crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Location: ${client.locations.first.area}',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(width: 6),
+                Icon(Icons.pin_drop_outlined,color: Colors.grey,size: 14,)
+
+              ],
             ),
           ],
         ),

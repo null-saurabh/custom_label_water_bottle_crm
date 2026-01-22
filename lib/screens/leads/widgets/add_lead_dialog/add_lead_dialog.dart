@@ -133,7 +133,7 @@ class AddLeadDialog extends GetView<AddLeadController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     BottleSizeSection(
-                      selected: controller.bottleSizes.value,
+                      selected: controller.bottleSizes,
                       onChanged: (val) {
                         controller.bottleSizes.value = val;
                         controller.bottleError.value = null;
