@@ -1,76 +1,73 @@
-// lib/features/inventory/inventory_controller.dart
+import 'dart:async';
+import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
+import 'package:clwb_crm/screens/inventory/model/inventory_stock_add_model.dart';
+import 'package:clwb_crm/screens/inventory/model/supplier_model.dart';
+import 'package:clwb_crm/screens/inventory/repositories/inventory_item_repo.dart';
+import 'package:clwb_crm/screens/inventory/repositories/inventory_stocks_repo.dart';
+import 'package:clwb_crm/screens/inventory/repositories/supplier_repo.dart';
 import 'package:get/get.dart';
 
 class InventoryController extends GetxController {
-  final labelInventory = <LabelInventory>[].obs;
-  final bottleInventory = <BottleInventory>[].obs;
+  final InventoryItemRepository itemRepo;
+  final SupplierRepository supplierRepo;
+  final InventoryStockRepository stockRepo;
+
+  InventoryController({
+    required this.itemRepo,
+    required this.supplierRepo,
+    required this.stockRepo,
+  });
+
+  // ===== STATE =====
+  final items = <InventoryItemModel>[].obs;
+  final suppliers = <SupplierModel>[].obs;
+  final stockEntries = <InventoryStockAddModel>[].obs;
+
+  final selectedItem = Rxn<InventoryItemModel>();
+
+  final isLoading = false.obs;
+
+  StreamSubscription? _itemSub;
+  StreamSubscription? _supplierSub;
+  StreamSubscription? _stockSub;
 
   @override
   void onInit() {
     super.onInit();
-    loadInventory();
+    _bindStreams();
   }
 
-  void loadInventory() {
-    labelInventory.assignAll([
-      LabelInventory(
-        skuId: 'A-500-A1',
-        available: 1200,
-        weeklyDemand: 1800,
-        monthlyDemand: 6200,
-      ),
-    ]);
+  void _bindStreams() {
+    isLoading.value = true;
 
-    bottleInventory.assignAll([
-      BottleInventory(
-        size: '500ml',
-        shape: 'Round',
-        available: 3000,
-        reserved: 1200,
-        minimum: 1500,
-      ),
-    ]);
+    _itemSub = itemRepo.watchItems().listen((data) {
+      items.value = data;
+      isLoading.value = false;
+    });
+
+    _supplierSub = supplierRepo.watchSuppliers().listen((data) {
+      suppliers.value = data;
+    });
+
+    _stockSub = stockRepo.watchStockEntries().listen((data) {
+      stockEntries.value = data;
+    });
   }
 
-  bool isLabelShortage(LabelInventory inv) {
-    return inv.available < inv.weeklyDemand;
+  // ===== UI ACTIONS =====
+  void selectItem(InventoryItemModel item) {
+    selectedItem.value = item;
   }
 
-  bool isBottleBelowMinimum(BottleInventory inv) {
-    return inv.available < inv.minimum;
+  void clearSelection() {
+    selectedItem.value = null;
   }
-}
 
-
-
-
-
-
-class LabelInventory {
-  final String skuId;
-  final int available;
-  final int weeklyDemand;
-  final int monthlyDemand;
-
-  LabelInventory({
-    required this.skuId,
-    required this.available,
-    required this.weeklyDemand,
-    required this.monthlyDemand,
-  });
-}
-class BottleInventory {
-  final String size;
-  final String shape;
-  final int available;
-  final int reserved;
-  final int minimum;
-
-  BottleInventory({
-    required this.size,
-    required this.shape,
-    required this.available,
-    required this.reserved,
-    required this.minimum,
-  });
+  @override
+  void onClose() {
+    _itemSub?.cancel();
+    _supplierSub?.cancel();
+    _stockSub?.cancel();
+    super.onClose();
+  }
 }

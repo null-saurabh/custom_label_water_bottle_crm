@@ -1,5 +1,6 @@
-import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/detail_panel_content.dart';
 import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/detail_panel_header.dart';
+import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/detail_panel_tab_switcher.dart';
+import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/overview_tab/detail_overview_tab.dart';
 import 'package:flutter/material.dart';
 
 class InventoryDetailPanel extends StatelessWidget {
@@ -41,12 +42,17 @@ class InventoryDetailPanel extends StatelessWidget {
               ),
             ],
           ),
-          child: Column(
-            children: [
-              InventoryDetailPanelHeader(onClose: onClose),
-              const Divider(height: 1),
-              const Expanded(child: InventoryPanelDetail()),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                InventoryDetailPanelHeader(onClose: onClose),
+                // const SizedBox(height: 12),
+                const InventoryDetailPanelTabSwitcher(),
+                const SizedBox(height: 20),
+                const InventoryOverviewTab(),
+            
+              ],
+            ),
           ),
         ),
       ),

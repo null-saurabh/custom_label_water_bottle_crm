@@ -8,11 +8,10 @@ class InventoryDetailPanelHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           IconButton(
-
             icon: const Icon(Icons.arrow_back),
             onPressed: onClose,
           ),

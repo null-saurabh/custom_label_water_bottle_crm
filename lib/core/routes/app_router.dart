@@ -3,6 +3,9 @@ import 'package:clwb_crm/screens/client/client_split_screen.dart';
 import 'package:clwb_crm/screens/dashboard/dashboard_screen.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/inventory_screen.dart';
+import 'package:clwb_crm/screens/inventory/repositories/inventory_item_repo.dart';
+import 'package:clwb_crm/screens/inventory/repositories/inventory_stocks_repo.dart';
+import 'package:clwb_crm/screens/inventory/repositories/supplier_repo.dart';
 import 'package:get/get.dart';
 
 import '../../screens/dashboard/dashboard_controller.dart';
@@ -61,7 +64,11 @@ class AppPages {
           name: AppRoutes.inventory,
           page: () => InventoryScreen(),
           binding: BindingsBuilder(() {
-            Get.lazyPut(() => InventoryController());
+            Get.lazyPut(() => InventoryController(
+              itemRepo: InventoryItemRepository(),
+              supplierRepo: SupplierRepository(),
+              stockRepo: InventoryStockRepository(),
+            ),);
           }),
         ),
         // more pages...

@@ -1,5 +1,9 @@
-import 'package:clwb_crm/core/theme/constants.dart';
+import 'package:clwb_crm/core/widgets/blue_action_button.dart';
+import 'package:clwb_crm/screens/inventory/dialogs/add_item_dialog.dart';
+import 'package:clwb_crm/screens/inventory/dialogs/add_stock_dialog.dart';
+import 'package:clwb_crm/screens/inventory/dialogs/add_supplier_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class InventoryActionBar extends StatelessWidget {
   const InventoryActionBar({super.key});
@@ -8,24 +12,30 @@ class InventoryActionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _ActionButton(
+        BlueActionButton(
           icon: Icons.inventory_2_outlined,
           label: 'Add Stock',
           isPrimary: true,
-          onTap: () {},
+          onTap: () {
+            Get.dialog(const AddStockDialog());
+          },
         ),
         const SizedBox(width: 12),
-        _ActionButton(
+        BlueActionButton(
           icon: Icons.add_box_outlined,
           label: 'Add Item',
-          onTap: () {},
+          onTap: () {
+            Get.dialog(const AddItemDialog());
+          },
         ),
 
         const SizedBox(width: 12),
-        _ActionButton(
+        BlueActionButton(
           icon: Icons.factory_outlined,
           label: 'Add Supplier',
-          onTap: () {},
+          onTap: () {
+            Get.dialog(const AddSupplierDialog());
+          },
         ),
 
       ],
@@ -33,55 +43,3 @@ class InventoryActionBar extends StatelessWidget {
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isPrimary;
-  final VoidCallback onTap;
-
-  const _ActionButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.isPrimary = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-        decoration: BoxDecoration(
-
-          gradient: isPrimary?AppGradients.primary:AppGradients.softBlue,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: isPrimary ? Colors.white : Colors.black87,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: isPrimary ? Colors.white : Colors.black87,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Icon(
-              Icons.chevron_right,
-              size: 18,
-              color: isPrimary ? Colors.white : Colors.black54,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
