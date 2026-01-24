@@ -1,7 +1,5 @@
 // lib/features/inventory/inventory_controller.dart
 import 'package:get/get.dart';
-import 'models/label_inventory.dart';
-import 'models/bottle_inventory.dart';
 
 class InventoryController extends GetxController {
   final labelInventory = <LabelInventory>[].obs;
@@ -41,4 +39,38 @@ class InventoryController extends GetxController {
   bool isBottleBelowMinimum(BottleInventory inv) {
     return inv.available < inv.minimum;
   }
+}
+
+
+
+
+
+
+class LabelInventory {
+  final String skuId;
+  final int available;
+  final int weeklyDemand;
+  final int monthlyDemand;
+
+  LabelInventory({
+    required this.skuId,
+    required this.available,
+    required this.weeklyDemand,
+    required this.monthlyDemand,
+  });
+}
+class BottleInventory {
+  final String size;
+  final String shape;
+  final int available;
+  final int reserved;
+  final int minimum;
+
+  BottleInventory({
+    required this.size,
+    required this.shape,
+    required this.available,
+    required this.reserved,
+    required this.minimum,
+  });
 }
