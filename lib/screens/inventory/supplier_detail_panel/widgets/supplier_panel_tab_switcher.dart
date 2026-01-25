@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-class InventoryDetailPanelTabSwitcher
+class SupplierPanelTabSwitcher
     extends GetView<InventoryController> {
-  const InventoryDetailPanelTabSwitcher({super.key});
+  const SupplierPanelTabSwitcher({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,13 +13,13 @@ class InventoryDetailPanelTabSwitcher
       color: const Color(0xffebe7f7),
       padding: const EdgeInsets.only(left: 16,right: 16, top: 12),
       child: Obx(() {
-        final active = controller.activeDetailTab.value;
+        final active = controller.activeSupplierDetailTab.value;
 
         return Row(
           children: [
             _TabItem(
               title: 'Overview',
-              isActive: active == InventoryDetailTab.overview,
+              isActive: active == SupplierDetailTab.overview,
               width: 44,
               onTap: () => controller.switchDetailTab(
                 InventoryDetailTab.overview,
@@ -28,7 +28,7 @@ class InventoryDetailPanelTabSwitcher
             const SizedBox(width: 32),
             _TabItem(
               title: 'Recent Transactions',
-              isActive: active == InventoryDetailTab.transactions,
+              isActive: active == SupplierDetailTab.transactions,
               width: 96,
               onTap: () => controller.switchDetailTab(
                 InventoryDetailTab.transactions,

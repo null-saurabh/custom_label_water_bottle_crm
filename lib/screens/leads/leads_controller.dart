@@ -38,13 +38,41 @@ class LeadsController extends GetxController {
   }
 
 
+  final leadSearchQuery = ''.obs;
 
   final selectedFilter = Rxn<LeadStatus>(LeadStatus.newLead); // null means "All"
 
-  List<LeadModel> get filteredLeads =>
-      selectedFilter.value == null
-          ? leads
-          : leads.where((l) => l.status == selectedFilter.value).toList();
+  List<LeadModel> get filteredLeads {
+    Iterable<LeadModel> result = leads;
+
+    /// 1️⃣ Status filter
+    final status = selectedFilter.value;
+    if (status != null) {
+      result = result.where((l) => l.status == status);
+    }
+
+    /// 2️⃣ Search filter (multi-field)
+    final query = leadSearchQuery.value.trim().toLowerCase();
+    if (query.isNotEmpty) {
+      result = result.where((l) {
+        bool contains(String? value) =>
+            value != null && value.toLowerCase().contains(query);
+
+        return contains(l.businessName) ||
+            contains(l.contactName) ||
+            contains(l.phone) ||
+            contains(l.email) ||
+            contains(l.area);
+      });
+    }
+
+    return result.toList();
+  }
+
+
+
+  // ===== SEARCH =====
+
 
 
 

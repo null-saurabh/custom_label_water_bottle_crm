@@ -52,32 +52,56 @@ class InventoryStockAddModel {
     required this.updatedAt,
   });
 
-  factory InventoryStockAddModel.fromMap(Map<String, dynamic> d, {String id = ''}) {
-    final orderedQty = asInt(d['orderedQuantity']);
-    final rate = asDouble(d['ratePerUnit']);
-
-    // if totalAmount missing, compute safely
-    final total = d.containsKey('totalAmount')
-        ? asDouble(d['totalAmount'])
-        : (orderedQty * rate);
-
+  factory InventoryStockAddModel.fromMap(
+      Map<String, dynamic> d,
+      ) {
     return InventoryStockAddModel(
-      id: (d['id'] ?? id).toString(),
-      itemId: (d['itemId'] ?? '').toString(),
-      supplierId: (d['supplierId'] ?? '').toString(),
-      orderedQuantity: orderedQty,
-      receivedQuantity: asInt(d['receivedQuantity']),
-      ratePerUnit: rate,
-      totalAmount: total,
-      paidAmount: asDouble(d['paidAmount']),
-      dueAmount: asDouble(d['dueAmount']),
-      status: enumFromName(DeliveryStatus.values, d['status'], DeliveryStatus.pending),
-      deliveryDate: asNullableDateTime(d['deliveryDate']),
-      dueDate: asNullableDateTime(d['dueDate']),
-      createdAt: asDateTime(d['createdAt']),
-      updatedAt: asDateTime(d['updatedAt']),
+      id: d['id'],
+      itemId: d['itemId'],
+      supplierId: d['supplierId'],
+      orderedQuantity: d['orderedQuantity'] ?? 0,
+      receivedQuantity: d['receivedQuantity'] ?? 0,
+
+      ratePerUnit: (d['ratePerUnit'] as num?)?.toDouble() ?? 0.0,
+      totalAmount: (d['totalAmount'] as num?)?.toDouble() ?? 0.0,
+      paidAmount: (d['paidAmount'] as num?)?.toDouble() ?? 0.0,
+      dueAmount: (d['dueAmount'] as num?)?.toDouble() ?? 0.0,
+
+      status: d['status'],
+      deliveryDate: d['deliveryDate']?.toDate(),
+      dueDate: d['dueDate']?.toDate(),
+      createdAt: d['createdAt'].toDate(),
+      updatedAt: d['updatedAt'].toDate(),
     );
   }
+
+
+  // factory InventoryStockAddModel.fromMap(Map<String, dynamic> d, {String id = ''}) {
+  //   final orderedQty = asInt(d['orderedQuantity']);
+  //   final rate = asDouble(d['ratePerUnit']);
+  //
+  //   // if totalAmount missing, compute safely
+  //   final total = d.containsKey('totalAmount')
+  //       ? asDouble(d['totalAmount'])
+  //       : (orderedQty * rate);
+  //
+  //   return InventoryStockAddModel(
+  //     id: (d['id'] ?? id).toString(),
+  //     itemId: (d['itemId'] ?? '').toString(),
+  //     supplierId: (d['supplierId'] ?? '').toString(),
+  //     orderedQuantity: orderedQty,
+  //     receivedQuantity: asInt(d['receivedQuantity']),
+  //     ratePerUnit: rate,
+  //     totalAmount: total,
+  //     paidAmount: asDouble(d['paidAmount']),
+  //     dueAmount: asDouble(d['dueAmount']),
+  //     status: enumFromName(DeliveryStatus.values, d['status'], DeliveryStatus.pending),
+  //     deliveryDate: asNullableDateTime(d['deliveryDate']),
+  //     dueDate: asNullableDateTime(d['dueDate']),
+  //     createdAt: asDateTime(d['createdAt']),
+  //     updatedAt: asDateTime(d['updatedAt']),
+  //   );
+  // }
 
   factory InventoryStockAddModel.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;

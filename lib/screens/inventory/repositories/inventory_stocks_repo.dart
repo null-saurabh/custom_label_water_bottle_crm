@@ -3,7 +3,7 @@ import 'package:clwb_crm/screens/inventory/model/inventory_stock_add_model.dart'
 
 class InventoryStockRepository {
   final _db = FirebaseFirestore.instance;
-  CollectionReference get _ref => _db.collection('inventory_stock_entries');
+  CollectionReference get _ref => _db.collection('inventory_stocks');
 
   Stream<List<InventoryStockAddModel>> watchStockEntries() {
     return _ref.orderBy('createdAt', descending: true)

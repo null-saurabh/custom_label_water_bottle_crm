@@ -5,14 +5,23 @@ class SupplierItemRepository {
   final _db = FirebaseFirestore.instance;
   CollectionReference get _ref => _db.collection('supplier_items');
 
+  /// 🔥 REQUIRED for inventory aggregation
+  Stream<List<SupplierItemModel>> watchAll() {
+    return _ref.snapshots().map(
+          (s) => s.docs.map((d) => SupplierItemModel.fromDoc(d)).toList(),
+    );
+  }
+
   Stream<List<SupplierItemModel>> watchItemsForSupplier(String supplierId) {
-    return _ref.where('supplierId', isEqualTo: supplierId)
+    return _ref
+        .where('supplierId', isEqualTo: supplierId)
         .snapshots()
         .map((s) => s.docs.map((d) => SupplierItemModel.fromDoc(d)).toList());
   }
 
   Stream<List<SupplierItemModel>> watchSuppliersForItem(String itemId) {
-    return _ref.where('itemId', isEqualTo: itemId)
+    return _ref
+        .where('itemId', isEqualTo: itemId)
         .snapshots()
         .map((s) => s.docs.map((d) => SupplierItemModel.fromDoc(d)).toList());
   }

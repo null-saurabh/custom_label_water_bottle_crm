@@ -1,11 +1,13 @@
 import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
+import 'package:clwb_crm/screens/inventory/model/supplier_item_model.dart';
+import 'package:clwb_crm/screens/inventory/model/supplier_model.dart';
 import 'package:flutter/material.dart';
 
-class InventoryDetailPanelHeader extends StatelessWidget {
-  final InventoryItemModel item;
+class SupplierPanelHeader extends StatelessWidget {
+  final SupplierModel item;
   final VoidCallback onClose;
 
-  const InventoryDetailPanelHeader({
+  const SupplierPanelHeader({
     super.key,
     required this.item,
     required this.onClose,
@@ -35,7 +37,7 @@ class InventoryDetailPanelHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  item.category.name.toUpperCase(),
+                  item.phone ?? "N/A",
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,

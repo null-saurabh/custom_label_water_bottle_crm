@@ -1,10 +1,24 @@
+import 'package:clwb_crm/screens/inventory/model/bottle_config.dart';
+import 'package:clwb_crm/screens/inventory/model/cap_config.dart';
+import 'package:clwb_crm/screens/inventory/model/inventory_item_detail.dart';
+import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
+import 'package:clwb_crm/screens/inventory/model/label_config.dart';
+import 'package:clwb_crm/screens/inventory/model/package_config.dart';
 import 'package:flutter/material.dart';
 
 class OverviewHeader extends StatelessWidget {
-  const OverviewHeader({super.key});
+  final InventoryItemDetail detail;
+
+  const OverviewHeader({
+    super.key,
+    required this.detail,
+
+  });
 
   @override
   Widget build(BuildContext context) {
+    final item = detail.item;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -25,51 +39,157 @@ class OverviewHeader extends StatelessWidget {
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text(
-                'Round Bottle 500 ML',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                item.name,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              SizedBox(height: 12),
-              _Spec(label: 'Item ID', value: 'BOT-500-RND'),
-              _Spec(label: 'Type', value: 'Bottle'),
-              _Spec(label: 'Size', value: '500 ML'),
-              _Spec(label: 'Pack Size', value: '24 Bottles / Pack'),
-              _Spec(label: 'Shape', value: 'Round'),
-              _Spec(label: 'Neck Type', value: '28mm'),
+              const SizedBox(height: 12),
+              _spec('Item ID', item.id),
+              _spec('Category', item.category.name),
+              _CategorySpecs(detail: detail),
             ],
           ),
         ),
       ],
     );
   }
+
+
 }
 
-class _Spec extends StatelessWidget {
-  final String label;
-  final String value;
 
-  const _Spec({required this.label, required this.value});
+Widget _spec(String label, String value) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Row(
+      children: [
+        SizedBox(
+          width: 90,
+          child: Text(
+            '$label:',
+            style: TextStyle(color: Colors.grey.shade600),
+          ),
+        ),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
+      ],
+    ),
+  );
+}
+
+
+class _CategorySpecs extends StatelessWidget {
+  final InventoryItemDetail detail;
+
+  const _CategorySpecs({required this.detail});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 90,
-            child: Text(
-              '$label:',
-              style: TextStyle(color: Colors.grey.shade600),
-            ),
-          ),
-          Text(
-            value,
-            style: const TextStyle(fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
+    switch (detail.item.category) {
+      case InventoryCategory.bottle:
+        final b = detail.bottle;
+        return b == null
+            ? _MissingConfig()
+            : _BottleSpecs(b);
+
+      case InventoryCategory.cap:
+        final c = detail.cap;
+        return c == null
+            ? _MissingConfig()
+            : _CapSpecs(c);
+
+      case InventoryCategory.label:
+        final l = detail.label;
+        return l == null
+            ? _MissingConfig()
+            : _LabelSpecs(l);
+
+      case InventoryCategory.packaging:
+        final p = detail.packaging;
+        return p == null
+            ? _MissingConfig()
+            : _PackagingSpecs(p);
+    }
+  }
+}
+
+
+class _MissingConfig extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'Configuration not available',
+      style: TextStyle(color: Colors.red),
     );
   }
 }
+
+
+
+class _BottleSpecs extends StatelessWidget {
+  final BottleConfig c;
+  const _BottleSpecs(this.c);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _spec('Size', '${c.sizeMl} ML'),
+        _spec('Pack Size', '${c.packSize} Bottles / Pack'),
+        _spec('Shape', c.shape),
+        _spec('Neck Type', c.neckType),
+      ],
+    );
+  }
+}
+
+class _CapSpecs extends StatelessWidget {
+  final CapConfig c;
+  const _CapSpecs(this.c);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _spec('Size', c.size),
+        _spec('Color', c.color),
+        _spec('Material', c.material),
+      ],
+    );
+  }
+}
+class _LabelSpecs extends StatelessWidget {
+  final LabelConfig c;
+  const _LabelSpecs(this.c);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _spec('Width', '${c.widthMm} mm'),
+        _spec('Height', '${c.heightMm} mm'),
+        _spec('Material', c.material),
+        _spec('Client Specific', c.isClientSpecific ? 'Yes' : 'No'),
+      ],
+    );
+  }
+}
+
+class _PackagingSpecs extends StatelessWidget {
+  final PackagingConfig c;
+  const _PackagingSpecs(this.c);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _spec('Type', c.type),
+        _spec('Capacity', '${c.capacity} Bottles'),
+      ],
+    );
+  }
+}
+

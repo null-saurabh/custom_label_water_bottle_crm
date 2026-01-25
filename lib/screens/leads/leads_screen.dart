@@ -1,5 +1,6 @@
 // lib/features/leads/leads_view.dart
 
+import 'package:clwb_crm/screens/inventory/widgets/items_table/inventory_item_table.dart';
 import 'package:clwb_crm/screens/leads/widgets/lead_table/lead_table.dart';
 import 'package:clwb_crm/screens/leads/widgets/leads_filter.dart';
 import 'package:flutter/material.dart';
@@ -21,22 +22,22 @@ class LeadsView extends GetView<LeadsController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
-                  Container(
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(22),
-                    ),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search',
-                        prefixIcon: const Icon(Icons.search),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                    ),
+                Container(
+                height: 44,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: TextField(
+                  onChanged: controller.leadSearchQuery.call,
+                  decoration: InputDecoration(
+                    hintText: 'Search',
+                    prefixIcon: const Icon(Icons.search),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
                   ),
+                ),),
+
                   const SizedBox(height: 16),
                   Text("Leads",style: TextStyle(fontSize: 32,fontWeight: FontWeight.bold),),
                   const SizedBox(height: 16),

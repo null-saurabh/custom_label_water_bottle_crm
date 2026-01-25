@@ -1,16 +1,16 @@
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
-import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/detail_panel_header.dart';
-import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/detail_panel_tab_switcher.dart';
-import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/overview_tab/detail_overview_tab.dart';
-import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/overview_tab/overview_recent_table.dart';
+import 'package:clwb_crm/screens/inventory/supplier_detail_panel/widgets/supplier_overview_tab/supplier_overview_tab.dart';
+import 'package:clwb_crm/screens/inventory/supplier_detail_panel/widgets/supplier_overview_tab/supplier_recent_table.dart';
+import 'package:clwb_crm/screens/inventory/supplier_detail_panel/widgets/supplier_panel_header.dart';
+import 'package:clwb_crm/screens/inventory/supplier_detail_panel/widgets/supplier_panel_tab_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class InventoryDetailPanel extends GetView<InventoryController> {
+class SupplierDetailPanel extends GetView<InventoryController> {
   final bool isVisible;
   final VoidCallback onClose;
 
-  const InventoryDetailPanel({
+  const SupplierDetailPanel({
     super.key,
     required this.isVisible,
     required this.onClose,
@@ -40,39 +40,35 @@ class InventoryDetailPanel extends GetView<InventoryController> {
             ),
           ),
           child: Obx(() {
+            final supplier = controller.selectedSupplier.value;
 
-            final detail = controller.selectedItemDetail.value;
-
-            if (detail == null) {
+            if (supplier == null) {
               return const SizedBox.shrink();
             }
 
-            final item = detail.item;
-
-
             return Column(
               children: [
-                InventoryDetailPanelHeader(item: item, onClose: onClose),
+                SupplierPanelHeader(item: supplier, onClose: onClose),
 
-                const InventoryDetailPanelTabSwitcher(),
+                const SupplierPanelTabSwitcher(),
 
                 const Divider(height: 1),
 
                 Expanded(
                   child: Obx(() {
-                    final tab = controller.activeDetailTab.value;
+                    final tab = controller.activeSupplierDetailTab.value;
 
                     switch (tab) {
-                      case InventoryDetailTab.overview:
+                      case SupplierDetailTab.overview:
                         return SingleChildScrollView(
                           padding: const EdgeInsets.all(20),
-                          child: InventoryOverviewTab(detail: detail),
+                          child: SupplierOverviewTab(item: supplier),
                         );
 
-                      case InventoryDetailTab.transactions:
+                      case SupplierDetailTab.transactions:
                         return SingleChildScrollView(
                           padding: const EdgeInsets.all(20),
-                          child: OverviewRecentTable(itemId: item.id),
+                          child: SupplierRecentTable(supplierId: supplier.id),
                         );
                     }
                   }),

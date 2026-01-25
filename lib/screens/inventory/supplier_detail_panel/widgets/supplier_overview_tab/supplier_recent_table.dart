@@ -4,19 +4,19 @@ import 'package:clwb_crm/screens/inventory/model/inventory_stock_add_model.dart'
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class OverviewRecentTable extends GetView<InventoryController> {
-  final String itemId;
+class SupplierRecentTable extends GetView<InventoryController> {
+  final String supplierId;
 
-  const OverviewRecentTable({
+  const SupplierRecentTable({
     super.key,
-    required this.itemId,
+    required this.supplierId,
   });
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       final entries = controller.stockEntries
-          .where((e) => e.itemId == itemId)
+          .where((e) => e.supplierId == supplierId)
           .take(5)
           .toList();
 

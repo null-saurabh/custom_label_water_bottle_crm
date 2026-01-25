@@ -1,10 +1,13 @@
+import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
+import 'package:clwb_crm/screens/inventory/widgets/items_table/inventory_item_table.dart';
 import 'package:clwb_crm/screens/inventory/widgets/supplier_table/widgets/supplier_header.dart';
 import 'package:clwb_crm/screens/inventory/widgets/supplier_table/widgets/supplier_row.dart';
 import 'package:flutter/material.dart';
 
-class InventorySupplierTable extends StatelessWidget {
-  final VoidCallback onDetailTap;
-  const InventorySupplierTable({super.key, required this.onDetailTap});
+import 'package:get/get.dart';
+
+class InventorySupplierTable extends GetView<InventoryController> {
+  const InventorySupplierTable({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,67 +27,67 @@ class InventorySupplierTable extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Manufacturers",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-          SizedBox(height: 16,),
-          Container(
-            height: 44,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: Colors.grey.shade400)
-            ),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search Manufacturers...',
-                hintStyle: TextStyle(color: Colors.grey),
-                prefixIcon:  Icon(Icons.search,color: Colors.grey.shade400,),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-            ),
+          const Text(
+            "Manufacturers",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 16,),
-          Container(
-            decoration:BoxDecoration(
-              // borderRadius: BorderRadius.circular(1),
-              // border: Border.all(color: Colors.grey.shade400)
-            ),
-            child: Column(
-              children: [
-                SupplierHeader(),
-                const Divider(height: 1),
+          const SizedBox(height: 16),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical:8,horizontal: 20),
-                  child: SupplierRow(
-                    itemName: 'AquaPure Pvt. Ltd.',
-                    subText: 'Bottles & Caps',
-                    inStock: '450',
-                    orderDueMonth: '52',
-                    orderDueWeek: 'Bottles & Caps',
-                    currentValue: '\$2,100',
-                    soldValue: '\$38,200', onDetailTap: onDetailTap
-                  ),
-                ),
-                const Divider(height: 1,),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 20),
-                  child: SupplierRow(
-                    itemName: 'Design Print Solution',
-                    subText: 'Labels',
-                    inStock: '450',
-                    orderDueMonth: '52',
-                    orderDueWeek: 'BoPP Levels',
-                    currentValue: '\$2,000',
-                    soldValue: '\$25,500', onDetailTap: onDetailTap,
-                  ),
-                ),
-              ],
-            ),
+          SearchBox(
+            hintText: 'Search Manufacturers...',
+            onChanged: controller.supplierSearchQuery.call,
           ),
 
-        ],
+
+
+          const SizedBox(height: 16),
+
+      Obx(() {
+        final list = controller.filteredSuppliers;
+
+        if (controller.isLoading.value) {
+          return const Padding(
+            padding: EdgeInsets.all(24),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+
+        if (list.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(24),
+            child: Center(child: Text('No suppliers found')),
+          );
+        }
+
+        return Column(
+          children: [
+            const SupplierHeader(),
+            const Divider(height: 1),
+
+            ...list.map((supplier) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 20,
+                    ),
+                    child: SupplierRow(supplier: supplier,
+                      onTap: () => controller.selectSupplier(supplier),
+                    ),
+                  ),
+                  const Divider(height: 1),
+                ],
+              );
+            }),
+          ],
+        );
+      })
+
+      ],
       ),
     );
   }
 }
+

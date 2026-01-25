@@ -1,48 +1,59 @@
+import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:flutter/material.dart';
 
-class InventoryStatCards extends StatelessWidget {
+import 'package:get/get.dart';
+
+class InventoryStatCards extends GetView<InventoryController> {
   const InventoryStatCards({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children:  [
-        _StatCard(
-          icon: Icons.inventory_2_outlined,
-          value: '5',
-          label: 'Total Items',
-        ),
-        SizedBox(width: 16),
-        _StatCard(
-          icon: Icons.factory_outlined,
-          value: '4',
-          label: 'Suppliers',
-        ),
-        SizedBox(width: 16),
-        _StatCard(
-          icon: Icons.schedule_outlined,
-          value: '\$3,200',
-          label: 'Orders Due This Week',
-        ),
-        SizedBox(width: 16),
-        _StatCard(
-          icon: Icons.account_balance_wallet_outlined,
-          value: '\$45,550',
-          label: 'Total Stock Value',
-          bgColor: Colors.green.shade50,
-        ),
-        SizedBox(width: 16),
-        _StatCard(
-          icon: Icons.trending_up_outlined,
-          value: '\$45,550',
-          label: 'Total Stock Value', bgColor: Colors.purple.shade50,
+    return Obx(() {
+      final totalItems = controller.items.length;
+      final totalSuppliers = controller.suppliers.length;
 
 
-        ),
-      ],
-    );
+      return Row(
+        children: [
+          _StatCard(
+            icon: Icons.inventory_2_outlined,
+            value: totalItems.toString(),
+            label: 'Total Items',
+            bgColor: Color(0xffeef2f5),
+
+          ),
+          const SizedBox(width: 16),
+          _StatCard(
+            icon: Icons.factory_outlined,
+            value: totalSuppliers.toString(),
+            label: 'Suppliers',
+            bgColor: Colors.green.shade50,
+
+
+
+          ),
+          const SizedBox(width: 16),
+          _StatCard(
+            icon: Icons.schedule_outlined,
+            value: controller.ordersDueThisWeek.toString(),
+            label: 'Orders Due This Week',
+            bgColor: Color(0xffebe6fb),
+
+          ),
+          const SizedBox(width: 16),
+          _StatCard(
+            icon: Icons.account_balance_wallet_outlined,
+            value: '₹${controller.totalStockValue.toStringAsFixed(0)}',
+            label: 'Total Stock Value',
+            bgColor: Color(0xfff7f1ec),
+
+          ),
+        ],
+      );
+    });
   }
 }
+
 
 class _StatCard extends StatelessWidget {
   final IconData icon;

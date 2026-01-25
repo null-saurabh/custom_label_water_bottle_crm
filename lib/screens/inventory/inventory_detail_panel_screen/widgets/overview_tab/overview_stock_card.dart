@@ -1,49 +1,73 @@
+import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
+import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class OverviewStockCards extends StatelessWidget {
-  const OverviewStockCards({super.key});
+class OverviewStockCards extends GetView<InventoryController> {
+  final InventoryItemModel item;
+
+  const OverviewStockCards({
+    super.key,
+    required this.item,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: const [
-            _ValueCard(
-              title: 'Current Stock Value',
-              value: '\$2,700',
-              sub: '(10,800 Bottles)',
-            ),
-            SizedBox(width: 16),
-            _ValueCard(
-              title: 'Sold Stock Value',
-              value: '\$38,200',
-              sub: '(2,400 Bottles)',
-              editable: true,
-            ),
-          ],
-        ),
-        SizedBox(height: 16,),
-        Row(
-          children: const [
-            _ValueCard(
-              title: 'Recurring Orders',
-              value: '211',
-              sub: '(10,800 Bottles)',
-            ),
-            SizedBox(width: 16),
-            _ValueCard(
-              title: 'Payment Due',
-              value: '\$38,200',
-              sub: 'of 2000',
-              editable: true,
-            ),
-          ],
-        ),
-      ],
-    );
+    return Obx(() {
+      final stockEntries =
+      controller.stockEntries.where((e) => e.itemId == item.id);
+
+      final totalPurchased = stockEntries.fold<double>(
+        0,
+            (sum, e) => sum + e.totalAmount,
+      );
+
+      final totalPaid = stockEntries.fold<double>(
+        0,
+            (sum, e) => sum + e.paidAmount,
+      );
+
+      final due = totalPurchased - totalPaid;
+
+      return Column(
+        children: [
+          Row(
+            children: [
+              _ValueCard(
+                title: 'Current Stock',
+                value: item.stock.toString(),
+                sub: 'Units Available',
+              ),
+              const SizedBox(width: 16),
+              _ValueCard(
+                title: 'Total Purchased',
+                value: '₹${totalPurchased.toStringAsFixed(0)}',
+                sub: 'Lifetime',
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _ValueCard(
+                title: 'Paid Amount',
+                value: '₹${totalPaid.toStringAsFixed(0)}',
+                sub: 'To Suppliers',
+              ),
+              const SizedBox(width: 16),
+              _ValueCard(
+                title: 'Payment Due',
+                value: '₹${due.toStringAsFixed(0)}',
+                sub: 'Outstanding',
+              ),
+            ],
+          ),
+        ],
+      );
+    });
   }
 }
+
 
 class _ValueCard extends StatelessWidget {
   final String title;

@@ -5,7 +5,9 @@ import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/inventory_screen.dart';
 import 'package:clwb_crm/screens/inventory/repositories/inventory_item_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/inventory_stocks_repo.dart';
+import 'package:clwb_crm/screens/inventory/repositories/supplier_item_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/supplier_repo.dart';
+import 'package:clwb_crm/screens/orders/repo/order_repo.dart';
 import 'package:get/get.dart';
 
 import '../../screens/dashboard/dashboard_controller.dart';
@@ -13,9 +15,7 @@ import '../../screens/leads/leads_controller.dart';
 import '../../screens/leads/leads_screen.dart';
 import '../layouts/shell_screen.dart';
 
-
 abstract class AppRoutes {
-
   static const shell = '/';
   static const login = '/login';
   static const dashboard = '/dashboard';
@@ -24,9 +24,6 @@ abstract class AppRoutes {
   static const leads = '/leads';
   static const clients = '/clients';
 }
-
-
-
 
 class AppPages {
   static final pages = [
@@ -59,16 +56,19 @@ class AppPages {
           }),
         ),
 
-
         GetPage(
           name: AppRoutes.inventory,
           page: () => InventoryScreen(),
           binding: BindingsBuilder(() {
-            Get.lazyPut(() => InventoryController(
-              itemRepo: InventoryItemRepository(),
-              supplierRepo: SupplierRepository(),
-              stockRepo: InventoryStockRepository(),
-            ),);
+            Get.lazyPut(
+              () => InventoryController(
+                SupplierItemRepository(),
+                FirebaseOrderRepository(),
+                itemRepo: InventoryItemRepository(),
+                supplierRepo: SupplierRepository(),
+                stockRepo: InventoryStockRepository(),
+              ),
+            );
           }),
         ),
         // more pages...
@@ -76,6 +76,3 @@ class AppPages {
     ),
   ];
 }
-
-
-
