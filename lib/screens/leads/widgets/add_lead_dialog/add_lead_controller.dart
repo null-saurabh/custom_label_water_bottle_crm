@@ -60,7 +60,7 @@ class AddLeadController extends GetxController {
   }
 
   Future<void> submit() async {
-    print("A");
+    // print("A");
 
     businessError.value = null;
         phoneError.value = null;
@@ -69,7 +69,7 @@ class AddLeadController extends GetxController {
         bottleError.value = null;
 
     if (!validate()) return;
-    print("Aa");
+    // print("Aa");
     try {
     isSubmitting.value = true;
 
@@ -81,7 +81,7 @@ class AddLeadController extends GetxController {
       note: 'Lead added from CRM',
       at: DateTime.now(),
     );
-    print("submit 1");
+    // print("submit 1");
 
     final lead = LeadModel(
       id: '',
@@ -112,18 +112,18 @@ class AddLeadController extends GetxController {
         ),
       ],
     );
-    print("submit 2");
+    // print("submit 2");
 
     final leadId = await repo.addLead(lead);
-    print("submit 3");
+    // print("submit 3");
 
     await LeadActivityRepository().addActivity(leadId, activity);
-    print("submit 4");
+    // print("submit 4");
 
-    print("Aa");
+    // print("Aa");.
 
 
-    print("Aa");
+    // print("Aa");
 
     Get.back();
     } catch (e) {

@@ -16,15 +16,6 @@ enum ClientFilter {
 class ClientsController extends GetxController {
   final repo = ClientRepository();
 
-  // final ClientRepository _repo;
-
-  // ClientsController(this._repo);
-
-
-
-
-
-
   final clients = <ClientModel>[].obs;
 
   // UI state
@@ -42,6 +33,8 @@ class ClientsController extends GetxController {
 
     repo.watchClients().listen(clients.assignAll);
     super.onInit();
+
+    selectedClientId.value = null;
   }
 
   void selectClient(String clientId) {

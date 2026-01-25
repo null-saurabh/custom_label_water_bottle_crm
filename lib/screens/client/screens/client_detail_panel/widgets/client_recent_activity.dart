@@ -5,21 +5,33 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class RecentActivityList extends StatelessWidget {
-  final String clientId;
-
-  const RecentActivityList({
-    super.key,
-    required this.clientId,
-  });
+class RecentActivityList extends GetView<ClientsController> {
+  const RecentActivityList({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final controller =
+
+
+
+      final clientId = controller.selectedClientId.value;
+
+      if (clientId == null) {
+        return const Center(
+          child: Text('Select a client to view activity'),
+        );
+      }
+
+      if (!Get.isRegistered<ClientActivityController>(tag: clientId)) {
+        return const Center(
+          child: Text('Select a client to view activity'),
+        );
+      }
+
+      final activityController =
       Get.find<ClientActivityController>(tag: clientId);
 
-      final activities = controller.activities;
+      final activities = activityController.activities;
 
       if (activities.isEmpty) {
         return const Center(

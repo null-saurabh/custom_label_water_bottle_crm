@@ -21,8 +21,8 @@ class SupplierPanelTabSwitcher
               title: 'Overview',
               isActive: active == SupplierDetailTab.overview,
               width: 44,
-              onTap: () => controller.switchDetailTab(
-                InventoryDetailTab.overview,
+              onTap: () => controller.switchSupplierDetailTab(
+                SupplierDetailTab.overview,
               ),
             ),
             const SizedBox(width: 32),
@@ -30,8 +30,8 @@ class SupplierPanelTabSwitcher
               title: 'Recent Transactions',
               isActive: active == SupplierDetailTab.transactions,
               width: 96,
-              onTap: () => controller.switchDetailTab(
-                InventoryDetailTab.transactions,
+              onTap: () => controller.switchSupplierDetailTab(
+                SupplierDetailTab.transactions,
               ),
             ),
           ],

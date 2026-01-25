@@ -54,7 +54,7 @@ class ClientOverviewTab extends StatelessWidget {
           const SizedBox(height: 24),
           ClientStatSection(client: client,),
           const SizedBox(height: 24),
-          RecentActivityList(clientId: client.id,),
+          RecentActivityList(),
         ],
       ),
     );

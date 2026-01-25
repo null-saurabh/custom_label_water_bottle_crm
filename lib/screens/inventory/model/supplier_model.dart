@@ -54,4 +54,31 @@ class SupplierModel {
       'updatedAt': updatedAt,
     };
   }
+
+
+  SupplierModel copyWith({
+    String? id,
+    String? name,
+    String? contactPerson,
+    String? phone,
+    String? email,
+    String? address,
+    bool? isActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return SupplierModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      contactPerson: contactPerson ?? this.contactPerson,
+      phone: phone ?? this.phone,
+      email: email ?? this.email,
+      address: address ?? this.address,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+
 }

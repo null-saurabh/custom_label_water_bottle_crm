@@ -51,9 +51,9 @@ class AppPages {
         GetPage(
           name: AppRoutes.clients,
           page: () => const ClientsSplitScreen(),
-          binding: BindingsBuilder(() {
-            Get.lazyPut(() => ClientsController());
-          }),
+          // binding: BindingsBuilder(() {
+          //   Get.lazyPut(() => ClientsController());
+          // }),
         ),
 
         GetPage(

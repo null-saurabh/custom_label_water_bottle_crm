@@ -1,6 +1,5 @@
 
 import 'package:clwb_crm/core/widgets/blue_action_button.dart';
-import 'package:clwb_crm/screens/inventory/dummy_order.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,17 +26,18 @@ class InventoryActionBar extends GetView<InventoryController> {
           // },
           onTap: controller.openAddStockDialog,
         ),
-        const SizedBox(width: 12),
-        BlueActionButton(
-          icon: Icons.add_box_outlined,
-          label: 'Add Item',
-          onTap: controller.openAddItemDialog,
-        ),
+
         const SizedBox(width: 12),
         BlueActionButton(
           icon: Icons.factory_outlined,
           label: 'Add Supplier',
           onTap: controller.openAddSupplierDialog,
+        ),
+        const SizedBox(width: 12),
+        BlueActionButton(
+          icon: Icons.add_box_outlined,
+          label: 'Add Item',
+          onTap: controller.openAddItemDialog,
         ),
       ],
     );

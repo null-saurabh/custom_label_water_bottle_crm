@@ -7,19 +7,23 @@ class LabelConfig {
   final double widthMm;
   final double heightMm;
   final String material;        // Paper / Plastic
-  final bool isClientSpecific;  // true for custom branding
+  final bool isClientSpecific;// true for custom branding
+  final String? clientId;
 
-  LabelConfig({
+  LabelConfig( {
     required this.itemId,
     required this.widthMm,
     required this.heightMm,
     required this.material,
     required this.isClientSpecific,
+    this.clientId,
   });
 
   factory LabelConfig.fromMap(Map<String, dynamic> d) {
     return LabelConfig(
+
       itemId: (d['itemId'] ?? '').toString(),
+      clientId: (d['clientId'] ?? '').toString(),
       widthMm: asDouble(d['widthMm']),
       heightMm: asDouble(d['heightMm']),
       material: (d['material'] ?? '').toString(),
@@ -40,6 +44,7 @@ class LabelConfig {
   Map<String, dynamic> toMap() {
     return {
       'itemId': itemId,
+      'clientId': clientId,
       'widthMm': widthMm,
       'heightMm': heightMm,
       'material': material,
@@ -49,6 +54,7 @@ class LabelConfig {
 
   LabelConfig copyWith({
     String? itemId,
+    String? clientId,
     double? widthMm,
     double? heightMm,
     String? material,
@@ -56,6 +62,7 @@ class LabelConfig {
   }) {
     return LabelConfig(
       itemId: itemId ?? this.itemId,
+      clientId: clientId ?? this.clientId,
       widthMm: widthMm ?? this.widthMm,
       heightMm: heightMm ?? this.heightMm,
       material: material ?? this.material,

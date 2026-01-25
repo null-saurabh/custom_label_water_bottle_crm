@@ -8,7 +8,7 @@ class SupplierItemRepository {
   /// 🔥 REQUIRED for inventory aggregation
   Stream<List<SupplierItemModel>> watchAll() {
     return _ref.snapshots().map(
-          (s) => s.docs.map((d) => SupplierItemModel.fromDoc(d)).toList(),
+      (s) => s.docs.map((d) => SupplierItemModel.fromDoc(d)).toList(),
     );
   }
 
@@ -19,12 +19,38 @@ class SupplierItemRepository {
         .map((s) => s.docs.map((d) => SupplierItemModel.fromDoc(d)).toList());
   }
 
+  Future<SupplierItemModel?> findSupplierItem({
+    required String supplierId,
+    required String itemId,
+  }) async {
+    final q = await _ref
+        .where('supplierId', isEqualTo: supplierId)
+        .where('itemId', isEqualTo: itemId)
+        .limit(1)
+        .get();
+
+    if (q.docs.isEmpty) return null;
+    return SupplierItemModel.fromDoc(q.docs.first);
+  }
+
   Stream<List<SupplierItemModel>> watchSuppliersForItem(String itemId) {
     return _ref
         .where('itemId', isEqualTo: itemId)
         .snapshots()
         .map((s) => s.docs.map((d) => SupplierItemModel.fromDoc(d)).toList());
   }
+
+
+  Future<String> addSupplierItem(SupplierItemModel model) async {
+    final doc = _ref.doc();
+
+    await doc.set(
+      model.copyWith(id: doc.id).toMap(),
+    );
+
+    return doc.id;
+  }
+
 
   Future<void> upsertSupplierItem(SupplierItemModel model) {
     return _ref.doc(model.id).set(model.toMap(), SetOptions(merge: true));

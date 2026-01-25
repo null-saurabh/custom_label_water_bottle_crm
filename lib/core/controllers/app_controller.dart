@@ -18,11 +18,6 @@ class AppController extends GetxController {
     selectedMenu.value = menu;
 
     Get.rootDelegate.toNamed(menu.route); // ✅ FIX
-    //
-    // selectedMenu.value = menu;
-    // Get.rootDelegate.offNamed(
-    //   menu.route,
-    // );
 
   }
 
@@ -39,7 +34,6 @@ class AppController extends GetxController {
 enum SidebarMenu {
   dashboard,
   orders,
-  deliveries,
   clients,
   leads,
   inventory,
@@ -53,8 +47,6 @@ extension SidebarMenuRoute on SidebarMenu {
         return AppRoutes.dashboard;
       case SidebarMenu.orders:
         return AppRoutes.orders;
-      case SidebarMenu.deliveries:
-        return AppRoutes.dashboard;
       case SidebarMenu.clients:
         return AppRoutes.clients;
       case SidebarMenu.leads:

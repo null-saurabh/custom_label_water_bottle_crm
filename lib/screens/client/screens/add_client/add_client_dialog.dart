@@ -18,74 +18,80 @@ class AddClientDialog extends GetView<AddClientController> {
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 600),
-        child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 40,
-              vertical: 40,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 40,
-                  offset: const Offset(0, 24),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 40,
+            vertical: 40,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 40,
+                offset: const Offset(0, 24),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Add Client',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+
+              // const SizedBox(height: 10),
+              const Divider(color: Color(0xFFE6EDF3), thickness: 1, height: 24),
+
+
+              const SizedBox(height: 20),
+              Flexible(child: SingleChildScrollView(
+                child: Column(
                   children: [
-                    const Text(
-                      'Add Client',
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Get.back(),
-                      icon: const Icon(Icons.close),
-                    ),
+                    _BasicInfoSection(),
+
+                    const SizedBox(height: 20),
+                    _ContactInfoSection(),
+
+                    const SizedBox(height: 20),
+                    _LocationSection(),
+
                   ],
                 ),
+              )),
 
-                // const SizedBox(height: 10),
-                const Divider(color: Color(0xFFE6EDF3), thickness: 1, height: 24),
-
-
-                const SizedBox(height: 20),
-                _BasicInfoSection(),
-
-                const SizedBox(height: 20),
-                _ContactInfoSection(),
-
-                const SizedBox(height: 20),
-                _LocationSection(),
-
-                const SizedBox(height: 32),
+              const SizedBox(height: 32),
 
 
-                const Divider(color: Color(0xFFE6EDF3), thickness: 1, height: 24),
+              const Divider(color: Color(0xFFE6EDF3), thickness: 1, height: 24),
 
-                Obx(() =>PremiumButton(
-                  text: 'Submit',
-                  onTap: (){controller.submit();},
-                  isLoading: controller.isSubmitting.value,
-                )),
+              Obx(() =>PremiumButton(
+                text: 'Submit',
+                onTap: (){controller.submit();},
+                isLoading: controller.isSubmitting.value,
+              )),
 
-                const Divider(color: Color(0xFFE6EDF3), thickness: 1, height: 24),
+              const Divider(color: Color(0xFFE6EDF3), thickness: 1, height: 24),
 
 
 
-              ],
-            ),
+            ],
           ),
         ),
       ),

@@ -197,7 +197,7 @@ class InventoryController extends GetxController {
 
       case InventoryCategory.packaging:
         packagingConfigRepo.watchConfig(item.id).listen((pkg) {
-          if (pkg == null) return;
+          // if (pkg == null) return;
           selectedItemDetail.value = InventoryItemDetail(
             item: item,
             packaging: pkg,
@@ -433,6 +433,22 @@ class InventoryController extends GetxController {
         .fold(0.0, (s, e) => s + e.dueAmount);
   }
 
+  DateTime? supplierNextDeliveryDate(String supplierId) {
+    final pending = stockEntries
+        .where((e) =>
+    e.supplierId == supplierId &&
+        e.status != DeliveryStatus.received &&
+        e.deliveryDate != null)
+        .toList();
+
+    if (pending.isEmpty) return null;
+
+    pending.sort(
+          (a, b) => a.deliveryDate!.compareTo(b.deliveryDate!),
+    );
+
+    return pending.first.deliveryDate;
+  }
 
 
 // ===== SEARCH =====
@@ -530,4 +546,7 @@ class InventoryController extends GetxController {
     _stockSub?.cancel();
     super.onClose();
   }
+
+
+
 }

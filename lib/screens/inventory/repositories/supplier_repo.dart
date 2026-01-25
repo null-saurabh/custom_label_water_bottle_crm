@@ -16,10 +16,23 @@ class SupplierRepository {
           (d) => d.exists ? SupplierModel.fromDoc(d) : null,
     );
   }
+  Future<String> addSupplier(SupplierModel supplier) async {
+    final doc = _ref.doc(); // ✅ auto-generated ID
 
-  Future<void> addSupplier(SupplierModel supplier) {
-    return _ref.doc(supplier.id).set(supplier.toMap());
+    await doc.set(
+      supplier.copyWith(id: doc.id).toMap(),
+    );
+
+    return doc.id;
   }
+
+
+  // Future<void> addSupplier(SupplierModel supplier) {
+  //   print("in adding supplier");
+  //   print(supplier);
+  //   return _ref.doc(supplier.id).set(supplier.toMap());
+  //
+  // }
 
   Future<void> updateSupplier(String id, Map<String, dynamic> data) {
     return _ref.doc(id).update(data);

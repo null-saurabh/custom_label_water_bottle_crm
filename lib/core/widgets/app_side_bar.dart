@@ -125,15 +125,6 @@ class AppSidebar extends StatelessWidget {
                         controller.selectMenu(SidebarMenu.orders),
                   ),
                   _SidebarItem(
-                    icon: Icons.local_shipping_outlined,
-                    label: 'Deliveries',
-                    isActive:
-                    controller.selectedMenu.value ==
-                        SidebarMenu.deliveries,
-                    onTap: () =>
-                        controller.selectMenu(SidebarMenu.deliveries),
-                  ),
-                  _SidebarItem(
                     icon: Icons.people_outline,
                     label: 'Clients',
                     isActive:

@@ -6,12 +6,17 @@ import 'package:get/get.dart';
 class SupplierRow extends GetView<InventoryController> {
   final SupplierModel supplier;
   final VoidCallback onTap;
+  final String pendingAmount;
+  final String pendingOrders;
+  final String nextDeliveryDate;
 
 
-  const SupplierRow({
+
+  const SupplierRow( {
     super.key,
     required this.supplier,
     required this.onTap,
+    required this.pendingAmount, required this.pendingOrders, required this.nextDeliveryDate,
 
   });
 
@@ -19,12 +24,16 @@ class SupplierRow extends GetView<InventoryController> {
   Widget build(BuildContext context) {
     final categories =
     controller.supplierCategories(supplier.id);
-    final itemsCount =
-    controller.supplierItemsCount(supplier.id);
-    final pendingOrders =
-    controller.supplierPendingDeliveries(supplier.id);
-    final pendingAmount =
-    controller.supplierPendingAmount(supplier.id);
+
+
+    // final nextDeliveryDate =
+    // controller.supplierNextDeliveryDate(supplier.id) ?? "N/A";
+    // final pendingOrders =
+    // controller.supplierPendingDeliveries(supplier.id);
+    // final pendingAmount =
+    // controller.supplierPendingAmount(supplier.id);
+
+
     final totalPurchased =
     controller.supplierTotalPurchased(supplier.id);
 
@@ -35,9 +44,9 @@ class SupplierRow extends GetView<InventoryController> {
         children: [
           _itemCell(),
           _textCell(categories,15),
-          _textCell(itemsCount.toString(),10),
-          _textCell(pendingOrders.toString(),12),
-          _redText('₹${pendingAmount.toStringAsFixed(0)}'),
+          _textCell(pendingOrders,10),
+          _textCell(nextDeliveryDate,12),
+          _redText('₹$pendingAmount'),
           _greenText('₹${totalPurchased.toStringAsFixed(0)}'),
           const SizedBox(
             width: 32,

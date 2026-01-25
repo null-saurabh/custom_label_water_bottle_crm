@@ -1,7 +1,9 @@
+import 'package:clwb_crm/screens/inventory/dialogs/edit_supplier_dialog.dart';
 import 'package:clwb_crm/screens/inventory/model/bottle_config.dart';
 import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
 import 'package:clwb_crm/screens/inventory/model/supplier_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SupplierOverviewHeader extends StatelessWidget {
   final SupplierModel item;
@@ -36,13 +38,33 @@ class SupplierOverviewHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                item.name,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    item.name,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  // const SizedBox(width: 6),
+                  IconButton(
+                    onPressed: () {
+                      Get.dialog(
+                        EditSupplierDialog(supplier: item),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.edit,
+                      size: 18,
+                      color: Colors.grey,
+                    ),
+                  ),
+
+                ],
               ),
+
               const SizedBox(height: 12),
               _spec('Item ID', item.id),
               _spec('Name', item.contactPerson ?? "N/A"),

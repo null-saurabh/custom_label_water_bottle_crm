@@ -1,3 +1,4 @@
+import 'package:clwb_crm/screens/inventory/dialogs/edit_item_dialog.dart';
 import 'package:clwb_crm/screens/inventory/model/bottle_config.dart';
 import 'package:clwb_crm/screens/inventory/model/cap_config.dart';
 import 'package:clwb_crm/screens/inventory/model/inventory_item_detail.dart';
@@ -5,6 +6,7 @@ import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
 import 'package:clwb_crm/screens/inventory/model/label_config.dart';
 import 'package:clwb_crm/screens/inventory/model/package_config.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class OverviewHeader extends StatelessWidget {
   final InventoryItemDetail detail;
@@ -40,12 +42,31 @@ class OverviewHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                item.name,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    item.name,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  // const SizedBox(width: 6),
+                  IconButton(
+                    onPressed: () {
+                      Get.dialog(
+                        EditItemDialog(detail: detail),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.edit,
+                      size: 18,
+                      color: Colors.grey,
+                    ),
+                  ),
+
+                ],
               ),
               const SizedBox(height: 12),
               _spec('Item ID', item.id),

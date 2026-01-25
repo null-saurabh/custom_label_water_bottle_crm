@@ -5,6 +5,7 @@ import 'package:clwb_crm/screens/inventory/widgets/supplier_table/widgets/suppli
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class InventorySupplierTable extends GetView<InventoryController> {
   const InventorySupplierTable({super.key});
@@ -38,56 +39,65 @@ class InventorySupplierTable extends GetView<InventoryController> {
             onChanged: controller.supplierSearchQuery.call,
           ),
 
-
-
           const SizedBox(height: 16),
 
-      Obx(() {
-        final list = controller.filteredSuppliers;
+          Obx(() {
 
-        if (controller.isLoading.value) {
-          return const Padding(
-            padding: EdgeInsets.all(24),
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
+            final list = controller.filteredSuppliers;
 
-
-        if (list.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.all(24),
-            child: Center(child: Text('No suppliers found')),
-          );
-        }
-
-        return Column(
-          children: [
-            const SupplierHeader(),
-            const Divider(height: 1),
-
-            ...list.map((supplier) {
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 20,
-                    ),
-                    child: SupplierRow(supplier: supplier,
-                      onTap: () => controller.selectSupplier(supplier),
-                    ),
-                  ),
-                  const Divider(height: 1),
-                ],
+            if (controller.isLoading.value) {
+              return const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: CircularProgressIndicator()),
               );
-            }),
-          ],
-        );
-      })
+            }
 
-      ],
+            if (list.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: Text('No suppliers found')),
+              );
+            }
+
+            return Column(
+              children: [
+                const SupplierHeader(),
+                const Divider(height: 1),
+
+                ...list.map((supplier) {
+
+                  final pendingAmount =
+                  controller.supplierPendingAmount(supplier.id);
+                  final pendingOrders =
+                  controller.supplierPendingDeliveries(supplier.id);
+                  final nextDeliveryDate =
+                  controller.supplierNextDeliveryDate(supplier.id) != null ?DateFormat('d MMM y').format(controller.supplierNextDeliveryDate(supplier.id)!) : "N/A";
+
+
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 20,
+                        ),
+                        child: SupplierRow(
+                          pendingAmount: pendingAmount.toStringAsFixed(0),
+                          pendingOrders: pendingOrders.toString(),
+                          nextDeliveryDate: nextDeliveryDate.toString(),
+                          supplier: supplier,
+                          onTap: () => controller.selectSupplier(supplier),
+                        ),
+                      ),
+                      const Divider(height: 1),
+                    ],
+                  );
+                }),
+              ],
+            );
+          }),
+        ],
       ),
     );
   }
 }
-

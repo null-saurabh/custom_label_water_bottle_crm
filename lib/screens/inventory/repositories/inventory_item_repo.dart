@@ -19,8 +19,14 @@ class InventoryItemRepository {
     );
   }
 
-  Future<void> addItem(InventoryItemModel item) {
-    return _ref.doc(item.id).set(item.toMap());
+  // Future<void> addItem(InventoryItemModel item) {
+  //   return _ref.doc(item.id).set(item.toMap());
+  // }
+
+  Future<String> addItem(InventoryItemModel item) async {
+    final doc = _ref.doc();
+    await doc.set(item.copyWith(id: doc.id).toMap());
+    return doc.id;
   }
 
   Future<void> updateItem(String itemId, Map<String, dynamic> data) {

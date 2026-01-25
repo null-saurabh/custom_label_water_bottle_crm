@@ -17,8 +17,14 @@ class InventoryStockRepository {
         .map((s) => s.docs.map((d) => InventoryStockAddModel.fromDoc(d)).toList());
   }
 
-  Future<void> addStockEntry(InventoryStockAddModel entry) {
-    return _ref.doc(entry.id).set(entry.toMap());
+  Future<String> addStock(InventoryStockAddModel stock) async {
+    final doc = _ref.doc();
+
+    await doc.set(
+      stock.copyWith(id: doc.id).toMap(),
+    );
+
+    return doc.id;
   }
 
   Future<void> updateStockEntry(String id, Map<String, dynamic> data) {
