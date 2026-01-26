@@ -11,7 +11,7 @@ class AppSidebar extends StatelessWidget {
     final controller = Get.find<AppController>();
 
     return Container(
-      width: 260,
+      width: 180,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -65,38 +65,38 @@ class AppSidebar extends StatelessWidget {
           const SizedBox(height: 28),
 
           // USER INFO
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0),
-            child: Row(
-              children:  [
-                CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Colors.grey.shade200,
-                  child: const Icon(
-                    Icons.person_outline,
-                    size: 20,
-                    color: Colors.grey,
-                  ),
-                ),
-
-                SizedBox(width: 8),
-                Column(
-                  children: [
-                    Text(
-                      'John Parker',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Sales Manager',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                )
-
-              ],
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(left: 16.0),
+          //   child: Row(
+          //     children:  [
+          //       CircleAvatar(
+          //         radius: 18,
+          //         backgroundColor: Colors.grey.shade200,
+          //         child: const Icon(
+          //           Icons.person_outline,
+          //           size: 20,
+          //           color: Colors.grey,
+          //         ),
+          //       ),
+          //
+          //       SizedBox(width: 8),
+          //       Column(
+          //         children: [
+          //           Text(
+          //             'John Parker',
+          //             style: TextStyle(fontWeight: FontWeight.w600),
+          //           ),
+          //           SizedBox(height: 2),
+          //           Text(
+          //             'Sales Manager',
+          //             style: TextStyle(fontSize: 12, color: Colors.grey),
+          //           ),
+          //         ],
+          //       )
+          //
+          //     ],
+          //   ),
+          // ),
 
           const SizedBox(height: 32),
 

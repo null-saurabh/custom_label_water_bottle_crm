@@ -46,7 +46,7 @@ class InventoryController extends GetxController {
   final SupplierRepository supplierRepo;
   final InventoryStockRepository stockRepo;
   final SupplierItemRepository supplierItemRepo;
-  final OrderRepository orderRepo;
+  final OrdersRepository orderRepo;
 
   InventoryController(this.supplierItemRepo, this.orderRepo, {
     required this.itemRepo,
@@ -122,7 +122,7 @@ class InventoryController extends GetxController {
         supplierItemRepo.watchAll().listen(supplierItems.assignAll);
 
     _orderSub =
-        orderRepo.watchOrders().listen(orders.assignAll);
+        orderRepo.watchAllOrders().listen(orders.assignAll);
   }
 
 
@@ -240,18 +240,18 @@ class InventoryController extends GetxController {
     return orders
         .where((o) =>
     o.itemId == itemId &&
-        o.status != 'delivered' &&
-        _isThisWeek(o.deliveryDate))
-        .fold(0, (s, o) => s + (o.totalBottles - o.deliveredBottles));
+        o.orderStatus != 'delivered' &&
+        _isThisWeek(o.expectedDeliveryDate ?? DateTime.now()))
+        .fold(0, (s, o) => s + (o.orderedQuantity - o.deliveredQuantity));
   }
 
   int orderDueThisMonth(String itemId) {
     return orders
         .where((o) =>
     o.itemId == itemId &&
-        o.status != 'delivered' &&
-        _isThisMonth(o.deliveryDate))
-        .fold(0, (s, o) => s + (o.totalBottles - o.deliveredBottles));
+        o.orderStatus != 'delivered' &&
+        _isThisMonth(o.expectedDeliveryDate ?? DateTime.now()))
+        .fold(0, (s, o) => s + (o.orderedQuantity - o.deliveredQuantity));
   }
 
   double currentStockValue(String itemId) {
@@ -513,9 +513,9 @@ class InventoryController extends GetxController {
 
     return orders
         .where((o) =>
-    o.status != 'delivered' &&
-        o.deliveryDate.isAfter(startOfWeek) &&
-        o.deliveryDate.isBefore(endOfWeek))
+    o.orderStatus != 'delivered' &&
+        o.expectedDeliveryDate!.isAfter(startOfWeek) &&
+        o.expectedDeliveryDate!.isBefore(endOfWeek))
         .length; // or sum quantities if you want
   }
 

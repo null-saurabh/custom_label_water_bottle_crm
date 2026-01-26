@@ -7,6 +7,8 @@ import 'package:clwb_crm/screens/inventory/repositories/inventory_item_repo.dart
 import 'package:clwb_crm/screens/inventory/repositories/inventory_stocks_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/supplier_item_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/supplier_repo.dart';
+import 'package:clwb_crm/screens/orders/order_controller.dart';
+import 'package:clwb_crm/screens/orders/orders_screen.dart';
 import 'package:clwb_crm/screens/orders/repo/order_repo.dart';
 import 'package:get/get.dart';
 
@@ -39,6 +41,13 @@ class AppPages {
             Get.lazyPut(() => DashboardController());
           }),
         ),
+        GetPage(
+          name: AppRoutes.orders,
+          page: () => OrdersPage(),
+          binding: BindingsBuilder(() {
+            Get.lazyPut(() => OrdersController());
+          }),
+        ),
 
         GetPage(
           name: AppRoutes.leads,
@@ -63,7 +72,7 @@ class AppPages {
             Get.lazyPut(
               () => InventoryController(
                 SupplierItemRepository(),
-                FirebaseOrderRepository(),
+                OrdersRepository(),
                 itemRepo: InventoryItemRepository(),
                 supplierRepo: SupplierRepository(),
                 stockRepo: InventoryStockRepository(),
