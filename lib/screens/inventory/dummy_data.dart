@@ -192,5 +192,5 @@ Future<void> seedFullInventoryDummyData() async {
     'createdAt': now,
   });
 
-  print('✅ Full inventory dummy data seeded successfully');
+  // print('✅ Full inventory dummy data seeded successfully');
 }

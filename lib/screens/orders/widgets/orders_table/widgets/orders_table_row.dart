@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 class OrdersTableRow extends StatelessWidget {
   final OrderModel order;
-
+  final bool isSelected;
   const OrdersTableRow({
     super.key,
-    required this.order,
+    required this.order, required this.isSelected,
   });
 
   @override
@@ -104,7 +104,7 @@ class OrdersTableRow extends StatelessWidget {
 
                   // Status + Arrow
                   Expanded(
-                    flex: 2,
+                    flex: 3,
                     child: Row(
                       children: [
                         _StatusBadge(order.orderStatus),

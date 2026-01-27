@@ -87,10 +87,13 @@ class AddClientController extends GetxController {
         createdAt: DateTime.now(),
       );
 
-      final clientId = await repo.addClient(client);
+      final created =
+      await repo.createClientWithLabels(client);
+
+      // final clientId = await repo.addClient(client);
 
       await ClientActivityRepository().logClientCreated(
-        clientId: clientId,
+        clientId: created.id,
         userName: 'Admin', // later: logged-in user
       );
 

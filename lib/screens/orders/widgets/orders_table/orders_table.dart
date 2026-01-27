@@ -4,14 +4,20 @@ import 'package:clwb_crm/screens/orders/widgets/orders_table/widgets/orders_tabl
 import 'package:clwb_crm/screens/orders/widgets/orders_table/widgets/orders_table_row.dart';
 import 'package:flutter/material.dart';
 
-
 class OrdersTable extends StatelessWidget {
+  final List<OrderModel> dummyOrders;
+  final List<OrderModel> orders;
+  final String? selectedId;
   final Function(OrderModel) onOrderTap;
-  const OrdersTable({super.key,required this.onOrderTap,});
+  const OrdersTable({
+    super.key,
+    required this.orders,
+    required this.selectedId,
+    required this.onOrderTap, required this.dummyOrders,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final orders = OrdersDummyData.list;
 
     return Column(
       children: [
@@ -20,9 +26,11 @@ class OrdersTable extends StatelessWidget {
           child: ListView.builder(
             itemCount: orders.length,
             itemBuilder: (_, i) {
+              final order = orders[i];
+              final isSelected = order.id == selectedId;
               return GestureDetector(
-                onTap: () => onOrderTap(orders[i]),
-                child: OrdersTableRow(order: orders[i]),
+                onTap: () => onOrderTap(order),
+                child: OrdersTableRow(order: order,isSelected: isSelected,),
               );
             },
           ),

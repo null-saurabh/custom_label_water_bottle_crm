@@ -49,7 +49,12 @@ class ClientModel {
   final int? dueOrdersCount;
   final int? deliveredOrdersCount;
 
-  const ClientModel({
+
+  final String? labelSmallItemId;   // 🔥
+  final String? labelLargeItemId;   // 🔥
+
+
+  const ClientModel( {
     required this.id,
     required this.businessName,
     required this.businessType,
@@ -77,6 +82,8 @@ class ClientModel {
     this.totalOrders,
     this.dueOrdersCount,
     this.deliveredOrdersCount,
+    this.labelLargeItemId,
+    this.labelSmallItemId,
   });
 
   factory ClientModel.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -125,6 +132,9 @@ class ClientModel {
       totalOrders: data['totalOrders'],
       dueOrdersCount: data['dueOrdersCount'],
       deliveredOrdersCount: data['deliveredOrdersCount'],
+      labelLargeItemId: data['labelLargeItemId'], // 🔥
+      labelSmallItemId: data['labelSmallItemId'], // 🔥
+
     );
   }
 
@@ -176,6 +186,8 @@ class ClientModel {
       'totalOrders': totalOrders,
       'dueOrdersCount': dueOrdersCount,
       'deliveredOrdersCount': deliveredOrdersCount,
+      'labelItemId': labelLargeItemId, // 🔥
+      'labelSmallItemId': labelSmallItemId, // 🔥
     };
   }
   factory ClientModel.fromJson(
@@ -192,6 +204,8 @@ class ClientModel {
       id: id ?? (json['id'] ?? '') as String,
 
       businessName: json['businessName'] ?? '',
+      labelLargeItemId: json['labelLargeItemId'] ?? '',
+      labelSmallItemId: json['labelSmallItemId'] ?? '',
       businessType: json['businessType'] ?? '',
       gstNumber: json['gstNumber'] ?? '',
       brandTier: json['brandTier'] ?? '',
@@ -234,6 +248,156 @@ class ClientModel {
       deliveredOrdersCount: json['deliveredOrdersCount'],
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'businessName': businessName,
+      'businessType': businessType,
+      'gstNumber': gstNumber,
+      'brandTier': brandTier,
+
+      'contactName': contactName,
+      'contactRole': contactRole,
+      'phone': phone,
+      'email': email,
+      'notes': notes,
+
+      'isActive': isActive,
+      'isPriority': isPriority,
+
+      'paymentMode': paymentMode,
+      'creditDays': creditDays,
+      'outstandingAmount': outstandingAmount,
+
+      'locations': locations.map((l) {
+        return {
+          'locationId': l.locationId,
+          'address': l.address,
+          'googleMapsLink': l.googleMapsLink,
+          'city': l.city,
+          'area': l.area,
+          'isPrimary': l.isPrimary,
+        };
+      }).toList(),
+
+      'products': [],
+
+      'media': {
+        'logoUrl': media.businessPhotos,
+        'brandImages': media.finalizedLabelImage,
+        'visitingCardUrl': media.draftLabelImages,
+      },
+
+      'lastOrderDate': lastOrderDate,
+      'nextDeliveryDate': nextDeliveryDate,
+      'contractEndDate': contractEndDate,
+      'createdAt': createdAt,
+
+      'lastActivityAt': lastActivityAt,
+      'lastActivitySummary': lastActivitySummary,
+
+      'totalOrders': totalOrders,
+      'dueOrdersCount': dueOrdersCount,
+      'deliveredOrdersCount': deliveredOrdersCount,
+
+      'labelSmallItemId': labelSmallItemId,
+      'labelLargeItemId': labelLargeItemId,
+    };
+  }
+
+
+  ClientModel copyWith({
+    String? id,
+
+    String? businessName,
+    String? businessType,
+    String? gstNumber,
+    String? brandTier,
+
+    String? contactName,
+    String? contactRole,
+    String? phone,
+    String? email,
+    String? notes,
+
+    bool? isActive,
+    bool? isPriority,
+
+    String? paymentMode,
+    int? creditDays,
+    double? outstandingAmount,
+
+    List<ClientLocation>? locations,
+    List<ClientProductSKU>? products,
+    ClientMedia? media,
+
+    DateTime? lastOrderDate,
+    DateTime? nextDeliveryDate,
+    DateTime? contractEndDate,
+    DateTime? createdAt,
+
+    DateTime? lastActivityAt,
+    String? lastActivitySummary,
+
+    int? totalOrders,
+    int? dueOrdersCount,
+    int? deliveredOrdersCount,
+
+    String? labelSmallItemId,
+    String? labelLargeItemId,
+  }) {
+    return ClientModel(
+      id: id ?? this.id,
+
+      businessName: businessName ?? this.businessName,
+      businessType: businessType ?? this.businessType,
+      gstNumber: gstNumber ?? this.gstNumber,
+      brandTier: brandTier ?? this.brandTier,
+
+      contactName: contactName ?? this.contactName,
+      contactRole: contactRole ?? this.contactRole,
+      phone: phone ?? this.phone,
+      email: email ?? this.email,
+      notes: notes ?? this.notes,
+
+      isActive: isActive ?? this.isActive,
+      isPriority: isPriority ?? this.isPriority,
+
+      paymentMode: paymentMode ?? this.paymentMode,
+      creditDays: creditDays ?? this.creditDays,
+      outstandingAmount:
+      outstandingAmount ?? this.outstandingAmount,
+
+      locations: locations ?? this.locations,
+      products: products ?? this.products,
+      media: media ?? this.media,
+
+      lastOrderDate: lastOrderDate ?? this.lastOrderDate,
+      nextDeliveryDate:
+      nextDeliveryDate ?? this.nextDeliveryDate,
+      contractEndDate:
+      contractEndDate ?? this.contractEndDate,
+      createdAt: createdAt ?? this.createdAt,
+
+      lastActivityAt:
+      lastActivityAt ?? this.lastActivityAt,
+      lastActivitySummary:
+      lastActivitySummary ?? this.lastActivitySummary,
+
+      totalOrders: totalOrders ?? this.totalOrders,
+      dueOrdersCount:
+      dueOrdersCount ?? this.dueOrdersCount,
+      deliveredOrdersCount:
+      deliveredOrdersCount ??
+          this.deliveredOrdersCount,
+
+      labelSmallItemId:
+      labelSmallItemId ?? this.labelSmallItemId,
+      labelLargeItemId:
+      labelLargeItemId ?? this.labelLargeItemId,
+    );
+  }
+
 
 }
 

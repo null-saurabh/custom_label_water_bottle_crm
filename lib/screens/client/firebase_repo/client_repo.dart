@@ -51,6 +51,64 @@ class ClientRepository {
   }
 
 
+  Future<ClientModel> createClientWithLabels(
+      ClientModel client,
+      ) async {
+    final batch = _db.batch();
+
+    // 1️⃣ Create client doc ref
+    final clientRef = _ref.doc();
+
+    // 2️⃣ Create small label item
+    final smallLabelRef =
+    _db.collection('inventory_items').doc();
+
+    final smallLabelData = {
+      'name': '${client.businessName} - S Label',
+      'category': 'label',
+      'stock': 0,
+      'reorderLevel': 500,
+      'isActive': true,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    };
+
+    batch.set(smallLabelRef, smallLabelData);
+
+    // 3️⃣ Create large label item
+    final largeLabelRef =
+    _db.collection('inventory_items').doc();
+
+    final largeLabelData = {
+      'name': '${client.businessName} - L Label',
+      'category': 'label',
+      'stock': 0,
+      'reorderLevel': 500,
+      'isActive': true,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    };
+
+    batch.set(largeLabelRef, largeLabelData);
+
+    // 4️⃣ Attach labels to client
+    final clientWithLabels = client.copyWith(
+      labelSmallItemId: smallLabelRef.id,
+      labelLargeItemId: largeLabelRef.id,
+    );
+
+    batch.set(
+      clientRef,
+      clientWithLabels.toJson(),
+    );
+
+    // 5️⃣ Commit atomically
+    await batch.commit();
+
+    return clientWithLabels.copyWith(id: clientRef.id);
+  }
+
+
 
   // Future<void> seedDemoClients() async {
   //   final db = FirebaseFirestore.instance;

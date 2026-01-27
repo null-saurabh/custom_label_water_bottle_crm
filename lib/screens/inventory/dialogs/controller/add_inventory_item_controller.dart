@@ -129,12 +129,12 @@ class AddInventoryItemController extends GetxController {
         createdAt: now,
         updatedAt: now,
       );
-      print("in submit4");
+      // print("in submit4");
 
 
       final itemId = await _itemRepo.addItem(item);
 
-      print("in submit5");
+      // print("in submit5");
       // 2️⃣ Category Config
       if (isBottle) {
         await _bottleRepo.addConfig(
@@ -158,7 +158,7 @@ class AddInventoryItemController extends GetxController {
         );
       }
 
-      print("in submit6");
+      // print("in submit6");
 
 
       if (isLabel) {
@@ -183,7 +183,7 @@ class AddInventoryItemController extends GetxController {
         description: '${name.value} added to inventory',
       );
 
-      print("in submit7");
+      // print("in submit7");
 
       Get.back();
       Get.delete<AddInventoryItemController>();

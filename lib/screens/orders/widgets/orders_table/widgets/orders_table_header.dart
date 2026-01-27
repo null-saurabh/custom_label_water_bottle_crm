@@ -20,7 +20,7 @@ class OrdersTableHeader extends StatelessWidget {
           _HeaderCol('Items', 2),
           _HeaderCol('Progress', 3),
           _HeaderCol('Delivery  >', 2),
-          _HeaderCol('Status', 2),
+          _HeaderCol('Status', 3),
         ],
       ),
     );

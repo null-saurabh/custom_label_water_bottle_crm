@@ -2,44 +2,75 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OrderActivityModel {
   final String id;
-  final String type; // created / production_added / delivery_added / status_changed / payment_updated
-  final String title;
-  final String description;
-  final Map<String, dynamic>? meta;
+  final String orderId;
+
+  final String type;        // created / dispatch / production / delivery / payment
+  final String title;       // Short headline
+  final String description; // Human readable
+
+  final String stage;       // order / dispatch / production / delivery / finance
+
+  final DateTime activityDate;
+
   final String createdBy;
+
   final DateTime createdAt;
 
   const OrderActivityModel({
     required this.id,
+    required this.orderId,
     required this.type,
     required this.title,
     required this.description,
-    required this.meta,
+    required this.stage,
+    required this.activityDate,
     required this.createdBy,
     required this.createdAt,
   });
 
   factory OrderActivityModel.fromDoc(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final d = doc.data() as Map<String, dynamic>;
+
     return OrderActivityModel(
       id: doc.id,
-      type: data['type'],
-      title: data['title'],
-      description: data['description'],
-      meta: data['meta'],
-      createdBy: data['createdBy'],
-      createdAt: data['createdAt'].toDate(),
+      orderId: d['orderId'],
+      type: d['type'],
+      title: d['title'],
+      description: d['description'],
+      stage: d['stage'],
+      activityDate: d['activityDate'].toDate(),
+      createdBy: d['createdBy'],
+      createdAt: d['createdAt'].toDate(),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
+      'orderId': orderId,
       'type': type,
       'title': title,
       'description': description,
-      'meta': meta,
+      'stage': stage,
+      'activityDate': activityDate,
       'createdBy': createdBy,
       'createdAt': createdAt,
     };
+  }
+
+  OrderActivityModel copyWith({
+    String? id,
+    DateTime? createdAt,
+  }) {
+    return OrderActivityModel(
+      id: id ?? this.id,
+      orderId: orderId,
+      type: type,
+      title: title,
+      description: description,
+      stage: stage,
+      activityDate: activityDate,
+      createdBy: createdBy,
+      createdAt: createdAt ?? this.createdAt,
+    );
   }
 }

@@ -8,6 +8,7 @@ import 'package:clwb_crm/screens/inventory/repositories/inventory_stocks_repo.da
 import 'package:clwb_crm/screens/inventory/repositories/supplier_item_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/supplier_repo.dart';
 import 'package:clwb_crm/screens/orders/order_controller.dart';
+import 'package:clwb_crm/screens/orders/orders_binding.dart';
 import 'package:clwb_crm/screens/orders/orders_screen.dart';
 import 'package:clwb_crm/screens/orders/repo/order_repo.dart';
 import 'package:get/get.dart';
@@ -19,7 +20,6 @@ import '../layouts/shell_screen.dart';
 
 abstract class AppRoutes {
   static const shell = '/';
-  static const login = '/login';
   static const dashboard = '/dashboard';
   static const inventory = '/inventory';
   static const orders = '/orders';
@@ -44,9 +44,7 @@ class AppPages {
         GetPage(
           name: AppRoutes.orders,
           page: () => OrdersPage(),
-          binding: BindingsBuilder(() {
-            Get.lazyPut(() => OrdersController());
-          }),
+          binding: OrdersBinding(),
         ),
 
         GetPage(
@@ -68,17 +66,17 @@ class AppPages {
         GetPage(
           name: AppRoutes.inventory,
           page: () => InventoryScreen(),
-          binding: BindingsBuilder(() {
-            Get.lazyPut(
-              () => InventoryController(
-                SupplierItemRepository(),
-                OrdersRepository(),
-                itemRepo: InventoryItemRepository(),
-                supplierRepo: SupplierRepository(),
-                stockRepo: InventoryStockRepository(),
-              ),
-            );
-          }),
+          // binding: BindingsBuilder(() {
+          //   Get.lazyPut(
+          //     () => InventoryController(
+          //       SupplierItemRepository(),
+          //       OrdersRepository(),
+          //       itemRepo: InventoryItemRepository(),
+          //       supplierRepo: SupplierRepository(),
+          //       stockRepo: InventoryStockRepository(),
+          //     ),
+          //   );
+          // }),
         ),
         // more pages...
       ],

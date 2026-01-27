@@ -1,59 +1,100 @@
-import 'package:clwb_crm/core/widgets/premium_button.dart';
+import 'package:clwb_crm/screens/client/client_controller.dart';
+import 'package:clwb_crm/screens/orders/dummy_data.dart';
+import 'package:clwb_crm/screens/orders/order_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../../core/widgets/premium_button.dart';
 
-class OrdersFiltersRow extends StatelessWidget {
+
+class OrdersFiltersRow extends GetView<OrdersController> {
   const OrdersFiltersRow({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final clientsCtrl = Get.find<ClientsController>();
+
     return Row(
       children: [
-        _FilterDropdown(
-          label: 'All Clients',
-          items: const ['All Clients', 'Cafe Snowtrail', 'Elite Dine'],
-        ),
+        // =====================
+        // CLIENT FILTER
+        // =====================
+        Obx(() {
+          final clientNames = [
+            'All Clients',
+            ...clientsCtrl.clients.map((c) => c.businessName),
+          ];
+
+          return _FilterDropdown(
+            label: 'All Clients',
+            items: clientNames,
+            value: controller.clientFilter.value,
+            onChanged: (v) {
+              if (v == null) return;
+              controller.setClientFilter(
+                v == 'All Clients' ? 'all' : v,
+              );
+            },
+          );
+        }),
+
         const SizedBox(width: 12),
-        _FilterDropdown(
-          label: 'All Delivery Dates',
-          items: const [
-            'All Delivery Dates',
-            'Today',
-            'Tomorrow',
-            'Next 7 Days',
-          ],
-        ),
-        Spacer(),
+
+        // =====================
+        // DELIVERY DATE FILTER
+        // =====================
+        Obx(() {
+          return _FilterDropdown(
+            label: 'All Delivery Dates',
+            items: const [
+              'All Delivery Dates',
+              'Today',
+              'Tomorrow',
+              'Next 7 Days',
+            ],
+            value: controller.dateFilter.value,
+            onChanged: (v) {
+              if (v == null) return;
+              controller.setDateFilter(v);
+            },
+          );
+        }),
+
+        const Spacer(),
+
+        // =====================
+        // ADD ORDER BUTTON
+        // =====================
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
-          child: PremiumButton(text: "+  Add Order", onTap: (){}),
-        )
-
+          child: PremiumButton(
+            text: "+ Add Order",
+            // onTap: (){
+            //   OrdersSeedService.uploadDummyOrders();
+            // },
+            onTap: controller.openAddOrderDialog,
+          ),
+        ),
       ],
     );
   }
 }
 
-class _FilterDropdown extends StatefulWidget {
+// ===============================
+// SHARED DROPDOWN WIDGET
+// ===============================
+
+class _FilterDropdown extends StatelessWidget {
   final String label;
   final List<String> items;
+  final String value;
+  final ValueChanged<String?> onChanged;
 
   const _FilterDropdown({
     required this.label,
     required this.items,
+    required this.value,
+    required this.onChanged,
   });
-
-  @override
-  State<_FilterDropdown> createState() => _FilterDropdownState();
-}
-
-class _FilterDropdownState extends State<_FilterDropdown> {
-  late String selected;
-
-  @override
-  void initState() {
-    super.initState();
-    selected = widget.items.first;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,8 +107,8 @@ class _FilterDropdownState extends State<_FilterDropdown> {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: selected,
-          items: widget.items
+          value: _safeValue(),
+          items: items
               .map(
                 (e) => DropdownMenuItem(
               value: e,
@@ -75,12 +116,14 @@ class _FilterDropdownState extends State<_FilterDropdown> {
             ),
           )
               .toList(),
-          onChanged: (v) {
-            if (v == null) return;
-            setState(() => selected = v);
-          },
+          onChanged: onChanged,
         ),
       ),
     );
+  }
+
+  String _safeValue() {
+    if (items.contains(value)) return value;
+    return items.first;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:clwb_crm/screens/inventory/model/bottle_config.dart';
 import 'package:clwb_crm/screens/orders/models/order_activity_model.dart';
 import 'package:clwb_crm/screens/orders/models/order_delivery_entry_model.dart';
 import 'package:clwb_crm/screens/orders/models/order_model.dart';
@@ -26,15 +27,33 @@ class OrdersRepository {
   // ===========================
   // ORDER CRUD
   // ===========================
-
-  Future<String> createOrder(OrderModel order) async {
+  Future<OrderModel> createOrder(OrderModel order) async {
     final docRef = _ordersRef.doc();
-    await docRef.set(order.toMap());
-    return docRef.id;
+
+    final orderWithId = order.copyWith(
+      id: docRef.id,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    await docRef.set(orderWithId.toMap());
+
+    return orderWithId;
   }
 
+
+  // Future<String> createOrder(OrderModel order) async {
+  //   final docRef = _ordersRef.doc();
+  //   await docRef.set(order.toMap());
+  //   return docRef.id;
+  // }
+
   Future<void> updateOrder(String orderId, Map<String, dynamic> data) async {
+    print("inupf");
     await _ordersRef.doc(orderId).update(data);
+    print("inupf22");
+
+
   }
 
   Future<void> softDeleteOrder(String orderId) async {
@@ -43,6 +62,26 @@ class OrdersRepository {
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
+
+  Future<String> generateNextOrderNumber() async {
+    final ref = _firestore.doc('meta/order_counter');
+
+    return _firestore.runTransaction((tx) async {
+      final snap = await tx.get(ref);
+
+      int last = 100;
+      if (snap.exists) {
+        last = snap.data()!['lastOrder'] ?? 100;
+      }
+
+      final next = last + 1;
+
+      tx.set(ref, {'lastOrder': next}, SetOptions(merge: true));
+
+      return '#ORD-$next';
+    });
+  }
+
 
   Future<OrderModel?> getOrderById(String orderId) async {
     final doc = await _ordersRef.doc(orderId).get();
@@ -68,6 +107,18 @@ class OrdersRepository {
       return OrderModel.fromDoc(doc);
     });
   }
+
+  Future<BottleConfig?> getBottleConfig(String itemId) async {
+    final snap = await _firestore
+        .collection('bottle_configs')
+        .doc(itemId)
+        .get();
+
+    if (!snap.exists) return null;
+
+    return BottleConfig.fromMap(snap.data()!);
+  }
+
 
   // ===========================
   // PRODUCTION ENTRIES

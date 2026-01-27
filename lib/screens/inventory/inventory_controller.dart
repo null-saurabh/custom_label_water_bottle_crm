@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:clwb_crm/core/controllers/app_controller.dart';
+import 'package:clwb_crm/screens/client/client_controller.dart';
+import 'package:clwb_crm/screens/client/models/client_model.dart';
 import 'package:clwb_crm/screens/inventory/dialogs/add_item_dialog.dart';
 import 'package:clwb_crm/screens/inventory/dialogs/add_stock_dialog.dart';
 import 'package:clwb_crm/screens/inventory/dialogs/add_supplier_dialog.dart';
@@ -537,6 +540,71 @@ class InventoryController extends GetxController {
     return d.month == now.month && d.year == now.year;
   }
 
+
+
+  InventoryItemModel? resolveLabelForClientAndBottle(
+      ClientModel client,
+      BottleConfig bottleCfg,
+      ) {
+    final labelItemId = bottleCfg.sizeMl >= 1000
+        ? client.labelLargeItemId
+        : client.labelSmallItemId;
+
+    if (labelItemId == null) return null;
+
+    return items.firstWhereOrNull(
+          (i) => i.id == labelItemId,
+    );
+  }
+
+// Caps: selectable
+  List<InventoryItemModel> get availableCaps =>
+      items
+          .where(
+            (i) =>
+        i.category == InventoryCategory.cap &&
+            i.isActive,
+      )
+          .toList();
+
+// Packaging: optional global default
+  InventoryItemModel? get defaultPackagingItem =>
+      items.firstWhereOrNull(
+            (i) =>
+        i.category == InventoryCategory.packaging &&
+
+            i.isActive,
+      );
+
+  Future<void> deductStock({
+    required String itemId,
+    required int quantity,
+  }) async {
+    if (quantity <= 0) return;
+
+    final item =
+    items.firstWhereOrNull((i) => i.id == itemId);
+
+    if (item == null) {
+      throw Exception('Inventory item not found');
+    }
+
+    if (item.stock < quantity) {
+      throw Exception(
+        'Insufficient stock for ${item.name}',
+      );
+    }
+
+    final newStock = item.stock - quantity;
+
+    await itemRepo.updateItem(
+      item.id,
+      {
+        'stock': newStock,
+        'updatedAt': DateTime.now(),
+      },
+    );
+  }
 
 
   @override

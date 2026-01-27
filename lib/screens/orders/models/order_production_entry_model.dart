@@ -3,55 +3,81 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class OrderProductionEntryModel {
   final String id;
   final String orderId;
-  final int quantityProduced;
+
+  final int quantityProducedToday; // 🔥 +100 today
+  final int cumulativeProduced;    // 🔥 running total
+
   final DateTime productionDate;
-  final String? batchNumber;
-  final String? machineId;
-  final String? supervisorName;
-  final String? qualityCheckedBy;
-  final String? remarks;
+
+  final String notes;
+  final String createdBy;
+
   final DateTime createdAt;
+  final DateTime updatedAt;
 
   const OrderProductionEntryModel({
     required this.id,
     required this.orderId,
-    required this.quantityProduced,
+    required this.quantityProducedToday,
+    required this.cumulativeProduced,
     required this.productionDate,
-    required this.batchNumber,
-    required this.machineId,
-    required this.supervisorName,
-    required this.qualityCheckedBy,
-    required this.remarks,
+    required this.notes,
+    required this.createdBy,
     required this.createdAt,
+    required this.updatedAt,
   });
 
-  factory OrderProductionEntryModel.fromDoc(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+  factory OrderProductionEntryModel.fromDoc(
+      DocumentSnapshot doc) {
+    final d = doc.data() as Map<String, dynamic>;
+
     return OrderProductionEntryModel(
       id: doc.id,
-      orderId: data['orderId'],
-      quantityProduced: data['quantityProduced'],
-      productionDate: data['productionDate'].toDate(),
-      batchNumber: data['batchNumber'],
-      machineId: data['machineId'],
-      supervisorName: data['supervisorName'],
-      qualityCheckedBy: data['qualityCheckedBy'],
-      remarks: data['remarks'],
-      createdAt: data['createdAt'].toDate(),
+      orderId: d['orderId'],
+      quantityProducedToday:
+      d['quantityProducedToday'],
+      cumulativeProduced:
+      d['cumulativeProduced'],
+      productionDate:
+      d['productionDate'].toDate(),
+      notes: d['notes'],
+      createdBy: d['createdBy'],
+      createdAt: d['createdAt'].toDate(),
+      updatedAt: d['updatedAt'].toDate(),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'orderId': orderId,
-      'quantityProduced': quantityProduced,
+      'quantityProducedToday':
+      quantityProducedToday,
+      'cumulativeProduced':
+      cumulativeProduced,
       'productionDate': productionDate,
-      'batchNumber': batchNumber,
-      'machineId': machineId,
-      'supervisorName': supervisorName,
-      'qualityCheckedBy': qualityCheckedBy,
-      'remarks': remarks,
+      'notes': notes,
+      'createdBy': createdBy,
       'createdAt': createdAt,
+      'updatedAt': updatedAt,
     };
   }
+  OrderProductionEntryModel copyWith({
+    String? id,
+    DateTime? updatedAt,
+  }) {
+    return OrderProductionEntryModel(
+      id: id ?? this.id,
+      orderId: orderId,
+      quantityProducedToday:
+      quantityProducedToday,
+      cumulativeProduced:
+      cumulativeProduced,
+      productionDate: productionDate,
+      notes: notes,
+      createdBy: createdBy,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
 }

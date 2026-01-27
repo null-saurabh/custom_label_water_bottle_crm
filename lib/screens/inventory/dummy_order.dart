@@ -9,7 +9,7 @@ Future<void> seedDummyOrders() async {
   final clientSnap = await db.collection('clients').limit(1).get();
 
   if (itemSnap.docs.isEmpty || clientSnap.docs.isEmpty) {
-    print('❌ Need at least 1 item and 1 client');
+    // print('❌ Need at least 1 item and 1 client');
     return;
   }
 
@@ -48,5 +48,5 @@ Future<void> seedDummyOrders() async {
     'createdAt': now,
   });
 
-  print('✅ Dummy orders seeded');
+  // print('✅ Dummy orders seeded');
 }

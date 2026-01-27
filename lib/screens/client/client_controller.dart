@@ -112,16 +112,16 @@ class ClientsController extends GetxController {
 
 
 
-  Future<void> seedOnce() async {
-    // final existing = await repo.ref.limit(4).get();
-    print("dum 1");
-    // if (existing.docs.isNotEmpty) return; // already seeded
-    print("dum a");
-
-    // await repo.seedDemoClients();
-    print("dum 1a");
-
-  }
+  // Future<void> seedOnce() async {
+  //   // final existing = await repo.ref.limit(4).get();
+  //   print("dum 1");
+  //   // if (existing.docs.isNotEmpty) return; // already seeded
+  //   print("dum a");
+  //
+  //   // await repo.seedDemoClients();
+  //   print("dum 1a");
+  //
+  // }
 
 
 }

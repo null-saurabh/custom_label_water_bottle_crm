@@ -1,4 +1,5 @@
 import 'package:clwb_crm/screens/client/client_controller.dart';
+import 'package:clwb_crm/screens/client/dummy_data.dart';
 import 'package:clwb_crm/screens/client/models/client_model.dart';
 import 'package:clwb_crm/screens/client/screens/add_client/add_client_dialog.dart';
 import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_stat_widget/client_status_card.dart';
@@ -32,11 +33,28 @@ class ClientListPanel extends GetView<ClientsController> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
-              IconButton(onPressed: (){
+              IconButton(onPressed: ()  {
+
                 Get.dialog(
                   const AddClientDialog(),
                   barrierDismissible: false,
                 );
+
+
+                  // try {
+                  //   await ClientsSeedService.uploadDummyClients();
+                  //
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     const SnackBar(content: Text('Dummy clients uploaded')),
+                  //   );
+                  // } catch (e) {
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     SnackBar(content: Text('Upload failed: $e')),
+                  //   );
+                  // }
+
+
+
               }, icon: const Icon(Icons.add,color: Colors.blue,)),
 
             ],

@@ -22,6 +22,10 @@ class OverviewTab extends StatelessWidget {
           _fmt(order.expectedDeliveryDate),
         ),
         _InfoRow(
+          'Order Date',
+          _fmt(order.createdAt),
+        ),
+        _InfoRow(
           'Priority',
           order.isPriority ? 'High' : 'Normal',
           valueColor:
