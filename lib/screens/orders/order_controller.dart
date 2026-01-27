@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/orders/dialog/add_order_dialog.dart';
+import 'package:clwb_crm/screens/orders/dialog/controller/edit_order_controller.dart';
+import 'package:clwb_crm/screens/orders/dialog/edit_order_dialog.dart';
 import 'package:clwb_crm/screens/orders/models/order_model.dart';
+import 'package:clwb_crm/screens/orders/repo/order_activity_repository.dart';
 import 'package:clwb_crm/screens/orders/repo/order_repo.dart';
 import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/order_detail_controller.dart';
 import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/widgets/overview_tab/over_detail_tab_controller.dart';
@@ -266,4 +270,25 @@ class OrdersController extends GetxController {
   void openAddOrderDialog() {
     Get.dialog(const AddOrderDialog());
   }
+
+
+  void openEditOrderDialog(OrderModel order) {
+    // 🔥 Ensure fresh controller each time
+    if (Get.isRegistered<EditOrderController>()) {
+      Get.delete<EditOrderController>();
+    }
+
+    Get.put(
+      EditOrderController(
+        Get.find<OrdersRepository>(),
+        Get.find<InventoryController>(),
+        Get.find<OrderActivityRepository>(),
+        order,
+      ),
+    );
+
+    Get.dialog(const EditOrderDialog());
+  }
+
+
 }

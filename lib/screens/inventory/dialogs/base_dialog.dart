@@ -86,12 +86,16 @@ class Field extends StatelessWidget {
   final String label;
   final int maxLines;
   final ValueChanged<String>? onChanged;
+  final TextEditingController? controller; // 🔥 NEW
+  final bool enabled; // 🔥 NEW
 
   const Field({
     super.key,
     required this.label,
     this.maxLines = 1,
     this.onChanged,
+    this.controller,
+    this.enabled = true,
   });
 
   @override
@@ -99,6 +103,8 @@ class Field extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextField(
+        controller: controller, // 🔥
+        enabled: enabled, // 🔥
         maxLines: maxLines,
         onChanged: onChanged,
         decoration: InputDecoration(
@@ -112,15 +118,18 @@ class Field extends StatelessWidget {
   }
 }
 
+
 class Dropdown extends StatelessWidget {
   final String label;
   final List<String> items;
+  final String? value; // 🔥 NEW
   final ValueChanged<String?>? onChanged;
 
   const Dropdown({
     super.key,
     required this.label,
     required this.items,
+    this.value,
     this.onChanged,
   });
 
@@ -129,6 +138,7 @@ class Dropdown extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: DropdownButtonFormField<String>(
+        initialValue: value, // 🔥 SAFE
         decoration: InputDecoration(
           labelText: label,
           border: OutlineInputBorder(

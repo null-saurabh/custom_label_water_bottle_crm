@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 
 class PanelClientInfo extends StatelessWidget {
   final OrderModel order;
+  final VoidCallback onEdit;
 
   const PanelClientInfo({
     super.key,
-    required this.order,
+    required this.order, required this.onEdit,
   });
 
   @override
@@ -37,8 +38,8 @@ class PanelClientInfo extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 2),
-              const Text(
-                'View client profile',
+               Text(
+                order.itemNameSnapshot,
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey,
@@ -49,7 +50,7 @@ class PanelClientInfo extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.edit),
-          onPressed: () {},
+          onPressed: onEdit,
         ),
       ],
     );

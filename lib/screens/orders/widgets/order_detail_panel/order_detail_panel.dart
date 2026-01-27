@@ -1,4 +1,5 @@
 import 'package:clwb_crm/screens/orders/models/order_model.dart';
+import 'package:clwb_crm/screens/orders/order_controller.dart';
 import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/widgets/activity_tab/activity_tab.dart';
 import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/widgets/overview_tab/over_detail_tab_controller.dart';
 import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/widgets/overview_tab/overview_tab.dart';
@@ -42,7 +43,9 @@ class OrdersDetailPanel extends StatelessWidget {
             onClose: onClose,
           ),
           const SizedBox(height: 16),
-          PanelClientInfo(order: order),
+          PanelClientInfo(order: order,onEdit: () {
+            Get.find<OrdersController>().openEditOrderDialog(order);
+          },),
           const SizedBox(height: 20),
           const PanelTabs(),
           const SizedBox(height: 16),

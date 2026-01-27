@@ -275,24 +275,44 @@ class OrderModel {
   OrderModel copyWith({
     String? id,
 
+    // 🔥 ORDER META
+    int? orderedQuantity,
+    double? ratePerBottle,
+    double? totalAmount,
+
+    // 🔥 MATERIAL SNAPSHOTS
+    String? capItemId,
+    String? capNameSnapshot,
+    String? packagingItemId,
+    String? packagingNameSnapshot,
+
+    // 🔥 PROGRESS
     int? producedQuantity,
     int? deliveredQuantity,
     int? remainingQuantity,
 
+    // 🔥 FINANCE
     double? paidAmount,
     double? dueAmount,
 
+    // 🔥 STATUS
     String? orderStatus,
     String? productionStatus,
     String? deliveryStatus,
 
+    // 🔥 DATES
     DateTime? expectedDeliveryDate,
     DateTime? nextDeliveryDate,
 
+    // 🔥 RECURRING
     bool? isRecurring,
     int? recurringIntervalDays,
     DateTime? lastRecurringGeneratedAt,
     DateTime? nextRecurringDate,
+
+    // 🔥 META
+    String? notes,
+    bool? isPriority,
 
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -312,12 +332,18 @@ class OrderModel {
 
       labelItemId: labelItemId,
       labelNameSnapshot: labelNameSnapshot,
-      capItemId: capItemId,
-      capNameSnapshot: capNameSnapshot,
-      packagingItemId: packagingItemId,
-      packagingNameSnapshot: packagingNameSnapshot,
 
-      orderedQuantity: orderedQuantity,
+      capItemId: capItemId ?? this.capItemId,
+      capNameSnapshot: capNameSnapshot ?? this.capNameSnapshot,
+
+      packagingItemId:
+      packagingItemId ?? this.packagingItemId,
+      packagingNameSnapshot:
+      packagingNameSnapshot ??
+          this.packagingNameSnapshot,
+
+      orderedQuantity:
+      orderedQuantity ?? this.orderedQuantity,
       producedQuantity:
       producedQuantity ?? this.producedQuantity,
       deliveredQuantity:
@@ -325,12 +351,17 @@ class OrderModel {
       remainingQuantity:
       remainingQuantity ?? this.remainingQuantity,
 
-      ratePerBottle: ratePerBottle,
-      totalAmount: totalAmount,
-      paidAmount: paidAmount ?? this.paidAmount,
-      dueAmount: dueAmount ?? this.dueAmount,
+      ratePerBottle:
+      ratePerBottle ?? this.ratePerBottle,
+      totalAmount:
+      totalAmount ?? this.totalAmount,
+      paidAmount:
+      paidAmount ?? this.paidAmount,
+      dueAmount:
+      dueAmount ?? this.dueAmount,
 
-      orderStatus: orderStatus ?? this.orderStatus,
+      orderStatus:
+      orderStatus ?? this.orderStatus,
       productionStatus:
       productionStatus ?? this.productionStatus,
       deliveryStatus:
@@ -343,7 +374,8 @@ class OrderModel {
       nextDeliveryDate:
       nextDeliveryDate ?? this.nextDeliveryDate,
 
-      isRecurring: isRecurring ?? this.isRecurring,
+      isRecurring:
+      isRecurring ?? this.isRecurring,
       recurringIntervalDays:
       recurringIntervalDays ??
           this.recurringIntervalDays,
@@ -356,15 +388,114 @@ class OrderModel {
       recurringParentOrderId:
       recurringParentOrderId,
 
-      notes: notes,
-      isPriority: isPriority,
+      notes: notes ?? this.notes,
+      isPriority:
+      isPriority ?? this.isPriority,
 
       createdBy: createdBy,
-      createdAt: createdAt  ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      isActive: isActive ?? this.isActive,
+      createdAt:
+      createdAt ?? this.createdAt,
+      updatedAt:
+      updatedAt ?? this.updatedAt,
+      isActive:
+      isActive ?? this.isActive,
     );
   }
+
+
+  // OrderModel copyWith({
+  //   String? id,
+  //
+  //   int? producedQuantity,
+  //   int? deliveredQuantity,
+  //   int? remainingQuantity,
+  //
+  //   double? paidAmount,
+  //   double? dueAmount,
+  //
+  //   String? orderStatus,
+  //   String? productionStatus,
+  //   String? deliveryStatus,
+  //
+  //   DateTime? expectedDeliveryDate,
+  //   DateTime? nextDeliveryDate,
+  //
+  //   bool? isRecurring,
+  //   int? recurringIntervalDays,
+  //   DateTime? lastRecurringGeneratedAt,
+  //   DateTime? nextRecurringDate,
+  //
+  //   DateTime? createdAt,
+  //   DateTime? updatedAt,
+  //   bool? isActive,
+  // }) {
+  //   return OrderModel(
+  //     id: id ?? this.id,
+  //     orderNumber: orderNumber,
+  //
+  //     clientId: clientId,
+  //     clientNameSnapshot: clientNameSnapshot,
+  //
+  //     itemId: itemId,
+  //     itemNameSnapshot: itemNameSnapshot,
+  //     bottleSize: bottleSize,
+  //     packSize: packSize,
+  //
+  //     labelItemId: labelItemId,
+  //     labelNameSnapshot: labelNameSnapshot,
+  //     capItemId: capItemId,
+  //     capNameSnapshot: capNameSnapshot,
+  //     packagingItemId: packagingItemId,
+  //     packagingNameSnapshot: packagingNameSnapshot,
+  //
+  //     orderedQuantity: orderedQuantity,
+  //     producedQuantity:
+  //     producedQuantity ?? this.producedQuantity,
+  //     deliveredQuantity:
+  //     deliveredQuantity ?? this.deliveredQuantity,
+  //     remainingQuantity:
+  //     remainingQuantity ?? this.remainingQuantity,
+  //
+  //     ratePerBottle: ratePerBottle,
+  //     totalAmount: totalAmount,
+  //     paidAmount: paidAmount ?? this.paidAmount,
+  //     dueAmount: dueAmount ?? this.dueAmount,
+  //
+  //     orderStatus: orderStatus ?? this.orderStatus,
+  //     productionStatus:
+  //     productionStatus ?? this.productionStatus,
+  //     deliveryStatus:
+  //     deliveryStatus ?? this.deliveryStatus,
+  //
+  //     expectedProductionStartDate:
+  //     expectedProductionStartDate,
+  //     expectedDeliveryDate:
+  //     expectedDeliveryDate ?? this.expectedDeliveryDate,
+  //     nextDeliveryDate:
+  //     nextDeliveryDate ?? this.nextDeliveryDate,
+  //
+  //     isRecurring: isRecurring ?? this.isRecurring,
+  //     recurringIntervalDays:
+  //     recurringIntervalDays ??
+  //         this.recurringIntervalDays,
+  //     lastRecurringGeneratedAt:
+  //     lastRecurringGeneratedAt ??
+  //         this.lastRecurringGeneratedAt,
+  //     nextRecurringDate:
+  //     nextRecurringDate ??
+  //         this.nextRecurringDate,
+  //     recurringParentOrderId:
+  //     recurringParentOrderId,
+  //
+  //     notes: notes,
+  //     isPriority: isPriority,
+  //
+  //     createdBy: createdBy,
+  //     createdAt: createdAt  ?? this.createdAt,
+  //     updatedAt: updatedAt ?? this.updatedAt,
+  //     isActive: isActive ?? this.isActive,
+  //   );
+  // }
 
   // ======================
   // 🔁 RECURRING CLONE HELPER
