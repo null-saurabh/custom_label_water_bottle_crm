@@ -1,6 +1,6 @@
 import 'package:clwb_crm/screens/orders/models/order_model.dart';
-import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/widgets/overview_inventory_warning.dart';
-import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/widgets/overview_summary_card.dart';
+import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/widgets/overview_tab/overview_inventory_warning.dart';
+import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/widgets/overview_tab/overview_summary_card.dart';
 import 'package:flutter/material.dart';
 
 
@@ -17,6 +17,9 @@ class OverviewTab extends StatelessWidget {
     return ListView(
       children: [
         _InfoRow('Client', order.clientNameSnapshot),
+        _InfoRow('Order Value', order.totalAmount.toString()),
+        _InfoRow('Payment', order.paidAmount.toString(),valueColor: Colors.green),
+        _InfoRow('Rate', order.ratePerBottle.toString()),
         _InfoRow(
           'Delivery Date',
           _fmt(order.expectedDeliveryDate),

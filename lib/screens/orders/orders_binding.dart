@@ -23,10 +23,9 @@ class OrdersBinding extends Bindings {
     Get.put(OrderProductionRepository());
     Get.put(OrderDeliveryRepository());
     Get.put(OrderExpenseRepository());
-    Get.put(OrderActivityRepository());
-
+    Get.put(OrderActivityRepository(), permanent: true);
     Get.put(OrdersController(Get.find()),permanent: true);
-    Get.put(OrderDetailController(Get.find()));
+    Get.put(OrderDetailController(Get.find(),Get.find()));
     Get.put(OrderDetailTabsController(), permanent: true);
 
 

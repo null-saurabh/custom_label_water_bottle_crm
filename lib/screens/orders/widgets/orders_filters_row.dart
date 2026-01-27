@@ -1,5 +1,4 @@
 import 'package:clwb_crm/screens/client/client_controller.dart';
-import 'package:clwb_crm/screens/orders/dummy_data.dart';
 import 'package:clwb_crm/screens/orders/order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -59,6 +58,41 @@ class OrdersFiltersRow extends GetView<OrdersController> {
           );
         }),
 
+        const SizedBox(width: 12),
+        // =====================
+// SORT DROPDOWN 🔥
+// =====================
+        Obx(() {
+          return _FilterDropdown(
+            label: 'Sort By',
+            items: const [
+              'Delivery Date',
+              'Created Date',
+            ],
+            value: () {
+              switch (controller.sortMode.value) {
+                case OrderSortMode.delivery:
+                  return 'Delivery Date';
+                case OrderSortMode.created:
+                  return 'Created Date';
+              }
+            }(),
+            onChanged: (v) {
+              if (v == null) return;
+
+              switch (v) {
+                case 'Delivery Date':
+                  controller.setSortMode(OrderSortMode.delivery);
+                  break;
+                case 'Created Date':
+                  controller.setSortMode(OrderSortMode.created);
+                  break;
+              }
+            },
+          );
+        }),
+
+
         const Spacer(),
 
         // =====================
@@ -83,6 +117,7 @@ class OrdersFiltersRow extends GetView<OrdersController> {
 // SHARED DROPDOWN WIDGET
 // ===============================
 
+
 class _FilterDropdown extends StatelessWidget {
   final String label;
   final List<String> items;
@@ -98,6 +133,9 @@ class _FilterDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selected =
+    items.contains(value) ? value : items.first;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
@@ -107,7 +145,7 @@ class _FilterDropdown extends StatelessWidget {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: _safeValue(),
+          value: selected,
           items: items
               .map(
                 (e) => DropdownMenuItem(
@@ -120,10 +158,5 @@ class _FilterDropdown extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _safeValue() {
-    if (items.contains(value)) return value;
-    return items.first;
   }
 }

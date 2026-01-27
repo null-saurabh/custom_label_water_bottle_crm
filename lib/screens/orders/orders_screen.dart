@@ -1,5 +1,4 @@
 import 'package:clwb_crm/screens/orders/order_controller.dart';
-import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/order_detail_controller.dart';
 import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/order_detail_panel.dart';
 import 'package:clwb_crm/screens/orders/widgets/orders_filters_bar.dart';
 import 'package:clwb_crm/screens/orders/widgets/orders_header.dart';
@@ -12,7 +11,7 @@ class OrdersPage extends GetView<OrdersController> {
 
   @override
   Widget build(BuildContext context) {
-    final detail = Get.find<OrderDetailController>();
+    // final detail = Get.find<OrderDetailController>();
     return Obx(() {
       final hasDetail =
           controller.selectedOrderId.value != null;
@@ -49,11 +48,10 @@ class OrdersPage extends GetView<OrdersController> {
                       }
 
                       return OrdersTable(
-                        dummyOrders: controller.allOrders,
-                        orders: controller.visibleOrders,
                         selectedId: controller.selectedOrderId.value,
                         onOrderTap: controller.selectOrder,
                       );
+
                     }),
                   ),
                 ],
@@ -77,16 +75,6 @@ class OrdersPage extends GetView<OrdersController> {
           }),
 
 
-          // Obx(() {
-          //   if (detail.order.value == null) {
-          //     return const SizedBox.shrink();
-          //   }
-          //
-          //   return OrdersDetailPanel(
-          //     order: detail.order.value!,
-          //     onClose: controller.clearSelection,
-          //   );
-          // }),
         ],
       );
     });

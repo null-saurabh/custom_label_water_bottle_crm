@@ -203,6 +203,22 @@ class ProductionController extends GetxController {
       ).toMap(),
     );
 
+    // 🔥 ACTIVITY LOG
+    await _activityRepo.addActivity(
+      OrderActivityModel(
+        id: '',
+        orderId: o.id,
+        type: 'production',
+        title: 'Production Updated',
+        description:
+        'Produced $qty bottles (Total: $newTotal / ${o.orderedQuantity})',
+        stage: 'production',
+        activityDate: DateTime.now(),
+        createdBy: 'admin',
+        createdAt: DateTime.now(),
+      ),
+    );
+
     producedToday.value = 0;
     productionNotes.value = '';
   }
@@ -250,6 +266,42 @@ class ProductionController extends GetxController {
         updatedAt: DateTime.now(),
       ).toMap(),
     );
+
+    // 🔥 ACTIVITY LOG
+// 🔥 ACTIVITY LOG
+    await _activityRepo.addActivity(
+      OrderActivityModel(
+        id: '',
+        orderId: o.id,
+        type: 'delivery',
+        title: 'Delivery Updated',
+        description:
+        'Delivered $qty bottles (Total: $newTotal / ${o.orderedQuantity})',
+        stage: 'delivery',
+        activityDate: DateTime.now(),
+        createdBy: 'admin',
+        createdAt: DateTime.now(),
+      ),
+    );
+
+
+    // 🔥 OPTIONAL: AUTO-MARK ORDER COMPLETE
+    if (isComplete) {
+      await _activityRepo.addActivity(
+        OrderActivityModel(
+          id: '',
+          orderId: o.id,
+          type: 'order_complete',
+          title: 'Order Completed',
+          description: 'Order fully delivered',
+          stage: 'delivery',
+          activityDate: DateTime.now(),
+          createdBy: 'admin',
+          createdAt: DateTime.now(),
+        ),
+      );
+    }
+
 
     deliveredToday.value = 0;
     deliveryNotes.value = '';

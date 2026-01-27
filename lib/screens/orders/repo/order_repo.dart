@@ -49,9 +49,9 @@ class OrdersRepository {
   // }
 
   Future<void> updateOrder(String orderId, Map<String, dynamic> data) async {
-    print("inupf");
+    // print("inupf");
     await _ordersRef.doc(orderId).update(data);
-    print("inupf22");
+    // print("inupf22");
 
 
   }

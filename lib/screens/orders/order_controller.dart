@@ -6,10 +6,19 @@ import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/order_detail_
 import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/widgets/overview_tab/over_detail_tab_controller.dart';
 import 'package:get/get.dart';
 
+
+enum OrderSortMode {
+  delivery,
+  created,
+}
+
+
 class OrdersController extends GetxController {
   final OrdersRepository _repo;
 
   OrdersController(this._repo);
+
+
 
   // ======================
   // STATE
@@ -34,29 +43,41 @@ class OrdersController extends GetxController {
 
   StreamSubscription? _ordersSub;
 
+
+
   // ======================
   // LIFECYCLE
   // ======================
 
+  late Worker _searchDebounce;
+
   @override
   void onInit() {
     super.onInit();
+
     _bindOrdersStream();
-    everAll(
-      [statusFilter, clientFilter, dateFilter, searchQuery],
-          (_) {
-        _applyFilters();
-        visibleOrders.refresh(); // 🔥 FORCE UI REBUILD
-      },
+
+    _searchDebounce = debounce(
+      searchQuery,
+          (_) => _applyFilters(),
+      time: const Duration(milliseconds: 300),
     );
 
+    everAll(
+      [statusFilter, clientFilter, dateFilter,sortMode,],
+          (_) => _applyFilters(),
+    );
   }
 
   @override
   void onClose() {
     _ordersSub?.cancel();
+    _searchDebounce.dispose();
     super.onClose();
   }
+
+
+
 
   // ======================
   // STREAMS
@@ -67,6 +88,8 @@ class OrdersController extends GetxController {
       // print("🔥 STREAM EMIT: ${list.length}");
 
       allOrders.assignAll(list);
+      // allOrders.value = list;
+
 
       // 🔥 FORCE RX NOTIFICATION
       visibleOrders.clear();
@@ -86,10 +109,19 @@ class OrdersController extends GetxController {
   // FILTERS
   // ======================
 
+  final Rx<OrderSortMode> sortMode = OrderSortMode.delivery.obs;
+
+
   void _applyFilters() {
     var list = List<OrderModel>.from(allOrders);
 
-    if (statusFilter.value != 'all') {
+    // ======================
+    // FILTERS
+    // ======================
+
+    if (statusFilter.value == 'all') {
+      list = list.where((o) => o.orderStatus != 'completed').toList();
+    } else {
       list = list
           .where((o) => o.orderStatus == statusFilter.value)
           .toList();
@@ -97,8 +129,7 @@ class OrdersController extends GetxController {
 
     if (clientFilter.value != 'all') {
       list = list
-          .where((o) =>
-      o.clientNameSnapshot == clientFilter.value)
+          .where((o) => o.clientNameSnapshot == clientFilter.value)
           .toList();
     }
 
@@ -110,8 +141,72 @@ class OrdersController extends GetxController {
       }).toList();
     }
 
-    visibleOrders.assignAll(list);
+    // ======================
+    // 🔥 GROUP BY PRIORITY
+    // ======================
+
+    final priorityOrders = list.where((o) => o.isPriority).toList();
+    final normalOrders = list.where((o) => !o.isPriority).toList();
+
+    // ======================
+    // 🔥 SORT FUNCTION
+    // ======================
+
+    int compare(OrderModel a, OrderModel b) {
+      switch (sortMode.value) {
+        case OrderSortMode.delivery:
+          final ad = a.expectedDeliveryDate;
+          final bd = b.expectedDeliveryDate;
+
+          if (ad != null && bd != null) {
+            final d = ad.compareTo(bd);
+            if (d != 0) return d;
+          } else if (ad != null) {
+            return -1;
+          } else if (bd != null) {
+            return 1;
+          }
+
+          return b.createdAt.compareTo(a.createdAt);
+
+        case OrderSortMode.created:
+          return b.createdAt.compareTo(a.createdAt);
+
+        // case OrderSortMode.client:
+        //   return a.clientNameSnapshot
+        //       .toLowerCase()
+        //       .compareTo(b.clientNameSnapshot.toLowerCase());
+        //
+        // case OrderSortMode.profit:
+        //   final ap = a.totalAmount - a.paidAmount; // or profitSoFar
+        //   final bp = b.totalAmount - b.paidAmount;
+        //   return bp.compareTo(ap);
+        //
+        // case OrderSortMode.due:
+        //   return b.dueAmount.compareTo(a.dueAmount);
+      }
+    }
+
+    priorityOrders.sort(compare);
+    normalOrders.sort(compare);
+
+    visibleOrders.assignAll([
+      ...priorityOrders,
+      ...normalOrders,
+    ]);
   }
+
+
+
+  // bool _isSameDay(DateTime a, DateTime b) {
+  //   return a.year == b.year &&
+  //       a.month == b.month &&
+  //       a.day == b.day;
+  // }
+
+
+
+
 
   // ======================
   // UI ACTIONS
@@ -163,6 +258,10 @@ class OrdersController extends GetxController {
   void setDateFilter(String v) {
     dateFilter.value = v;
   }
+  void setSortMode(OrderSortMode mode) {
+    sortMode.value = mode;
+  }
+
 
   void openAddOrderDialog() {
     Get.dialog(const AddOrderDialog());

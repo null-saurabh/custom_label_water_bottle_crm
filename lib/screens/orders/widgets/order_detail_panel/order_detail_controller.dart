@@ -3,13 +3,16 @@ import 'package:clwb_crm/screens/orders/models/order_activity_model.dart';
 import 'package:clwb_crm/screens/orders/models/order_delivery_entry_model.dart';
 import 'package:clwb_crm/screens/orders/models/order_model.dart';
 import 'package:clwb_crm/screens/orders/models/order_production_entry_model.dart';
+import 'package:clwb_crm/screens/orders/repo/order_activity_repository.dart';
 import 'package:clwb_crm/screens/orders/repo/order_repo.dart';
 import 'package:get/get.dart';
 
 class OrderDetailController extends GetxController {
   final OrdersRepository _repo;
+  final OrderActivityRepository _activityRepo;
 
-  OrderDetailController(this._repo);
+
+  OrderDetailController(this._repo,    this._activityRepo,);
 
   final Rxn<OrderModel> order = Rxn<OrderModel>();
   final RxList<OrderProductionEntryModel> production =
@@ -44,9 +47,13 @@ class OrderDetailController extends GetxController {
         .watchDeliveryEntries(orderId)
         .listen((list) => delivery.assignAll(list));
 
-    _actSub = _repo
-        .watchActivities(orderId)
-        .listen((list) => activities.assignAll(list));
+    _actSub = _activityRepo
+        .watchByOrder(orderId)
+        .listen(activities.assignAll);
+
+    // _actSub = _repo
+    //     .watchActivities(orderId)
+    //     .listen((list) => activities.assignAll(list));
   }
 
   void clear() {
