@@ -9,7 +9,9 @@ class OrdersStatusTabs extends StatelessWidget {
     'all',
     'in_production',
     'ready',
-    'delivered',
+    'completed',
+    'cancelled',
+
   ];
 
   static const labels = [
@@ -17,6 +19,7 @@ class OrdersStatusTabs extends StatelessWidget {
     'In Production',
     'Ready',
     'Delivered',
+    'Cancelled',
   ];
 
   @override
@@ -63,6 +66,10 @@ class OrdersStatusTabs extends StatelessWidget {
                     ],
                     if (i == 3) ...[
                       const Icon(Icons.local_shipping, size: 16),
+                      const SizedBox(width: 6),
+                    ],
+                    if (i == 4) ...[
+                      const Icon(Icons.cancel, size: 16),
                       const SizedBox(width: 6),
                     ],
                     Text(

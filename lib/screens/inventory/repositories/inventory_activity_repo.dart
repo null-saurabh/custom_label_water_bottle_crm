@@ -16,19 +16,34 @@ class InventoryActivityRepository {
         .map((s) => s.docs.map((d) => InventoryActivityModel.fromDoc(d)).toList());
   }
 
-  Future<void> addActivity({
-    required String itemId,
-    required String title,
-    required String description,
-    int? stockDelta,
-    double? amount,
-  }) {
-    return _ref(itemId).add({
-      'title': title,
-      'description': description,
-      'stockDelta': stockDelta,
-      'amount': amount,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+  Future<void> addActivity(InventoryActivityModel activity) async {
+    final doc = _ref(activity.itemId).doc();
+
+    final data = activity.copyWith(id: doc.id).toMap();
+
+    // ✅ Server-truth timestamps for audit timelines
+    data['createdAt'] = FieldValue.serverTimestamp();
+
+    await doc.set(data);
   }
+
+
+
+
+
+// Future<void> addActivity({
+  //   required String itemId,
+  //   required String title,
+  //   required String description,
+  //   int? stockDelta,
+  //   double? amount,
+  // }) {
+  //   return _ref(itemId).add({
+  //     'title': title,
+  //     'description': description,
+  //     'stockDelta': stockDelta,
+  //     'amount': amount,
+  //     'createdAt': FieldValue.serverTimestamp(),
+  //   });
+  // }
 }

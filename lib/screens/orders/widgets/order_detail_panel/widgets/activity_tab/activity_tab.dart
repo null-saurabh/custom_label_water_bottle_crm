@@ -1,3 +1,4 @@
+import 'package:clwb_crm/core/widgets/premium_button.dart';
 import 'package:clwb_crm/screens/orders/models/order_activity_model.dart';
 import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/order_detail_controller.dart';
 import 'package:flutter/material.dart';
@@ -6,10 +7,12 @@ import 'package:intl/intl.dart';
 
 class ActivityTab extends StatelessWidget {
   final String orderId;
+  final VoidCallback onCancel;
+
 
   const ActivityTab({
     super.key,
-    required this.orderId,
+    required this.orderId, required this.onCancel,
   });
 
   @override
@@ -29,14 +32,15 @@ class ActivityTab extends StatelessWidget {
       }
 
       return ListView.separated(
-        itemCount: list.length,
-        separatorBuilder: (_, __) =>
-        const Divider(height: 12),
-        itemBuilder: (_, i) {
-          final a = list[i];
+              itemCount: list.length,
+              separatorBuilder: (_, __) =>
+              const Divider(height: 12),
+              itemBuilder: (_, i) {
+                final a = list[i];
 
-          return _ActivityTile(activity: a);
-        },
+                return _ActivityTile(activity: a);
+              },
+
       );
     });
   }

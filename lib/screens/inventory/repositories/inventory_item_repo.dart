@@ -54,4 +54,46 @@ class InventoryItemRepository {
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
+
+
+  Future<void> applyStockDeltasTransactional({
+    required Map<String, int> itemDeltas, // itemId -> + / -
+  }) async {
+    if (itemDeltas.isEmpty) return;
+
+    await _db.runTransaction((tx) async {
+      // 1) Read all docs first
+      final refs = itemDeltas.keys.map((id) => _ref.doc(id)).toList();
+      final snaps = await Future.wait(refs.map(tx.get));
+
+      // 2) Validate stock won't go negative
+      for (int i = 0; i < refs.length; i++) {
+        final snap = snaps[i];
+        final itemId = refs[i].id;
+        final delta = itemDeltas[itemId] ?? 0;
+
+        if (!snap.exists) {
+          throw Exception('Inventory item not found: $itemId');
+        }
+
+        final data = snap.data() as Map<String, dynamic>;
+        final currentStock = (data['stock'] ?? 0) as int;
+
+        final nextStock = currentStock + delta;
+        if (nextStock < 0) {
+          final name = (data['name'] ?? 'Item') as String;
+          throw Exception('Insufficient stock for $name');
+        }
+      }
+
+      // 3) Apply increments
+      itemDeltas.forEach((itemId, delta) {
+        tx.update(_ref.doc(itemId), {
+          'stock': FieldValue.increment(delta),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      });
+    });
+  }
+
 }

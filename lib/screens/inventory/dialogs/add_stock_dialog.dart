@@ -60,6 +60,7 @@ class AddStockDialog extends StatelessWidget {
               final supplier =
               c.suppliers.firstWhere((e) => e.name == v);
               c.selectedSupplierId.value = supplier.id;
+              c.selectedSupplier.value = supplier;
             },
           ),
 

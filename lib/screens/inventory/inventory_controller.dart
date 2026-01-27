@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:clwb_crm/core/controllers/app_controller.dart';
-import 'package:clwb_crm/screens/client/client_controller.dart';
 import 'package:clwb_crm/screens/client/models/client_model.dart';
 import 'package:clwb_crm/screens/inventory/dialogs/add_item_dialog.dart';
 import 'package:clwb_crm/screens/inventory/dialogs/add_stock_dialog.dart';
@@ -89,6 +87,8 @@ class InventoryController extends GetxController {
   late StreamSubscription? _itemSub;
   late StreamSubscription? _supplierSub;
   late StreamSubscription? _stockSub;
+  StreamSubscription? _configSub;
+
   late StreamSubscription _supplierItemSub;
   late StreamSubscription _orderSub;
 
@@ -164,48 +164,56 @@ class InventoryController extends GetxController {
   void selectItem(InventoryItemModel item) {
     clearSelection();
     clearConfigs();
+    _configSub?.cancel();
+    _configSub = null;
+
 
     detailMode.value = InventoryDetailMode.item;
 
     switch (item.category) {
       case InventoryCategory.bottle:
-        bottleConfigRepo.watchConfig(item.id).listen((bottle) {
+        _configSub = bottleConfigRepo.watchConfig(item.id).listen((bottle) {
           if (bottle == null) return;
           selectedItemDetail.value = InventoryItemDetail(
             item: item,
             bottle: bottle,
           );
         });
+
         break;
 
       case InventoryCategory.cap:
-        capConfigRepo.watchConfig(item.id).listen((cap) {
+        _configSub = capConfigRepo.watchConfig(item.id).listen((cap) {
           if (cap == null) return;
           selectedItemDetail.value = InventoryItemDetail(
             item: item,
             cap: cap,
           );
         });
+
+
         break;
 
       case InventoryCategory.label:
-        labelConfigRepo.watchConfig(item.id).listen((label) {
+        _configSub = labelConfigRepo.watchConfig(item.id).listen((label) {
           if (label == null) return;
           selectedItemDetail.value = InventoryItemDetail(
             item: item,
             label: label,
           );
         });
+
         break;
 
       case InventoryCategory.packaging:
-        packagingConfigRepo.watchConfig(item.id).listen((pkg) {
+        _configSub = packagingConfigRepo.watchConfig(item.id).listen((pkg) {
           // if (pkg == null) return;
           selectedItemDetail.value = InventoryItemDetail(
             item: item,
             packaging: pkg,
           );
         });
+
         break;
     }
   }
@@ -262,7 +270,9 @@ class InventoryController extends GetxController {
     stockEntries.where((s) => s.itemId == itemId).toList();
     if (itemStocks.isEmpty) return 0;
 
-    final latestRate = itemStocks.last.ratePerUnit;
+    itemStocks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final latestRate = itemStocks.first.ratePerUnit;
+
     return inStock(itemId) * latestRate;
   }
 
@@ -495,8 +505,10 @@ class InventoryController extends GetxController {
 
       if (itemStocks.isEmpty) continue;
 
-      final latestRate = itemStocks.last.ratePerUnit;
+      itemStocks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      final latestRate = itemStocks.first.ratePerUnit;
       total += item.stock * latestRate;
+
     }
 
     return total;
@@ -576,35 +588,29 @@ class InventoryController extends GetxController {
             i.isActive,
       );
 
+
+  Future<void> addStock({
+    required String itemId,
+    required int quantity,
+  }) async {
+    if (quantity <= 0) return;
+
+    await itemRepo.applyStockDeltasTransactional(
+      itemDeltas: {itemId: quantity},
+    );
+  }
+
   Future<void> deductStock({
     required String itemId,
     required int quantity,
   }) async {
     if (quantity <= 0) return;
 
-    final item =
-    items.firstWhereOrNull((i) => i.id == itemId);
-
-    if (item == null) {
-      throw Exception('Inventory item not found');
-    }
-
-    if (item.stock < quantity) {
-      throw Exception(
-        'Insufficient stock for ${item.name}',
-      );
-    }
-
-    final newStock = item.stock - quantity;
-
-    await itemRepo.updateItem(
-      item.id,
-      {
-        'stock': newStock,
-        'updatedAt': DateTime.now(),
-      },
+    await itemRepo.applyStockDeltasTransactional(
+      itemDeltas: {itemId: -quantity},
     );
   }
+
 
 
   @override
@@ -612,8 +618,12 @@ class InventoryController extends GetxController {
     _itemSub?.cancel();
     _supplierSub?.cancel();
     _stockSub?.cancel();
+    _supplierItemSub.cancel();
+    _orderSub.cancel();
+    _configSub?.cancel();
     super.onClose();
   }
+
 
 
 

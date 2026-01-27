@@ -265,21 +265,43 @@ class _StatusBadge extends StatelessWidget {
         fg = const Color(0xFFB45309);
         label = 'In Production';
         break;
+
       case 'completed':
         bg = const Color(0xFFD1FAE5);
         fg = const Color(0xFF047857);
         label = 'Delivered';
         break;
+
       case 'ready':
         bg = const Color(0xFFE0F2FE);
         fg = const Color(0xFF0369A1);
         label = 'Ready';
         break;
+
+      case 'cancelled':
+        bg = const Color(0xFFFEE2E2); // soft red
+        fg = const Color(0xFFB91C1C); // deep red
+        label = 'Cancelled';
+        break;
+
+      case 'partially_delivered':
+        bg = const Color(0xFFFEF3C7); // amber-ish (same family as in_production)
+        fg = const Color(0xFF92400E); // darker amber
+        label = 'Partially Delivered';
+        break;
+
+      case 'pending':
+        bg = const Color(0xFFE5E7EB); // light gray
+        fg = const Color(0xFF6B7280); // muted gray
+        label = 'Pending';
+        break;
+
       default:
         bg = const Color(0xFFF3F4F6);
         fg = const Color(0xFF374151);
         label = status;
     }
+
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

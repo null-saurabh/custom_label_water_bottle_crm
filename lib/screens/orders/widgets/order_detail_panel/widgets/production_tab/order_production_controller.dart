@@ -1,5 +1,10 @@
 import 'dart:async';
 
+import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
+import 'package:clwb_crm/screens/inventory/model/inventory_activity_model.dart';
+import 'package:clwb_crm/screens/inventory/repositories/inventory_activity_repo.dart';
+import 'package:clwb_crm/screens/inventory/repositories/inventory_item_repo.dart';
+import 'package:clwb_crm/screens/inventory/repositories/packaging_config_repo.dart';
 import 'package:clwb_crm/screens/orders/models/order_activity_model.dart';
 import 'package:clwb_crm/screens/orders/models/order_delivery_entry_model.dart';
 import 'package:clwb_crm/screens/orders/models/order_expense_model.dart';
@@ -21,6 +26,9 @@ class ProductionController extends GetxController {
   final OrdersRepository _ordersRepo;
   final OrderExpenseRepository _expenseRepo;
   final OrderActivityRepository _activityRepo;
+  final InventoryActivityRepository _inventoryActivityRepo;
+  final InventoryController _inventory;
+
 
   ProductionController(
       this._productionRepo,
@@ -28,7 +36,16 @@ class ProductionController extends GetxController {
       this._ordersRepo,
       this._expenseRepo,
       this._activityRepo,
+      this._inventoryActivityRepo,
+      this._inventory,
+
       );
+
+
+  final _inventoryItemRepo = InventoryItemRepository();
+  final _packagingConfigRepo = PackagingConfigRepository();
+
+
 
   final isSaving = false.obs;
 
@@ -169,59 +186,257 @@ class ProductionController extends GetxController {
     if (o == null) return;
 
     final qty = producedToday.value;
-    if (qty <= 0) return;
-
-    final newTotal = o.producedQuantity + qty;
-    if (newTotal > o.orderedQuantity) {
-      Get.snackbar('Invalid', 'Exceeds order qty');
+    if (qty <= 0) {
+      Get.snackbar('Invalid', 'Enter quantity produced');
       return;
     }
 
-    final entry = OrderProductionEntryModel(
-      id: '',
-      orderId: o.id,
-      quantityProducedToday: qty,
-      cumulativeProduced: newTotal,
-      productionDate: DateTime.now(),
-      notes: productionNotes.value,
-      createdBy: 'admin',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
+    final newTotal = o.producedQuantity + qty;
+    if (newTotal > o.orderedQuantity) {
+      Get.snackbar(
+        'Invalid Quantity',
+        'Production exceeds order quantity',
+      );
+      return;
+    }
 
-    await _productionRepo.addProductionEntry(entry);
+    isSaving.value = true;
 
-    await _ordersRepo.updateOrder(
-      o.id,
-      o.copyWith(
-        producedQuantity: newTotal,
-        productionStatus: newTotal == o.orderedQuantity
-            ? 'completed'
-            : 'in_progress',
-        orderStatus: 'in_production',
-        updatedAt: DateTime.now(),
-      ).toMap(),
-    );
+    try {
+      // ======================
+      // 1️⃣ INVENTORY CHECK + DEDUCT 🔥
+      // ======================
 
-    // 🔥 ACTIVITY LOG
-    await _activityRepo.addActivity(
-      OrderActivityModel(
+// 1️⃣ INVENTORY CHECK + DEDUCT (TRANSACTIONAL) 🔥
+      final deltas = <String, int>{};
+
+// bottles always
+      deltas[o.itemId] = (deltas[o.itemId] ?? 0) - qty;
+
+// labels (if present)
+      if (o.labelItemId != null) {
+        deltas[o.labelItemId!] = (deltas[o.labelItemId!] ?? 0) - qty;
+      }
+
+// caps (if present)
+      if (o.capItemId != null) {
+        deltas[o.capItemId!] = (deltas[o.capItemId!] ?? 0) - qty;
+      }
+
+// packaging uses capacity if config exists, else falls back to qty
+//       if (o.packagingItemId != null) {
+//         int packUnits = qty;
+//
+//         final cfg = await _packagingConfigRepo.getConfig(o.packagingItemId!);
+//         final cap = cfg?.capacity;
+//
+//         if (cap != null && cap > 0) {
+//           packUnits = (qty / cap).ceil();
+//         }
+//
+//         deltas[o.packagingItemId!] = (deltas[o.packagingItemId!] ?? 0) - packUnits;
+//       }
+
+      int? usedPacks; // null means no packaging used
+
+      if (o.packagingItemId != null) {
+        final cfg = await _packagingConfigRepo.getConfig(o.packagingItemId!);
+        final cap = cfg?.capacity;
+
+        usedPacks = (cap != null && cap > 0) ? (qty / cap).ceil() : qty;
+        deltas[o.packagingItemId!] = (deltas[o.packagingItemId!] ?? 0) - usedPacks;
+      }
+
+
+// ✅ One atomic commit
+      await _inventoryItemRepo.applyStockDeltasTransactional(itemDeltas: deltas);
+
+
+      // ======================
+      // 2️⃣ PRODUCTION ENTRY
+      // ======================
+
+      final entry = OrderProductionEntryModel(
         id: '',
         orderId: o.id,
-        type: 'production',
-        title: 'Production Updated',
-        description:
-        'Produced $qty bottles (Total: $newTotal / ${o.orderedQuantity})',
-        stage: 'production',
-        activityDate: DateTime.now(),
+        quantityProducedToday: qty,
+        cumulativeProduced: newTotal,
+        productionDate: DateTime.now(),
+        notes: productionNotes.value,
         createdBy: 'admin',
         createdAt: DateTime.now(),
-      ),
-    );
+        updatedAt: DateTime.now(),
+      );
 
-    producedToday.value = 0;
-    productionNotes.value = '';
+      await _productionRepo.addProductionEntry(entry);
+
+      // ======================
+      // 3️⃣ UPDATE ORDER
+      // ======================
+
+      final newStatus =
+      newTotal == o.orderedQuantity ? 'completed' : 'in_progress';
+
+      await _ordersRepo.updateOrder(
+        o.id,
+        o.copyWith(
+          producedQuantity: newTotal,
+          productionStatus: newStatus,
+          orderStatus: 'in_production',
+          updatedAt: DateTime.now(),
+        ).toMap(),
+      );
+
+      // ======================
+      // 4️⃣ INVENTORY ACTIVITY LOG 🔥
+      // ======================
+
+      final now = DateTime.now();
+
+
+// ======================
+// BOTTLES 🔥
+// ======================
+      await _inventoryActivityRepo.addActivity(
+        InventoryActivityModel(
+          id: '',
+          itemId: o.itemId,
+          type: 'production_use',
+          source: 'order',
+          title: 'Production Consumption',
+          description:
+          'Used $qty bottles for Order ${o.orderNumber}',
+          stockDelta: -qty,
+          amount: null,
+          unitCost: null,
+          referenceId: o.id,
+          referenceType: 'order_production',
+          createdBy: 'admin',
+          createdAt: now,
+          isActive: true,
+        ),
+      );
+
+// ======================
+// LABELS 🔥
+// ======================
+      if (o.labelItemId != null) {
+        await _inventoryActivityRepo.addActivity(
+          InventoryActivityModel(
+            id: '',
+            itemId: o.labelItemId!,
+            type: 'production_use',
+            source: 'order',
+            title: 'Label Consumption',
+            description:
+            'Used $qty labels for Order ${o.orderNumber}',
+            stockDelta: -qty,
+            amount: null,
+            unitCost: null,
+            referenceId: o.id,
+            referenceType: 'order_production',
+            createdBy: 'admin',
+            createdAt: now,
+            isActive: true,
+          ),
+        );
+      }
+
+// ======================
+// CAPS 🔥
+// ======================
+      if (o.capItemId != null) {
+        await _inventoryActivityRepo.addActivity(
+          InventoryActivityModel(
+            id: '',
+            itemId: o.capItemId!,
+            type: 'production_use',
+            source: 'order',
+            title: 'Cap Consumption',
+            description:
+            'Used $qty caps for Order ${o.orderNumber}',
+            stockDelta: -qty,
+            amount: null,
+            unitCost: null,
+            referenceId: o.id,
+            referenceType: 'order_production',
+            createdBy: 'admin',
+            createdAt: now,
+            isActive: true,
+          ),
+        );
+      }
+
+// ======================
+// PACKAGING 🔥
+// ======================
+
+      final cfg = await _packagingConfigRepo.getConfig(o.packagingItemId!);
+      final cap = cfg?.capacity;
+      // final usedPacks = (cap != null && cap > 0) ? (qty / cap).ceil() : qty;
+      final packs = usedPacks ?? qty; // fallback, should exist if packagingItemId != null
+
+    if (o.packagingItemId != null) {
+        await _inventoryActivityRepo.addActivity(
+          InventoryActivityModel(
+            id: '',
+            itemId: o.packagingItemId!,
+            type: 'production_use',
+            source: 'order',
+            title: 'Packaging Consumption',
+            description: 'Used $packs packaging units for Order ${o.orderNumber}',
+            stockDelta: -packs,
+            amount: null,
+            unitCost: null,
+            referenceId: o.id,
+            referenceType: 'order_production',
+            createdBy: 'admin',
+            createdAt: now,
+            isActive: true,
+          ),
+        );
+      }
+
+
+      // ======================
+      // 5️⃣ ORDER ACTIVITY LOG 🔥
+      // ======================
+
+      await _activityRepo.addActivity(
+        OrderActivityModel(
+          id: '',
+          orderId: o.id,
+          type: 'production',
+          title: 'Production Updated',
+          description:
+          'Produced $qty bottles (Total: $newTotal / ${o.orderedQuantity})',
+          stage: 'production',
+          activityDate: now,
+          createdBy: 'admin',
+          createdAt: now,
+        ),
+      );
+
+      // ======================
+      // 6️⃣ RESET UI
+      // ======================
+
+      producedToday.value = 0;
+      productionNotes.value = '';
+
+      Get.back();
+      Get.snackbar('Success', 'Production updated');
+    } catch (e) {
+      Get.snackbar(
+        'Stock Error',
+        e.toString(),
+      );
+    } finally {
+      isSaving.value = false;
+    }
   }
+
+
 
   // ======================
   // DELIVERY 🔥

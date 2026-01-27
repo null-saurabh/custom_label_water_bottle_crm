@@ -55,10 +55,10 @@ class SupplierItemRepository {
   Future<void> upsertSupplierItem(SupplierItemModel model) {
     return _ref.doc(model.id).set(model.toMap(), SetOptions(merge: true));
   }
-
-  Future<void> updatePrice(String id, double ratePerUnit) {
-    return _ref.doc(id).update({'ratePerUnit': ratePerUnit});
+  Future<void> updatePrice(String id, double costPerUnit) {
+    return _ref.doc(id).update({'costPerUnit': costPerUnit});
   }
+
 
   Future<void> deleteSupplierItem(String id) {
     return _ref.doc(id).delete();

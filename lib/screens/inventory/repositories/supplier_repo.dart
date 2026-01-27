@@ -26,14 +26,6 @@ class SupplierRepository {
     return doc.id;
   }
 
-
-  // Future<void> addSupplier(SupplierModel supplier) {
-  //   print("in adding supplier");
-  //   print(supplier);
-  //   return _ref.doc(supplier.id).set(supplier.toMap());
-  //
-  // }
-
   Future<void> updateSupplier(String id, Map<String, dynamic> data) {
     return _ref.doc(id).update(data);
   }

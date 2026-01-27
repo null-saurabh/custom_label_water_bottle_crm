@@ -1,6 +1,7 @@
 import 'package:clwb_crm/screens/client/models/client_model.dart';
 import 'package:clwb_crm/screens/inventory/model/bottle_config.dart';
 import 'package:clwb_crm/screens/inventory/model/cap_config.dart';
+import 'package:clwb_crm/screens/inventory/model/inventory_activity_model.dart';
 import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
 import 'package:clwb_crm/screens/inventory/model/label_config.dart';
 import 'package:clwb_crm/screens/inventory/repositories/bottle_config_repo.dart';
@@ -177,11 +178,26 @@ class AddInventoryItemController extends GetxController {
       }
 
       // 3️⃣ Activity
+
       await _activityRepo.addActivity(
-        itemId: itemId,
-        title: 'Item Created',
-        description: '${name.value} added to inventory',
+        InventoryActivityModel(
+          id: '',
+          itemId: itemId,
+          type: 'item_created',
+          source: 'inventory',
+          title: 'Item Created',
+          description: '${name.value} added to inventory',
+          stockDelta: 0,
+          amount: null,
+          unitCost: null,
+          referenceId: itemId,
+          referenceType: 'inventory_item',
+          createdBy: 'admin',
+          createdAt: now,
+          isActive: true,
+        ),
       );
+
 
       // print("in submit7");
 

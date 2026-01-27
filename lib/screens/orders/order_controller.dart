@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
+import 'package:clwb_crm/screens/inventory/repositories/inventory_activity_repo.dart';
 import 'package:clwb_crm/screens/orders/dialog/add_order_dialog.dart';
+import 'package:clwb_crm/screens/orders/dialog/cancel_order_dialog.dart';
+import 'package:clwb_crm/screens/orders/dialog/controller/cancel_oder_controller.dart';
 import 'package:clwb_crm/screens/orders/dialog/controller/edit_order_controller.dart';
 import 'package:clwb_crm/screens/orders/dialog/edit_order_dialog.dart';
 import 'package:clwb_crm/screens/orders/models/order_model.dart';
 import 'package:clwb_crm/screens/orders/repo/order_activity_repository.dart';
+import 'package:clwb_crm/screens/orders/repo/order_expense_repository.dart';
 import 'package:clwb_crm/screens/orders/repo/order_repo.dart';
 import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/order_detail_controller.dart';
 import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/widgets/overview_tab/over_detail_tab_controller.dart';
@@ -124,7 +128,7 @@ class OrdersController extends GetxController {
     // ======================
 
     if (statusFilter.value == 'all') {
-      list = list.where((o) => o.orderStatus != 'completed').toList();
+      list = list.where((o) => o.orderStatus != 'completed' && o.orderStatus != 'cancelled').toList();
     } else {
       list = list
           .where((o) => o.orderStatus == statusFilter.value)
@@ -144,6 +148,37 @@ class OrdersController extends GetxController {
             o.clientNameSnapshot.toLowerCase().contains(q);
       }).toList();
     }
+
+
+
+    // ======================
+// DATE FILTER (optional)
+// ======================
+//     final now = DateTime.now();
+//
+//     if (dateFilter.value == 'today') {
+//       list = list.where((o) {
+//         final d = o.createdAt;
+//         return d.year == now.year && d.month == now.month && d.day == now.day;
+//       }).toList();
+//     }
+//
+//     if (dateFilter.value == 'this_week') {
+//       final start = now.subtract(Duration(days: now.weekday - 1));
+//       final end = start.add(const Duration(days: 7));
+//       list = list.where((o) {
+//         final d = o.createdAt;
+//         return d.isAfter(start) && d.isBefore(end);
+//       }).toList();
+//     }
+//
+//     if (dateFilter.value == 'this_month') {
+//       list = list.where((o) {
+//         final d = o.createdAt;
+//         return d.year == now.year && d.month == now.month;
+//       }).toList();
+//     }
+
 
     // ======================
     // 🔥 GROUP BY PRIORITY
@@ -176,18 +211,6 @@ class OrdersController extends GetxController {
         case OrderSortMode.created:
           return b.createdAt.compareTo(a.createdAt);
 
-        // case OrderSortMode.client:
-        //   return a.clientNameSnapshot
-        //       .toLowerCase()
-        //       .compareTo(b.clientNameSnapshot.toLowerCase());
-        //
-        // case OrderSortMode.profit:
-        //   final ap = a.totalAmount - a.paidAmount; // or profitSoFar
-        //   final bp = b.totalAmount - b.paidAmount;
-        //   return bp.compareTo(ap);
-        //
-        // case OrderSortMode.due:
-        //   return b.dueAmount.compareTo(a.dueAmount);
       }
     }
 
@@ -201,51 +224,31 @@ class OrdersController extends GetxController {
   }
 
 
-
-  // bool _isSameDay(DateTime a, DateTime b) {
-  //   return a.year == b.year &&
-  //       a.month == b.month &&
-  //       a.day == b.day;
-  // }
-
-
-
-
-
-  // ======================
-  // UI ACTIONS
-  // ======================
-
   void selectOrder(OrderModel order) {
-    // selectedOrder.value = order;
-
     selectedOrderId.value = order.id;
 
-    // // 🔥 NEW: bind tab controller
-    // if (!Get.isRegistered<OrderDetailTabsController>()) {
-    //   Get.put(OrderDetailTabsController());
-    // } else {
+    if (Get.isRegistered<OrderDetailTabsController>()) {
       Get.find<OrderDetailTabsController>().reset();
-    // }
+    }
 
-
-    Get.find<OrderDetailController>()
-        .bindOrder(order.id);
+    if (Get.isRegistered<OrderDetailController>()) {
+      Get.find<OrderDetailController>().bindOrder(order.id);
+    }
   }
+
 
   void clearSelection() {
     selectedOrderId.value = null;
-    // print("clear");
-    // if (Get.isRegistered<OrderDetailTabsController>()) {
-    //   Get.delete<OrderDetailTabsController>();
-    // }
-    // 🔥 Reset tab instead of deleting controller
-    Get.find<OrderDetailTabsController>().reset();
 
+    if (Get.isRegistered<OrderDetailTabsController>()) {
+      Get.find<OrderDetailTabsController>().reset();
+    }
 
-    Get.find<OrderDetailController>().clear();
-    // update();
+    if (Get.isRegistered<OrderDetailController>()) {
+      Get.find<OrderDetailController>().clear();
+    }
   }
+
 
   void setStatusFilter(String v) {
     statusFilter.value = v;
@@ -289,6 +292,30 @@ class OrdersController extends GetxController {
 
     Get.dialog(const EditOrderDialog());
   }
+
+  void openCancelDialog(OrderModel order) {
+
+    if (Get.isRegistered<CancelOrderController>()) {
+      Get.delete<CancelOrderController>();
+    }
+
+
+        Get.put(
+          CancelOrderController(
+            Get.find<OrdersRepository>(),
+            Get.find<InventoryController>(),
+            Get.find<OrderExpenseRepository>(),
+            Get.find<OrderActivityRepository>(),
+            Get.find<InventoryActivityRepository>(),
+            order,
+          ),
+        );
+
+    Get.dialog(const CancelOrderDialog());
+
+
+  }
+
 
 
 }

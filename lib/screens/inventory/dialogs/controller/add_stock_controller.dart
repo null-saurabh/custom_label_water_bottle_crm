@@ -1,3 +1,4 @@
+import 'package:clwb_crm/screens/inventory/model/inventory_activity_model.dart';
 import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
 import 'package:clwb_crm/screens/inventory/model/inventory_stock_add_model.dart';
 import 'package:clwb_crm/screens/inventory/model/supplier_item_model.dart';
@@ -22,6 +23,7 @@ class AddStockController extends GetxController {
   // ===============================
   final selectedItemId = RxnString();
   final selectedSupplierId = RxnString();
+  final selectedSupplier = Rxn<SupplierModel>();
 
   final quantity = 0.obs;
   final receivedQuantity = 0.obs;
@@ -150,14 +152,34 @@ class AddStockController extends GetxController {
       );
 
       /// Activity
+      final itemId = selectedItemId.value!;
+      final qty = receivedQuantity.value;
+
+// ✅ inventory movement should reflect received qty only
+      final total = ratePerUnit.value * qty;
+      final unitCost = qty > 0 ? ratePerUnit.value : null;
+
+
       await _activityRepo.addActivity(
-        itemId: selectedItemId.value!,
-        title: 'Stock Added',
-        description:
-        '${receivedQuantity.value} units received from supplier',
-        stockDelta: receivedQuantity.value,
-        amount: totalAmountComputed,
+        InventoryActivityModel(
+          id: '',
+          itemId: itemId,
+          type: 'stock_in',
+          source: 'purchase',
+          title: 'Stock Added',
+          description:
+          '$qty units received from supplier ${selectedSupplier.value?.name ?? ''}',
+          stockDelta: qty,
+          amount: total,
+          unitCost: unitCost,
+          referenceId: selectedSupplierId.value,
+          referenceType: 'supplier',
+          createdBy: 'admin',
+          createdAt: now,
+          isActive: true,
+        ),
       );
+
 
       Get.back();
       Get.delete<AddStockController>();

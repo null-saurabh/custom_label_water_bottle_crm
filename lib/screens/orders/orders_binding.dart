@@ -1,5 +1,6 @@
 import 'package:clwb_crm/screens/client/client_controller.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
+import 'package:clwb_crm/screens/inventory/repositories/inventory_activity_repo.dart';
 import 'package:clwb_crm/screens/orders/dialog/controller/add_order_controller.dart';
 import 'package:clwb_crm/screens/orders/order_controller.dart';
 import 'package:clwb_crm/screens/orders/repo/order_activity_repository.dart';
@@ -24,6 +25,7 @@ class OrdersBinding extends Bindings {
     Get.put(OrderDeliveryRepository());
     Get.put(OrderExpenseRepository());
     Get.put(OrderActivityRepository(), permanent: true);
+    Get.put(InventoryActivityRepository(), permanent: true);
     Get.put(OrdersController(Get.find()),permanent: true);
     Get.put(OrderDetailController(Get.find(),Get.find()));
     Get.put(OrderDetailTabsController(), permanent: true);
@@ -43,15 +45,15 @@ class OrdersBinding extends Bindings {
       fenix: true,
     );
 
-    Get.lazyPut(
-          () => MaterialDispatchController(
-        Get.find<OrderMaterialDispatchRepository>(),
-        Get.find<OrdersRepository>(),
-        Get.find<InventoryController>(),
-        Get.find<OrderExpenseRepository>(),
-        Get.find<OrderActivityRepository>()
-      ),
-    );
+  // Get.lazyPut(
+  //       () => MaterialDispatchController(
+  //     Get.find<OrderMaterialDispatchRepository>(),
+  //     Get.find<OrdersRepository>(),
+  //     Get.find<InventoryController>(),
+  //     Get.find<OrderExpenseRepository>(),
+  //     Get.find<OrderActivityRepository>()
+  //   ),
+  // );
 
 
     Get.put( ProductionController(
@@ -60,6 +62,8 @@ class OrdersBinding extends Bindings {
               Get.find<OrdersRepository>(),
               Get.find<OrderExpenseRepository>(),
               Get.find<OrderActivityRepository>(),
+              Get.find<InventoryActivityRepository>(),
+              Get.find<InventoryController>(),
 
       ),
     );

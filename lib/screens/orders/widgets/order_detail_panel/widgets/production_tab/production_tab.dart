@@ -158,17 +158,20 @@ Widget actionButton({
   required String label,
   IconData? icon,
   required VoidCallback onTap,
+  double? fontSize,
+  Color? bgColor,
+  double? verticalPadding,
 }) {
   return Expanded(
     child: InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: EdgeInsets.symmetric(vertical: verticalPadding ??12),
         decoration: BoxDecoration(
-          color: Colors.blue,
+          color: bgColor ??  Colors.blue,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.blue, width: 1),
+          border: Border.all(color: bgColor ?? Colors.blue, width: 1),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -176,12 +179,45 @@ Widget actionButton({
             Text(
               label,
               style: TextStyle(
-                fontSize: 11, // Small font for tight width
+                fontSize: fontSize ?? 11, // Small font for tight width
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
             ),
           ],
+        ),
+      ),
+    ),
+  );
+}
+
+
+Widget nonExpandedActionButton({
+  required String label,
+  IconData? icon,
+  required VoidCallback onTap,
+  double? fontSize,
+  Color? bgColor,
+  double? verticalPadding,
+}) {
+  return InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(12),
+    child: Container(
+      padding: EdgeInsets.symmetric(vertical: verticalPadding ??12),
+      decoration: BoxDecoration(
+        color: bgColor ??  Colors.blue,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: bgColor ?? Colors.blue, width: 1),
+      ),
+      child: Center(
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: fontSize ?? 11, // Small font for tight width
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
         ),
       ),
     ),

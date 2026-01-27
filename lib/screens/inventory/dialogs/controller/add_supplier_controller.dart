@@ -1,4 +1,6 @@
+import 'package:clwb_crm/screens/inventory/model/inventory_activity_model.dart';
 import 'package:clwb_crm/screens/inventory/model/supplier_model.dart';
+import 'package:clwb_crm/screens/inventory/repositories/inventory_activity_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/supplier_repo.dart';
 import 'package:get/get.dart';
 
@@ -26,6 +28,8 @@ class AddSupplierController extends GetxController {
   // REPO
   // ===============================
   final _supplierRepo = SupplierRepository();
+  final _activityRepo = InventoryActivityRepository();
+
 
   // ===============================
   // SUBMIT
@@ -50,7 +54,26 @@ class AddSupplierController extends GetxController {
         updatedAt: now,
       );
 
-      await _supplierRepo.addSupplier(supplier);
+    final supplierId = await _supplierRepo.addSupplier(supplier);
+
+      await _activityRepo.addActivity(
+        InventoryActivityModel(
+          id: '',
+          itemId: '_system', // 🔥 virtual bucket
+          type: 'supplier_created',
+          source: 'inventory',
+          title: 'Supplier Created',
+          description: 'Supplier ${name.value} added',
+          stockDelta: 0,
+          amount: null,
+          unitCost: null,
+          referenceId: supplierId,
+          referenceType: 'supplier',
+          createdBy: 'admin',
+          createdAt: now,
+          isActive: true,
+        ),
+      );
 
       Get.back();
       Get.delete<AddSupplierController>();

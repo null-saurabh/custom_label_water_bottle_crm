@@ -11,6 +11,12 @@ class PackagingConfigRepository {
           (d) => d.exists ? PackagingConfig.fromDoc(d) : null,
     );
   }
+  Future<PackagingConfig?> getConfig(String itemId) async {
+    final d = await _ref.doc(itemId).get();
+    if (!d.exists) return null;
+    return PackagingConfig.fromDoc(d);
+  }
+
 
   Future<void> addConfig(PackagingConfig config) {
     return _ref.doc(config.itemId).set(config.toMap());

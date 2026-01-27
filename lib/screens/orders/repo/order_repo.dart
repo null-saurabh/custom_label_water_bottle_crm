@@ -93,13 +93,22 @@ class OrdersRepository {
   // ORDER STREAMS
   // ===========================
 
+  // Stream<List<OrderModel>> watchAllOrders() {
+  //   return _ordersRef
+  //       .where('isActive', isEqualTo: true)
+  //       .orderBy('createdAt', descending: true)
+  //       .snapshots()
+  //       .map((snap) => snap.docs.map((d) => OrderModel.fromDoc(d)).toList());
+  // }
+
   Stream<List<OrderModel>> watchAllOrders() {
     return _ordersRef
-        .where('isActive', isEqualTo: true)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snap) => snap.docs.map((d) => OrderModel.fromDoc(d)).toList());
   }
+
+
 
   Stream<OrderModel?> watchOrderById(String orderId) {
     return _ordersRef.doc(orderId).snapshots().map((doc) {

@@ -46,7 +46,27 @@ class OrdersDetailPanel extends StatelessWidget {
           PanelClientInfo(order: order,onEdit: () {
             Get.find<OrdersController>().openEditOrderDialog(order);
           },),
-          const SizedBox(height: 20),
+
+
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(
+                height: 35,
+                width: 120,
+                child: nonExpandedActionButton(
+                  label: 'Cancel Order',
+                  onTap: (){Get.find<OrdersController>().openCancelDialog(order);},
+                  fontSize: 14,
+                  bgColor: Colors.red,
+                  verticalPadding: 4
+                ),
+              ),
+            ],
+          ),
+
+          // const SizedBox(height: 8),
           const PanelTabs(),
           const SizedBox(height: 16),
           Expanded(
@@ -75,7 +95,9 @@ class OrdersDetailPanel extends StatelessWidget {
 
 
       case OrderDetailTab.activity:
-        return ActivityTab(orderId: order.id);
+        return ActivityTab(orderId: order.id,onCancel: () {
+          Get.find<OrdersController>().openCancelDialog(order);
+        },);
 
       default:
         return const SizedBox.shrink();
