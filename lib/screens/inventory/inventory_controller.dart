@@ -3,8 +3,13 @@ import 'package:clwb_crm/screens/client/models/client_model.dart';
 import 'package:clwb_crm/screens/inventory/dialogs/add_item_dialog.dart';
 import 'package:clwb_crm/screens/inventory/dialogs/add_stock_dialog.dart';
 import 'package:clwb_crm/screens/inventory/dialogs/add_supplier_dialog.dart';
+import 'package:clwb_crm/screens/inventory/dialogs/edit_stock_meta_dialog.dart';
+import 'package:clwb_crm/screens/inventory/dialogs/receive_stock_dialog.dart';
+import 'package:clwb_crm/screens/inventory/dialogs/stock_payment_dialog.dart';
+import 'package:clwb_crm/screens/inventory/dialogs/stock_purchase_view_dialog.dart';
 import 'package:clwb_crm/screens/inventory/model/bottle_config.dart';
 import 'package:clwb_crm/screens/inventory/model/cap_config.dart';
+import 'package:clwb_crm/screens/inventory/model/inventory_activity_model.dart';
 import 'package:clwb_crm/screens/inventory/model/inventory_item_detail.dart';
 import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
 import 'package:clwb_crm/screens/inventory/model/inventory_stock_add_model.dart';
@@ -14,6 +19,7 @@ import 'package:clwb_crm/screens/inventory/model/supplier_item_model.dart';
 import 'package:clwb_crm/screens/inventory/model/supplier_model.dart';
 import 'package:clwb_crm/screens/inventory/repositories/bottle_config_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/cap_config_repo.dart';
+import 'package:clwb_crm/screens/inventory/repositories/inventory_activity_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/inventory_item_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/inventory_stocks_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/level_config_repo.dart';
@@ -22,6 +28,7 @@ import 'package:clwb_crm/screens/inventory/repositories/supplier_item_repo.dart'
 import 'package:clwb_crm/screens/inventory/repositories/supplier_repo.dart';
 import 'package:clwb_crm/screens/orders/models/order_model.dart';
 import 'package:clwb_crm/screens/orders/repo/order_repo.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
@@ -41,6 +48,21 @@ enum InventoryDetailMode {
   supplier,
 }
 
+class InventoryWarning {
+  final InventoryItemModel item;
+  final String title;
+  final String subtitle;
+  final String badge;
+
+  InventoryWarning({
+    required this.item,
+    required this.title,
+    required this.subtitle,
+    required this.badge,
+  });
+}
+
+
 
 class InventoryController extends GetxController {
   final InventoryItemRepository itemRepo;
@@ -48,11 +70,14 @@ class InventoryController extends GetxController {
   final InventoryStockRepository stockRepo;
   final SupplierItemRepository supplierItemRepo;
   final OrdersRepository orderRepo;
+  final InventoryActivityRepository activityRepo;
+
 
   InventoryController(this.supplierItemRepo, this.orderRepo, {
     required this.itemRepo,
     required this.supplierRepo,
     required this.stockRepo,
+    required this.activityRepo,
   });
 
   // ===== STATE =====
@@ -81,6 +106,9 @@ class InventoryController extends GetxController {
   final selectedSupplier = Rxn<SupplierModel>();
   final detailMode = InventoryDetailMode.none.obs;
 
+  final RxList<InventoryActivityModel> systemInventoryActivities =
+      <InventoryActivityModel>[].obs;
+
 
   final isLoading = false.obs;
 
@@ -91,13 +119,19 @@ class InventoryController extends GetxController {
 
   late StreamSubscription _supplierItemSub;
   late StreamSubscription _orderSub;
+  late StreamSubscription? _systemActSub;
 
+
+
+  final stockSupplierSearchQuery = ''.obs;
+  final TextEditingController stockSupplierSearchCtrl = TextEditingController();
 
 
 
   @override
   void onInit() {
     super.onInit();
+
     _bindStreams();
   }
 
@@ -117,6 +151,12 @@ class InventoryController extends GetxController {
       for (final s in data) {
         // print('STOCK ${s.id} due=${s.dueAmount} total=${s.totalAmount}');
       }
+
+      _systemActSub =
+          activityRepo.watchActivities('_system').listen((acts) {
+            systemInventoryActivities.assignAll(acts);
+          });
+
       stockEntries.value = data;
     });
 
@@ -130,7 +170,48 @@ class InventoryController extends GetxController {
 
 
 
+  void setStockSupplierSearch(String v) {
+    stockSupplierSearchQuery.value = v;
+  }
+  List<InventoryStockAddModel> get filteredStockPurchases {
+    final q = stockSupplierSearchQuery.value.toLowerCase().trim();
 
+    // Only pending/partial entries for this widget
+    var list = stockEntries
+        .where((e) => e.status != DeliveryStatus.received)
+        .toList();
+
+    if (q.isNotEmpty) {
+      list = list.where((e) {
+        final sName = supplierName(e.supplierId).toLowerCase();
+        return sName.contains(q);
+      }).toList();
+    }
+
+    // Most recent first
+    list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return list;
+  }
+
+
+  void openStockReceiveDialog(InventoryStockAddModel entry) {
+    Get.dialog(ReceiveStockDialog(entry: entry));
+  }
+
+  void openStockPaymentDialog(InventoryStockAddModel entry) {
+    Get.dialog(StockPaymentDialog(entry: entry));
+  }
+
+  void openStockCorrectionDialog(InventoryStockAddModel entry) {
+    // admin-only gate later (role-based). For now:
+    Get.dialog(EditStockMetaDialog(entry: entry));
+  }
+
+
+
+  void openStockPurchaseViewDialog(InventoryStockAddModel entry) {
+    Get.dialog(StockPurchaseViewDialog(entry: entry));
+  }
 
 
   final activeDetailTab = InventoryDetailTab.overview.obs;
@@ -166,9 +247,14 @@ class InventoryController extends GetxController {
     clearConfigs();
     _configSub?.cancel();
     _configSub = null;
-
+    _itemActivitySub?.cancel();
 
     detailMode.value = InventoryDetailMode.item;
+
+    _itemActivitySub =
+        activityRepo.watchActivities(item.id).listen((acts) {
+          selectedItemActivities.assignAll(acts);
+        });
 
     switch (item.category) {
       case InventoryCategory.bottle:
@@ -283,13 +369,29 @@ class InventoryController extends GetxController {
   }
 
 
+final RxList<InventoryActivityModel> selectedItemActivities =
+      <InventoryActivityModel>[].obs;
+
+  StreamSubscription? _itemActivitySub;
 
 
+  List<InventoryActivityModel> inventoryActivitiesForItem(String itemId) {
+    return selectedItemActivities
+        .where((a) => a.itemId == itemId)
+        .toList();
+  }
 
+  String supplierNameForStockActivity(InventoryActivityModel a) {
+    if (a.referenceId == null) return 'System';
 
+    final stock = stockEntries.firstWhereOrNull(
+          (s) => s.id == a.referenceId,
+    );
 
+    if (stock == null) return 'System';
 
-
+    return supplierName(stock.supplierId);
+  }
 
 
   /// All suppliers for a given inventory item
@@ -613,6 +715,100 @@ class InventoryController extends GetxController {
 
 
 
+
+
+
+
+
+
+  String itemName(String itemId) {
+    final i = items.firstWhereOrNull((e) => e.id == itemId);
+    return i?.name ?? 'Unknown Item';
+  }
+
+  String supplierName(String supplierId) {
+    final s = suppliers.firstWhereOrNull((e) => e.id == supplierId);
+    return s?.name ?? 'Unknown Supplier';
+  }
+
+  List<InventoryWarning> get inventoryWarnings {
+    final out = <InventoryWarning>[];
+
+    for (final item in items.where((i) => i.isActive)) {
+      final stock = item.stock;
+      final reorder = item.reorderLevel;
+
+      // Demand signals
+      final dueWeek = orderDueThisWeek(item.id);
+      final dueMonth = orderDueThisMonth(item.id);
+
+      // A) shortage this week
+      if (dueWeek > stock) {
+        final shortage = dueWeek - stock;
+        out.add(
+          InventoryWarning(
+            item: item,
+            title: '${item.name} shortage (this week)',
+            subtitle: 'Stock $stock, due $dueWeek. Short by $shortage.',
+            badge: '-$shortage',
+          ),
+        );
+        continue; // shortage is more urgent than reorder threshold
+      }
+
+      // B) reorder threshold
+      if (stock <= reorder && reorder > 0) {
+        out.add(
+          InventoryWarning(
+            item: item,
+            title: '${item.name} below reorder level',
+            subtitle: 'Stock $stock, reorder level $reorder.',
+            badge: 'LOW',
+          ),
+        );
+        continue;
+      }
+
+      // C) upcoming month pressure (optional)
+      if (dueMonth > stock && dueWeek <= stock) {
+        final shortage = dueMonth - stock;
+        out.add(
+          InventoryWarning(
+            item: item,
+            title: '${item.name} pressure (this month)',
+            subtitle: 'Stock $stock, due $dueMonth. Risk: short by $shortage.',
+            badge: 'RISK',
+          ),
+        );
+      }
+    }
+
+    // Sort: shortages first
+    out.sort((a, b) {
+      int score(InventoryWarning w) {
+        if (w.badge.startsWith('-')) return 0;
+        if (w.badge == 'LOW') return 1;
+        return 2;
+      }
+      final s = score(a).compareTo(score(b));
+      if (s != 0) return s;
+      return a.title.compareTo(b.title);
+    });
+
+    return out;
+  }
+
+
+
+
+
+  void openAllStockEntriesView() {
+    // Optional: later you can route to a dedicated screen or open a dialog.
+    // For now do nothing or show snackbar.
+    Get.snackbar('Coming soon', 'Full stock ledger view will open here.');
+  }
+
+
   @override
   void onClose() {
     _itemSub?.cancel();
@@ -621,10 +817,13 @@ class InventoryController extends GetxController {
     _supplierItemSub.cancel();
     _orderSub.cancel();
     _configSub?.cancel();
+    stockSupplierSearchCtrl.dispose();
+    _itemActivitySub?.cancel();
+    selectedItemActivities.clear();
+    _systemActSub?.cancel();
+
+
     super.onClose();
   }
-
-
-
 
 }

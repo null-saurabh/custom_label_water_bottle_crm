@@ -43,26 +43,36 @@ class InventoryActivityModel {
     required this.isActive,
   });
 
+
+
   factory InventoryActivityModel.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
+    // 🔥 Extract itemId from document path
+    // Path: inventory_items/{itemId}/activities/{activityId}
+    final segments = doc.reference.path.split('/');
+    final itemIdFromPath =
+    segments.length >= 2 ? segments[1] : '_unknown';
+
     return InventoryActivityModel(
       id: doc.id,
-      itemId: data['itemId'],
-      type: data['type'],
-      source: data['source'],
-      title: data['title'],
-      description: data['description'],
-      stockDelta: data['stockDelta'],
-      amount: data['amount']?.toDouble(),
-      unitCost: data['unitCost']?.toDouble(),
-      referenceId: data['referenceId'],
-      referenceType: data['referenceType'],
-      createdBy: data['createdBy'] ?? 'system',
+      itemId: data['itemId'] ?? itemIdFromPath, // ✅ SAFE
+      stockDelta: data['stockDelta'] ?? 0,
+      amount: (data['amount'] as num?)?.toDouble(),
+      unitCost: (data['unitCost'] as num?)?.toDouble(),
+      type: (data['type'] ?? '').toString(),
+      source: (data['source'] ?? '').toString(),
+      title: (data['title'] ?? '').toString(),
+      description: (data['description'] ?? '').toString(),
+      createdBy: (data['createdBy'] ?? 'system').toString(),
+      referenceId: data['referenceId']?.toString(),
+      referenceType: data['referenceType']?.toString(),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       isActive: data['isActive'] ?? true,
     );
   }
+
+
 
   Map<String, dynamic> toMap() {
     return {

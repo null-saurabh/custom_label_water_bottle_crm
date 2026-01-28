@@ -15,43 +15,93 @@ class SupplierRecentTable extends GetView<InventoryController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final entries = controller.stockEntries
+      // 1️⃣ Get stock entries for supplier
+      final stocks = controller.stockEntries
           .where((e) => e.supplierId == supplierId)
-          .take(5)
           .toList();
+
+      if (stocks.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.all(16),
+          child: Text('No supplier activity yet'),
+        );
+      }
+
+      // 2️⃣ Build activity rows
+      final rows = <_SupplierActivityRow>[];
+
+      for (final s in stocks) {
+        final itemName = controller.itemName(s.itemId);
+
+        // 🔹 Stock order created
+        rows.add(
+          _SupplierActivityRow(
+            date: s.createdAt,
+            item: itemName,
+            event: 'Stock Ordered',
+            value: '${s.orderedQuantity} units',
+            status: s.status.name,
+          ),
+        );
+
+        // 🔹 Stock received (from activities)
+        final receives = controller.inventoryActivitiesForItem(s.itemId)
+            .where((a) =>
+        a.referenceId == s.id &&
+            a.referenceType == 'inventory_stock' &&
+            a.stockDelta > 0)
+            .toList();
+
+        for (final a in receives) {
+          rows.add(
+            _SupplierActivityRow(
+              date: a.createdAt,
+              item: itemName,
+              event: 'Stock Received',
+              value: '+${a.stockDelta}',
+              status: s.status.name,
+            ),
+          );
+        }
+
+        // 🔹 Payments (system bucket)
+        final payments = controller.systemInventoryActivities
+            .where((a) =>
+        a.referenceId == s.id &&
+            a.referenceType == 'inventory_stock' &&
+            a.type == 'supplier_payment')
+            .toList();
+
+        for (final p in payments) {
+          rows.add(
+            _SupplierActivityRow(
+              date: p.createdAt,
+              item: itemName,
+              event: 'Payment',
+              value: '₹${p.amount?.toStringAsFixed(0) ?? '—'}',
+              status: 'paid',
+            ),
+          );
+        }
+      }
+
+      rows.sort((a, b) => b.date.compareTo(a.date));
+      final recent = rows.take(6).toList();
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                const Text(
-                  'Recent Stock Entries',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
-                const Spacer(),
-                BlueActionButton(
-                  icon: Icons.add,
-                  label: "Add Stock",
-                  isPrimary: true,
-                  onTap: controller.openAddStockDialog,
-                ),
-              ],
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Recent Supplier Activity',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
             ),
           ),
-          const SizedBox(height: 16),
-          if (entries.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('No stock entries yet'),
-            )
-          else ...[
-            _Header(),
-            const Divider(),
-            ...entries.map((e) => _Row(entry: e)),
-          ],
+          const SizedBox(height: 12),
+          const _SupplierHeader(),
+          const SizedBox(height: 8),
+          ...recent.map((r) => _SupplierRow(row: r)),
         ],
       );
     });
@@ -59,71 +109,94 @@ class SupplierRecentTable extends GetView<InventoryController> {
 }
 
 
-class _Header extends StatelessWidget {
+
+class _SupplierHeader extends StatelessWidget {
+  const _SupplierHeader();
+
   @override
   Widget build(BuildContext context) {
-    TextStyle style =
-    TextStyle(color: Colors.grey.shade600, fontSize: 13);
+    const style = TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w700,
+      color: Color(0xFF6B7280),
+    );
 
-    return Row(
-      children: [
-        _col('Date', style),
-        _col('Quantity', style),
-        _col('Pending Balance', style),
-        _col('Status', style),
-      ],
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Color(0xFFF3F4F6),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: const [
+          Expanded(flex: 4, child: Text('Date', style: style)),
+          Expanded(flex: 5, child: Text('Item', style: style)),
+          Expanded(flex: 4, child: Text('Event', style: style)),
+          Expanded(flex: 3, child: Text('Value', style: style)),
+          Expanded(flex: 3, child: Text('Status', style: style)),
+        ],
+      ),
     );
   }
 }
 
+class _SupplierRow extends StatelessWidget {
+  final _SupplierActivityRow row;
 
-
-class _Row extends StatelessWidget {
-  final InventoryStockAddModel entry;
-
-  const _Row({required this.entry});
+  const _SupplierRow({required this.row});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
       child: Row(
         children: [
-          _cell(_fmt(entry.createdAt)),
-          _cell(entry.orderedQuantity.toString()),
-          _cell('₹${entry.dueAmount.toStringAsFixed(0)}'),
-          _statusChip(entry.status.name),
+          _cell(_fmt(row.date), 4),
+          _cell(row.item, 5),
+          _cell(row.event, 4),
+          _cell(row.value, 3),
+          _cell(row.status, 3),
         ],
       ),
     );
   }
 
-  String _fmt(DateTime d) =>
-      '${d.day}/${d.month}/${d.year}';
-
-  Widget _cell(String t) =>
-      Expanded(child: Text(t));
-
-  Widget _statusChip(String s) {
+  Widget _cell(String text, int flex) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.blue.shade50,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          s,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            color: Colors.blue,
-          ),
+      flex: flex,
+      child: Text(
+        text,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontSize: 12.5,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
   }
+
+  String _fmt(DateTime d) => '${d.day}/${d.month}/${d.year}';
 }
 
+class _SupplierActivityRow {
+  final DateTime date;
+  final String item;
+  final String event;
+  final String value;
+  final String status;
 
-Widget _col(String t, TextStyle s) =>
-    Expanded(child: Text(t, style: s));
+  _SupplierActivityRow({
+    required this.date,
+    required this.item,
+    required this.event,
+    required this.value,
+    required this.status,
+  });
+}

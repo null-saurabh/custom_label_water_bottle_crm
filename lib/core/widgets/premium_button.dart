@@ -14,7 +14,6 @@ class PremiumButton extends StatefulWidget {
     this.isLoading = false,
   });
 
-
   @override
   State<PremiumButton> createState() => _PremiumButtonState();
 }
@@ -34,32 +33,27 @@ class _PremiumButtonState extends State<PremiumButton> {
         curve: Curves.easeOut,
         decoration: BoxDecoration(
           color: widget.isPrimary
-              ? (_hovering
-              ? primaryBlue.withOpacity(0.92)
-              : primaryBlue)
+              ? (_hovering ? primaryBlue.withOpacity(0.92) : primaryBlue)
               : Colors.white,
           borderRadius: BorderRadius.circular(999), // pill
           border: widget.isPrimary
               ? null
-              : Border.all(
-            color: primaryBlue.withOpacity(0.35),
-            width: 1.4,
-          ),
+              : Border.all(color: primaryBlue.withOpacity(0.35), width: 1.4),
           boxShadow: widget.isPrimary
               ? [
-            BoxShadow(
-              color: primaryBlue.withOpacity(0.18),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
-            ),
-          ]
+                  BoxShadow(
+                    color: primaryBlue.withOpacity(0.18),
+                    blurRadius: 20,
+                    offset: const Offset(0, 6),
+                  ),
+                ]
               : [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
         child: Material(
           color: Colors.transparent,
@@ -68,33 +62,31 @@ class _PremiumButtonState extends State<PremiumButton> {
             onTap: widget.isLoading ? null : widget.onTap,
 
             child: Padding(
-              padding:  EdgeInsets.symmetric(
-                horizontal: 34,
-                vertical: 16,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 34, vertical: 16),
               child: widget.isLoading
-                  ? const SizedBox(
-                width: 22,
-                height: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  color: Colors.white,
-                ),
-              )
+                  ? Center(
+                    child: const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
+                      ),
+                  )
                   : Center(
-                child: Text(
-                  widget.text,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.3,
-                    color: widget.isPrimary
-                        ? Colors.white
-                        : Color(0xFF1E3A5F),
-                  ),
-                ),
-              ),
-
+                      child: Text(
+                        widget.text,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.3,
+                          color: widget.isPrimary
+                              ? Colors.white
+                              : Color(0xFF1E3A5F),
+                        ),
+                      ),
+                    ),
             ),
           ),
         ),

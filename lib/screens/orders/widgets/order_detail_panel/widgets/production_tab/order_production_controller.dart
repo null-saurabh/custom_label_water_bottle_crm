@@ -210,42 +210,28 @@ class ProductionController extends GetxController {
 // 1️⃣ INVENTORY CHECK + DEDUCT (TRANSACTIONAL) 🔥
       final deltas = <String, int>{};
 
+      void addDelta(String? id, int delta) {
+        final key = (id ?? '').trim();
+        if (key.isEmpty) return; // ✅ skip null / empty ids
+        deltas[key] = (deltas[key] ?? 0) + delta;
+      }
+
 // bottles always
-      deltas[o.itemId] = (deltas[o.itemId] ?? 0) - qty;
+      addDelta(o.itemId, -qty);
 
-// labels (if present)
-      if (o.labelItemId != null) {
-        deltas[o.labelItemId!] = (deltas[o.labelItemId!] ?? 0) - qty;
+// labels (if present AND non-empty)
+      addDelta(o.labelItemId, -qty);
+
+// caps (if present AND non-empty)
+      addDelta(o.capItemId, -qty);
+
+// packaging (if present AND non-empty)
+      int? usedPacks;
+      if ((o.packagingItemId ?? '').trim().isNotEmpty) {
+        usedPacks = qty; // keep your simple version for now
+        addDelta(o.packagingItemId, -usedPacks);
       }
 
-// caps (if present)
-      if (o.capItemId != null) {
-        deltas[o.capItemId!] = (deltas[o.capItemId!] ?? 0) - qty;
-      }
-
-// packaging uses capacity if config exists, else falls back to qty
-//       if (o.packagingItemId != null) {
-//         int packUnits = qty;
-//
-//         final cfg = await _packagingConfigRepo.getConfig(o.packagingItemId!);
-//         final cap = cfg?.capacity;
-//
-//         if (cap != null && cap > 0) {
-//           packUnits = (qty / cap).ceil();
-//         }
-//
-//         deltas[o.packagingItemId!] = (deltas[o.packagingItemId!] ?? 0) - packUnits;
-//       }
-
-      int? usedPacks; // null means no packaging used
-
-      if (o.packagingItemId != null) {
-        final cfg = await _packagingConfigRepo.getConfig(o.packagingItemId!);
-        final cap = cfg?.capacity;
-
-        usedPacks = (cap != null && cap > 0) ? (qty / cap).ceil() : qty;
-        deltas[o.packagingItemId!] = (deltas[o.packagingItemId!] ?? 0) - usedPacks;
-      }
 
 
 // ✅ One atomic commit
@@ -371,12 +357,9 @@ class ProductionController extends GetxController {
 // PACKAGING 🔥
 // ======================
 
-      final cfg = await _packagingConfigRepo.getConfig(o.packagingItemId!);
-      final cap = cfg?.capacity;
-      // final usedPacks = (cap != null && cap > 0) ? (qty / cap).ceil() : qty;
-      final packs = usedPacks ?? qty; // fallback, should exist if packagingItemId != null
+      if (o.packagingItemId != null) {
+        final packs = usedPacks ?? qty; // usedPacks computed earlier in deltas block
 
-    if (o.packagingItemId != null) {
         await _inventoryActivityRepo.addActivity(
           InventoryActivityModel(
             id: '',
@@ -397,10 +380,6 @@ class ProductionController extends GetxController {
         );
       }
 
-
-      // ======================
-      // 5️⃣ ORDER ACTIVITY LOG 🔥
-      // ======================
 
       await _activityRepo.addActivity(
         OrderActivityModel(
@@ -426,12 +405,24 @@ class ProductionController extends GetxController {
 
       Get.back();
       Get.snackbar('Success', 'Production updated');
-    } catch (e) {
-      Get.snackbar(
-        'Stock Error',
-        e.toString(),
-      );
-    } finally {
+    } catch (e, st) {
+      debugPrint('❌ submitProduction FAILED');
+      debugPrint('Error: $e');
+      debugPrint('Stack: $st');
+
+      final msg = (e is StateError) ? e.message : e.toString();
+
+      // ✅ Web-safe: show snackbar AFTER frame
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.snackbar(
+          'Insufficient Stock',
+          msg,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 6),
+        );
+      });
+    }
+    finally {
       isSaving.value = false;
     }
   }

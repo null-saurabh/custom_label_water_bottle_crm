@@ -116,8 +116,10 @@ class AddStockDialog extends StatelessWidget {
 
           return DatePickerField(
             label: 'Next Delivery Date',
+            value: c.nextDeliveryDate.value, // ✅ shows selected date
             onChanged: (d) => c.nextDeliveryDate.value = d,
           );
+
         }),
 
 

@@ -13,7 +13,7 @@ class SupplierHeader extends StatelessWidget {
     );
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
       decoration: BoxDecoration(
           gradient: AppGradients.subtleCool
       ),
@@ -21,13 +21,15 @@ class SupplierHeader extends StatelessWidget {
         // mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _col('Name', 1.6, style),
-          _col('Items Supplied', 1.5, style),
-          _col('Orders', 1, style),
-          _col('Next Due Delivery', 1.2, style, subText: 'This Week'),
-          _col('Pending Value', 1.4, style),
-          _col('Total Value', 1.2, style),
-          const SizedBox(width: 32),
+          _col('Name', 8, style),
+          // _col('Items Supplied', 1.5, style),
+          _col('Orders', 5, style),
+          _col('Next Due Delivery', 5, style,
+              // subText: 'This Week'
+          ),
+          _col('Pending Value', 5, style),
+          _col('Total Value', 5, style),
+          // const SizedBox(width: 32),
         ],
       ),
     );

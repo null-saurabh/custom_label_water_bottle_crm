@@ -25,9 +25,9 @@ class OrdersTableRow extends StatelessWidget {
     )
         : null,),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding:  EdgeInsets.symmetric(horizontal:  isHigh ?32:16, vertical: isHigh ?8:8),
         child: Container(
-          padding:  EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding:  EdgeInsets.symmetric(horizontal: 20, vertical : 10),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(isHigh ? 18 : 0),
@@ -85,7 +85,7 @@ class OrdersTableRow extends StatelessWidget {
                   Expanded(
                     flex: 2,
                     child: Text(
-                      '${order.orderedQuantity} Bottles',
+                      '${order.itemNameSnapshot}',
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),

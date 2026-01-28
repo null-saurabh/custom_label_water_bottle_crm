@@ -1,12 +1,13 @@
+
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/model/inventory_activity_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class OverviewRecentTable extends GetView<InventoryController> {
+class OverviewStockFlowTable extends GetView<InventoryController> {
   final String itemId;
 
-  const OverviewRecentTable({
+  const OverviewStockFlowTable({
     super.key,
     required this.itemId,
   });
@@ -14,29 +15,24 @@ class OverviewRecentTable extends GetView<InventoryController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final activities = controller.inventoryActivitiesForItem(itemId)
-          .where((a) => a.stockDelta > 0)
+      final activities = controller
+          .inventoryActivitiesForItem(itemId)
           .toList()
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       final recent = activities.toList();
-      // final recent = activities.take(5).toList();
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: const [
-                Text(
-                  'Recent Stock In',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
+            child: Text(
+              'Stock Movement History',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -44,12 +40,12 @@ class OverviewRecentTable extends GetView<InventoryController> {
           if (recent.isEmpty)
             const Padding(
               padding: EdgeInsets.all(16),
-              child: Text('No stock received yet'),
+              child: Text('No stock movement yet'),
             )
           else ...[
-            const _Header(),
+            const _FlowHeader(),
             const SizedBox(height: 8),
-            ...recent.map((a) => _Row(activity: a)),
+            ...recent.map((a) => _FlowRow(activity: a)),
           ],
         ],
       );
@@ -59,8 +55,8 @@ class OverviewRecentTable extends GetView<InventoryController> {
 
 
 
-class _Header extends StatelessWidget {
-  const _Header();
+class _FlowHeader extends StatelessWidget {
+  const _FlowHeader();
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +75,11 @@ class _Header extends StatelessWidget {
       ),
       child: Row(
         children: const [
-          Expanded(flex: 5, child: Text('Date', style: style)),
-          Expanded(flex: 6, child: Text('Source', style: style)),
-          Expanded(flex: 3, child: Text('Qty', style: style)),
-          Expanded(flex: 3, child: Text('Note', style: style)),
-          Expanded(flex: 3, child: Text('Amount', style: style)),
+          Expanded(flex: 4, child: Text('Date', style: style)),
+          Expanded(flex: 5, child: Text('Source', style: style)),
+          Expanded(flex: 3, child: Text('Δ Qty', style: style)),
+          Expanded(flex: 4, child: Text('Type', style: style)),
+          Expanded(flex: 8, child: Text('Note', style: style)),
         ],
       ),
     );
@@ -91,14 +87,15 @@ class _Header extends StatelessWidget {
 }
 
 
-
-class _Row extends StatelessWidget {
+class _FlowRow extends StatelessWidget {
   final InventoryActivityModel activity;
 
-  const _Row({required this.activity});
+  const _FlowRow({required this.activity});
 
   @override
   Widget build(BuildContext context) {
+    final isIn = activity.stockDelta >= 0;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -109,16 +106,32 @@ class _Row extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _cell(_fmt(activity.createdAt), flex: 5),
+          _cell(_fmt(activity.createdAt), flex: 4),
+
           _cell(
             _sourceLabel(activity, Get.find<InventoryController>()),
-            flex: 6,
+            flex: 5,
           ),
-          _cell('+${activity.stockDelta}', flex: 3,
-              highlight: true),
-          _cell('₹${activity.unitCost}', flex: 3,),
-          _cell('₹${activity.amount}', flex: 3,),
-          // _cell(activity.description, flex: 24),
+
+          _cell(
+            '${isIn ? '+' : ''}${activity.stockDelta}',
+            flex: 3,
+            highlight: true,
+            color: isIn
+                ? const Color(0xFF047857)
+                : const Color(0xFFB91C1C),
+          ),
+
+          _cell(
+            _typeLabel(activity),
+            flex: 4,
+            dim: true,
+          ),
+
+          _cell(
+            activity.description,
+            flex: 8,
+          ),
         ],
       ),
     );
@@ -128,6 +141,8 @@ class _Row extends StatelessWidget {
       String text, {
         required int flex,
         bool highlight = false,
+        bool dim = false,
+        Color? color,
       }) {
     return Expanded(
       flex: flex,
@@ -137,9 +152,10 @@ class _Row extends StatelessWidget {
         style: TextStyle(
           fontSize: 12.5,
           fontWeight: highlight ? FontWeight.w700 : FontWeight.w600,
-          color: highlight
-              ? const Color(0xFF047857)
-              : const Color(0xFF111827),
+          color: color ??
+              (dim
+                  ? const Color(0xFF6B7280)
+                  : const Color(0xFF111827)),
         ),
       ),
     );
@@ -148,6 +164,22 @@ class _Row extends StatelessWidget {
   static String _fmt(DateTime d) =>
       '${d.day}/${d.month}/${d.year}';
 
+  static String _typeLabel(InventoryActivityModel a) {
+    switch (a.type) {
+      case 'stock_in':
+      case 'purchase_receive':
+        return 'Stock In';
+      case 'production_use':
+        return 'Production';
+      case 'cancel_restock':
+        return 'Restock';
+      case 'stock_meta_corrected':
+        return 'Correction';
+      default:
+        return a.type;
+    }
+  }
+
   static String _sourceLabel(
       InventoryActivityModel a,
       InventoryController controller,
@@ -155,11 +187,10 @@ class _Row extends StatelessWidget {
     if (a.source == 'purchase' || a.source == 'purchase_receive') {
       return controller.supplierNameForStockActivity(a);
     }
-
-    if (a.source == 'manual') return 'Manual Adjustment';
-    if (a.source == 'order_cancel') return 'Order Cancelled';
-
+    if (a.source == 'order') return 'Production';
+    if (a.source == 'order_cancel') return 'Order Cancel';
+    if (a.source == 'manual') return 'Manual';
     return 'System';
   }
-
 }
+

@@ -56,44 +56,106 @@ class InventoryItemRepository {
   }
 
 
+  // Future<void> applyStockDeltasTransactional({
+  //   required Map<String, int> itemDeltas, // itemId -> + / -
+  // }) async {
+  //   if (itemDeltas.isEmpty) return;
+  //
+  //   await _db.runTransaction((tx) async {
+  //     // 1) Read all docs first
+  //     final refs = itemDeltas.keys.map((id) => _ref.doc(id)).toList();
+  //     final snaps = await Future.wait(refs.map(tx.get));
+  //
+  //     // 2) Validate stock won't go negative
+  //     for (int i = 0; i < refs.length; i++) {
+  //       final snap = snaps[i];
+  //       final itemId = refs[i].id;
+  //       final delta = itemDeltas[itemId] ?? 0;
+  //
+  //       if (!snap.exists) {
+  //         throw Exception('Inventory item not found: $itemId');
+  //       }
+  //
+  //       final data = snap.data() as Map<String, dynamic>;
+  //       final currentStock = (data['stock'] ?? 0) as int;
+  //
+  //       final nextStock = currentStock + delta;
+  //       if (nextStock < 0) {
+  //         final name = (data['name'] ?? 'Item') as String;
+  //         throw Exception('Insufficient stock for $name');
+  //       }
+  //     }
+  //
+  //     // 3) Apply increments
+  //     itemDeltas.forEach((itemId, delta) {
+  //       tx.update(_ref.doc(itemId), {
+  //         'stock': FieldValue.increment(delta),
+  //         'updatedAt': FieldValue.serverTimestamp(),
+  //       });
+  //     });
+  //   });
+  // }
+
   Future<void> applyStockDeltasTransactional({
-    required Map<String, int> itemDeltas, // itemId -> + / -
+    required Map<String, int> itemDeltas,
   }) async {
     if (itemDeltas.isEmpty) return;
 
-    await _db.runTransaction((tx) async {
-      // 1) Read all docs first
-      final refs = itemDeltas.keys.map((id) => _ref.doc(id)).toList();
-      final snaps = await Future.wait(refs.map(tx.get));
+    final batch = _db.batch();
 
-      // 2) Validate stock won't go negative
-      for (int i = 0; i < refs.length; i++) {
-        final snap = snaps[i];
-        final itemId = refs[i].id;
-        final delta = itemDeltas[itemId] ?? 0;
+    // 1️⃣ Read & validate OUTSIDE transaction (Web-safe)
+    final snapshots = <String, DocumentSnapshot>{};
 
-        if (!snap.exists) {
-          throw Exception('Inventory item not found: $itemId');
-        }
-
-        final data = snap.data() as Map<String, dynamic>;
-        final currentStock = (data['stock'] ?? 0) as int;
-
-        final nextStock = currentStock + delta;
-        if (nextStock < 0) {
-          final name = (data['name'] ?? 'Item') as String;
-          throw Exception('Insufficient stock for $name');
-        }
+    for (final entry in itemDeltas.entries) {
+      final itemId = entry.key.trim();
+      if (itemId.isEmpty) {
+        throw StateError('Invalid inventory itemId');
       }
 
-      // 3) Apply increments
-      itemDeltas.forEach((itemId, delta) {
-        tx.update(_ref.doc(itemId), {
-          'stock': FieldValue.increment(delta),
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
+      final snap = await _ref.doc(itemId).get();
+      if (!snap.exists) {
+        throw StateError('Inventory item not found: $itemId');
+      }
+
+      snapshots[itemId] = snap;
+    }
+
+    // 2️⃣ Validate stock
+    for (final entry in itemDeltas.entries) {
+      final itemId = entry.key;
+      final delta = entry.value;
+
+      final data =
+          snapshots[itemId]!.data() as Map<String, dynamic>? ?? {};
+
+      final currentStockRaw = data['stock'];
+      final currentStock = (currentStockRaw is int)
+          ? currentStockRaw
+          : int.tryParse(currentStockRaw?.toString() ?? '') ?? 0;
+
+      final newStock = currentStock + delta;
+      if (newStock < 0) {
+        final name = (data['name'] ?? itemId).toString();
+        throw StateError(
+          'Insufficient stock for $name (Need ${delta.abs()}, Available $currentStock)',
+        );
+
+      }
+    }
+
+    // 3️⃣ Apply updates in batch
+    for (final entry in itemDeltas.entries) {
+      final itemId = entry.key;
+      final delta = entry.value;
+
+      batch.update(_ref.doc(itemId), {
+        'stock': FieldValue.increment(delta),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
-    });
+    }
+
+    await batch.commit();
   }
+
 
 }

@@ -22,8 +22,8 @@ class SupplierRow extends GetView<InventoryController> {
 
   @override
   Widget build(BuildContext context) {
-    final categories =
-    controller.supplierCategories(supplier.id);
+    // final categories =
+    // controller.supplierCategories(supplier.id);
 
 
     // final nextDeliveryDate =
@@ -43,19 +43,19 @@ class SupplierRow extends GetView<InventoryController> {
       child: Row(
         children: [
           _itemCell(),
-          _textCell(categories,15),
-          _textCell(pendingOrders,10),
-          _textCell(nextDeliveryDate,12),
+          // _textCell(categories,15),
+          _textCell(pendingOrders,5),
+          _textCell(nextDeliveryDate,5),
           _redText('₹$pendingAmount'),
           _greenText('₹${totalPurchased.toStringAsFixed(0)}'),
-          const SizedBox(
-            width: 32,
-            child: Icon(
-              Icons.arrow_forward_ios,
-              size: 14,
-              color: Colors.grey,
-            ),
-          ),
+          // const SizedBox(
+          //   width: 32,
+          //   child: Icon(
+          //     Icons.arrow_forward_ios,
+          //     size: 14,
+          //     color: Colors.grey,
+          //   ),
+          // ),
         ],
       ),
     );
@@ -65,7 +65,7 @@ class SupplierRow extends GetView<InventoryController> {
 
   Widget _itemCell() {
     return Expanded(
-      flex: 16,
+      flex: 8,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -100,7 +100,7 @@ class SupplierRow extends GetView<InventoryController> {
 
   Widget _greenText(String text) {
     return Expanded(
-      flex: 12,
+      flex: 5,
       child: Text(
         text,
         style: const TextStyle(
@@ -113,7 +113,7 @@ class SupplierRow extends GetView<InventoryController> {
 
   Widget _redText(String text) {
     return Expanded(
-      flex: 14,
+      flex: 5,
       child: Text(
         text,
         style: const TextStyle(

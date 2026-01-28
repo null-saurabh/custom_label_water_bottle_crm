@@ -1,5 +1,6 @@
 import 'package:clwb_crm/screens/client/client_controller.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
+import 'package:clwb_crm/screens/inventory/repositories/inventory_activity_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/inventory_item_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/inventory_stocks_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/supplier_item_repo.dart';
@@ -23,6 +24,7 @@ class InitialBinding extends Bindings {
         itemRepo: InventoryItemRepository(),
         supplierRepo: SupplierRepository(),
         stockRepo: InventoryStockRepository(),
+        activityRepo: InventoryActivityRepository(),
       ),
       permanent: true,
     );

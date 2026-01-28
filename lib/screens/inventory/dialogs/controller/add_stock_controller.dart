@@ -143,7 +143,9 @@ class AddStockController extends GetxController {
         ratePerUnit: ratePerUnit.value,
       );
 
-      await _stockRepo.addStock(stock);
+      final stockId = await _stockRepo.addStock(stock);
+
+      // await _stockRepo.addStock(stock);
 
       /// Increase item stock (simple version)
       await _itemRepo.incrementStock(
@@ -172,8 +174,8 @@ class AddStockController extends GetxController {
           stockDelta: qty,
           amount: total,
           unitCost: unitCost,
-          referenceId: selectedSupplierId.value,
-          referenceType: 'supplier',
+          referenceId: stockId,
+          referenceType: 'inventory_stock',
           createdBy: 'admin',
           createdAt: now,
           isActive: true,
