@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:clwb_crm/core/controllers/app_controller.dart';
 import 'package:clwb_crm/screens/client/client_controller.dart';
 import 'package:clwb_crm/screens/dashboard/models/global_search_models.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
@@ -19,6 +20,8 @@ class GlobalSearchController extends GetxController {
 
   final results = <GlobalSearchResult>[].obs;
   final focusedIndex = 0.obs;
+
+  final ScrollController scrollCtrl = ScrollController();
 
   Timer? _debounce;
 
@@ -60,16 +63,39 @@ class GlobalSearchController extends GetxController {
     close();
   }
 
+  static const double _itemHeight = 44.0; // must match tile height
+
+  void _scrollToFocused() {
+    if (!scrollCtrl.hasClients) return;
+
+    final offset = focusedIndex.value * _itemHeight;
+
+    scrollCtrl.animateTo(
+      offset,
+      duration: const Duration(milliseconds: 120),
+      curve: Curves.easeOut,
+    );
+  }
+
+
   void moveDown() {
     if (results.isEmpty) return;
-    focusedIndex.value = (focusedIndex.value + 1) % results.length;
+
+    focusedIndex.value =
+        (focusedIndex.value + 1) % results.length;
+
+    _scrollToFocused();
   }
 
   void moveUp() {
     if (results.isEmpty) return;
+
     focusedIndex.value =
         (focusedIndex.value - 1 + results.length) % results.length;
+
+    _scrollToFocused();
   }
+
 
   void submitFocused() {
     if (results.isEmpty) return;
