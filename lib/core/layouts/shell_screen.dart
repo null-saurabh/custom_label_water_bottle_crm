@@ -14,6 +14,7 @@ class ShellView extends StatelessWidget {
       body: Row(
         children: [
           const AppSidebar(),
+
           Expanded(
             child: GetRouterOutlet(
               // navigatorKey: Get.nestedKey(1),

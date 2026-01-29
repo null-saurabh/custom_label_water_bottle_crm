@@ -25,15 +25,30 @@ class OrdersHeader extends GetView<OrdersController> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(22),
             ),
-            child: TextField(
-              onChanged: controller.setSearch, // 🔥 LIVE BIND
-              decoration: const InputDecoration(
-                hintText: 'Search by order no or client',
-                prefixIcon: Icon(Icons.search),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 12),
-              ),
-            ),
+            child: Obx(() {
+              final hasText = controller.searchQuery.value.trim().isNotEmpty;
+
+              return TextField(
+                controller: controller.searchCtrl,
+                onChanged: controller.setSearch,
+                decoration: InputDecoration(
+                  hintText: 'Search by order no / client / id',
+                  prefixIcon: const Icon(Icons.search),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
+
+                  // ✅ trailing clear button
+                  suffixIcon: hasText
+                      ? IconButton(
+                    tooltip: 'Clear',
+                    icon: const Icon(Icons.close, size: 18),
+                    onPressed: controller.clearSearch,
+                  )
+                      : null,
+                ),
+              );
+            }),
+
           ),
         ),
       ],

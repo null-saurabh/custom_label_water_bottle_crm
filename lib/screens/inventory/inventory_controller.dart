@@ -661,14 +661,12 @@ final RxList<InventoryActivityModel> selectedItemActivities =
       BottleConfig bottleCfg,
       ) {
 
-    print("hii");
-    print("hii");
-    print(bottleCfg.sizeMl);
+    // print(bottleCfg.sizeMl);
     final labelItemId = bottleCfg.sizeMl >= 1000
         ? client.labelLargeItemId
         : client.labelSmallItemId;
-print(labelItemId);
-print(bottleCfg.sizeMl >= 1000);
+// print(labelItemId);
+// print(bottleCfg.sizeMl >= 1000);
     if (labelItemId == null) return null;
 
     return items.firstWhereOrNull(

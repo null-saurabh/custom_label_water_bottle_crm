@@ -16,10 +16,7 @@ class AppSidebar extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFFF6F8FD),
-            Color(0xFFF1F4FA),
-          ],
+          colors: [Color(0xFFF6F8FD), Color(0xFFF1F4FA)],
         ),
       ),
       child: Column(
@@ -51,10 +48,7 @@ class AppSidebar extends StatelessWidget {
                     ),
                     Text(
                       'Bottling',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey,
-                      ),
+                      style: TextStyle(fontSize: 13, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -64,101 +58,55 @@ class AppSidebar extends StatelessWidget {
 
           const SizedBox(height: 28),
 
-          // USER INFO
-          // Padding(
-          //   padding: const EdgeInsets.only(left: 16.0),
-          //   child: Row(
-          //     children:  [
-          //       CircleAvatar(
-          //         radius: 18,
-          //         backgroundColor: Colors.grey.shade200,
-          //         child: const Icon(
-          //           Icons.person_outline,
-          //           size: 20,
-          //           color: Colors.grey,
-          //         ),
-          //       ),
-          //
-          //       SizedBox(width: 8),
-          //       Column(
-          //         children: [
-          //           Text(
-          //             'John Parker',
-          //             style: TextStyle(fontWeight: FontWeight.w600),
-          //           ),
-          //           SizedBox(height: 2),
-          //           Text(
-          //             'Sales Manager',
-          //             style: TextStyle(fontSize: 12, color: Colors.grey),
-          //           ),
-          //         ],
-          //       )
-          //
-          //     ],
-          //   ),
-          // ),
-
           const SizedBox(height: 32),
 
           // MENU
           Expanded(
             child: Obx(
-                  () => ListView(
+              () => ListView(
                 padding: EdgeInsets.zero,
                 children: [
                   _SidebarItem(
                     icon: Icons.dashboard_outlined,
                     label: 'Dashboard',
                     isActive:
-                    controller.selectedMenu.value ==
-                        SidebarMenu.dashboard,
-                    onTap: () =>
-                        controller.selectMenu(SidebarMenu.dashboard),
+                        controller.selectedMenu.value == SidebarMenu.dashboard,
+                    onTap: () => controller.selectMenu(SidebarMenu.dashboard),
                   ),
                   _SidebarItem(
                     icon: Icons.receipt_long_outlined,
                     label: 'Orders',
                     isActive:
-                    controller.selectedMenu.value ==
-                        SidebarMenu.orders,
-                    onTap: () =>
-                        controller.selectMenu(SidebarMenu.orders),
+                        controller.selectedMenu.value == SidebarMenu.orders,
+                    onTap: () => controller.selectMenu(SidebarMenu.orders),
                   ),
                   _SidebarItem(
                     icon: Icons.people_outline,
                     label: 'Clients',
                     isActive:
-                    controller.selectedMenu.value ==
-                        SidebarMenu.clients,
-                    onTap: () =>
-                        controller.selectMenu(SidebarMenu.clients),
+                        controller.selectedMenu.value == SidebarMenu.clients,
+                    onTap: () => controller.selectMenu(SidebarMenu.clients),
                   ),
                   _SidebarItem(
                     icon: Icons.people_outline,
                     label: 'Leads',
                     isActive:
-                    controller.selectedMenu.value ==
-                        SidebarMenu.leads,
-                    onTap: () =>
-                        controller.selectMenu(SidebarMenu.leads),
+                        controller.selectedMenu.value == SidebarMenu.leads,
+                    onTap: () => controller.selectMenu(SidebarMenu.leads),
                   ),
                   _SidebarItem(
                     icon: Icons.inventory_2_outlined,
                     label: 'Inventory',
                     isActive:
-                    controller.selectedMenu.value ==
-                        SidebarMenu.inventory,
-                    onTap: () =>
-                        controller.selectMenu(SidebarMenu.inventory),
+                        controller.selectedMenu.value == SidebarMenu.inventory,
+                    onTap: () => controller.selectMenu(SidebarMenu.inventory),
                   ),
                   _SidebarItem(
                     icon: Icons.bar_chart_outlined,
                     label: 'Sales',
                     isActive:
-                    controller.selectedMenu.value ==
-                        SidebarMenu.sales,
-                    onTap: () =>
-                        controller.selectMenu(SidebarMenu.sales),
+                        controller.selectedMenu.value == SidebarMenu.sales,
+                    onTap: () => controller.selectMenu(SidebarMenu.sales),
                   ),
                 ],
               ),
@@ -170,15 +118,9 @@ class AppSidebar extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                _FooterItem(
-                  icon: Icons.settings_outlined,
-                  label: 'Settings',
-                ),
+                _FooterItem(icon: Icons.settings_outlined, label: 'Settings'),
                 const SizedBox(height: 8),
-                _FooterItem(
-                  icon: Icons.logout,
-                  label: 'Logout',
-                ),
+                _FooterItem(icon: Icons.logout, label: 'Logout'),
               ],
             ),
           ),
@@ -209,35 +151,26 @@ class _SidebarItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         onTap: onTap,
         child: Container(
-          padding:
-          const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
             gradient: isActive
                 ? const LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Color(0xFF5B7CFA),
-                Color(0xFF4C6FFF),
-              ],
-            )
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [Color(0xFF5B7CFA), Color(0xFF4C6FFF)],
+                  )
                 : null,
           ),
           child: Row(
             children: [
-              Icon(
-                icon,
-                color: isActive ? Colors.white : Colors.grey.shade700,
-              ),
+              Icon(icon, color: isActive ? Colors.white : Colors.grey.shade700),
               const SizedBox(width: 12),
               Text(
                 label,
                 style: TextStyle(
-                  color:
-                  isActive ? Colors.white : Colors.grey.shade800,
-                  fontWeight:
-                  isActive ? FontWeight.w600 : FontWeight.w500,
+                  color: isActive ? Colors.white : Colors.grey.shade800,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
                 ),
               ),
             ],
@@ -252,10 +185,7 @@ class _FooterItem extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const _FooterItem({
-    required this.icon,
-    required this.label,
-  });
+  const _FooterItem({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -263,10 +193,7 @@ class _FooterItem extends StatelessWidget {
       children: [
         Icon(icon, size: 18, color: Colors.grey.shade600),
         const SizedBox(width: 10),
-        Text(
-          label,
-          style: TextStyle(color: Colors.grey.shade700),
-        ),
+        Text(label, style: TextStyle(color: Colors.grey.shade700)),
       ],
     );
   }

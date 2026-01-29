@@ -1,17 +1,20 @@
-class InventoryWarning {
-  final String displayName; // Bottle shape OR Brand name
-  final String sizeCode;    // S / L
-  final bool isBottle;    // S / L
+import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
+
+class DashboardInventoryWarningRowModel {
+  final String displayName;
+  // final String sizeCode;
   final int due;
   final int stock;
+  final int shortfall;
+  final int reOrderValue;
+  final InventoryCategory category;
 
-  InventoryWarning({
-    required this.isBottle,
+  DashboardInventoryWarningRowModel({
     required this.displayName,
-    required this.sizeCode,
+    required this.category,
     required this.due,
     required this.stock,
+    required this.reOrderValue,
+    required this.shortfall,
   });
-
-  int get shortfall => (due - stock) > 0 ? (due - stock) : 0;
 }

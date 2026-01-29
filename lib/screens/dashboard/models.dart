@@ -21,6 +21,7 @@ class WeeklyBarData {
 
 class StandingOrderSummary {
   final String client;
+  final String orderId;
   final RecurringCycle cycle; // 🔥 weekly / monthly
   final int committedQty;     // total expected for the cycle
   final int fulfilledQty;     // shipped so far
@@ -28,6 +29,7 @@ class StandingOrderSummary {
 
   StandingOrderSummary({
     required this.client,
+    required this.orderId,
     required this.cycle,
     required this.committedQty,
     required this.fulfilledQty,
@@ -38,12 +40,14 @@ class StandingOrderSummary {
 
 class DueNextWeek {
   final String client;
+  final String orderId;
   final int quantity;
   final String dayLabel;
   final Color dayBg;
   final Color dayText;
 
   DueNextWeek({
+    required this.orderId,
     required this.client,
     required this.quantity,
     required this.dayLabel,
@@ -52,12 +56,15 @@ class DueNextWeek {
   });
 }
 class DueDeliveryToday {
+  final String orderId;
   final String client;
   final int quantity;
   final String timeLabel;
   final bool completed;
 
   DueDeliveryToday({
+
+    required this.orderId,
     required this.client,
     required this.quantity,
     required this.timeLabel,

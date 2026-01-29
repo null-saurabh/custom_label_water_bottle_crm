@@ -6,18 +6,22 @@ class DashboardSectionContainer extends StatelessWidget {
   final Widget child;
   final Widget? trailing;
   final double? width;
+  final double? height;
 
   const DashboardSectionContainer({
     super.key,
     required this.title,
     required this.child,
-    this.trailing, this.width,
+    this.trailing,
+    this.width,
+    this.height,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: width,
+      height: height,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -30,22 +34,25 @@ class DashboardSectionContainer extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const Spacer(),
-              if (trailing != null) trailing!,
-            ],
-          ),
-          const SizedBox(height: 12),
-          child,
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+            mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const Spacer(),
+                if (trailing != null) trailing!,
+              ],
+            ),
+            const SizedBox(height: 12),
+            child,
+          ],
+        ),
       ),
     );
   }

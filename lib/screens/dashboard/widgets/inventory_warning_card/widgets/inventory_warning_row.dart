@@ -1,12 +1,13 @@
 // lib/features/dashboard/widgets/inventory_warning_row.dart
 
 import 'package:clwb_crm/screens/dashboard/widgets/inventory_warning_card/inventory_warning_model.dart';
+import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
 class InventoryWarningRow extends StatelessWidget {
-  final InventoryWarning data;
+  final DashboardInventoryWarningRowModel data;
 
   const InventoryWarningRow({super.key, required this.data});
 
@@ -39,13 +40,17 @@ class InventoryWarningRow extends StatelessWidget {
                         fontSize: 14,
                       ),
                     ),
-                    SizedBox(width: 2,),
-                    data.isBottle == true ?Icon(CupertinoIcons.pin,size: 10,):SizedBox()
+                    SizedBox(width: 4,),
+                    Icon(
+                      inventoryCategoryIcon(data.category),
+                      size: 12,
+                      color: Colors.grey,
+                    )
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  data.sizeCode,
+                  "Reorder Level: ${data.reOrderValue.toString()}",
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,
@@ -116,5 +121,18 @@ class _Divider extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 8),
       color: const Color(0xFFE5E7EB),
     );
+  }
+}
+
+IconData inventoryCategoryIcon(InventoryCategory category) {
+  switch (category) {
+    case InventoryCategory.bottle:
+      return Icons.local_drink;
+    case InventoryCategory.cap:
+      return Icons.catching_pokemon;
+    case InventoryCategory.label:
+      return Icons.sell;
+    case InventoryCategory.packaging:
+      return Icons.inventory_2;
   }
 }

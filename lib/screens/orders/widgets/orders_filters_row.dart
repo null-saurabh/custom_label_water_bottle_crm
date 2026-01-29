@@ -45,15 +45,40 @@ class OrdersFiltersRow extends GetView<OrdersController> {
           return _FilterDropdown(
             label: 'All Delivery Dates',
             items: const [
-              'All Delivery Dates',
+              'All',
               'Today',
               'Tomorrow',
               'Next 7 Days',
+              'Custom Range',
             ],
-            value: controller.dateFilter.value,
+            value: () {
+              switch (controller.dateFilter.value) {
+                case 'today': return 'Today';
+                case 'tomorrow': return 'Tomorrow';
+                case 'next_7': return 'Next 7 Days';
+                case 'custom': return 'Custom Range';
+                default: return 'All';
+              }
+            }(),
             onChanged: (v) {
               if (v == null) return;
-              controller.setDateFilter(v);
+
+              switch (v) {
+                case 'Today':
+                  controller.setDateFilter('today');
+                  break;
+                case 'Tomorrow':
+                  controller.setDateFilter('tomorrow');
+                  break;
+                case 'Next 7 Days':
+                  controller.setDateFilter('next_7');
+                  break;
+                case 'Custom Range':
+                  controller.openCustomDatePicker();
+                  break;
+                default:
+                  controller.setDateFilter('all');
+              }
             },
           );
         }),
