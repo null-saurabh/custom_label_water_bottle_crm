@@ -1,4 +1,5 @@
 import 'package:clwb_crm/screens/client/client_controller.dart';
+import 'package:clwb_crm/screens/dashboard/global_search/global_search_controller.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/repositories/inventory_activity_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/inventory_item_repo.dart';
@@ -53,6 +54,8 @@ class InitialBinding extends Bindings {
       ),
       permanent: true,
     );
+    // Global search (depends on the above)
+    Get.lazyPut(() => GlobalSearchController(), fenix: true);
   }
 }
 

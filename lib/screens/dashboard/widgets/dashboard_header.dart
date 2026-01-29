@@ -1,4 +1,5 @@
 // lib/features/dashboard/widgets/dashboard_header.dart
+import 'package:clwb_crm/screens/dashboard/global_search/global_search_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/controllers/app_controller.dart';
@@ -16,23 +17,8 @@ class DashboardHeader extends StatelessWidget {
         // 🔍 TOP SEARCH + ACTIONS ROW
         Row(
           children: [
-            Expanded(
-              child: Container(
-                height: 44,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search',
-                    prefixIcon: const Icon(Icons.search),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-              ),
-            ),
+            Expanded(child: GlobalSearchBox()),
+
             const SizedBox(width: 16),
 
             _IconButton(icon: Icons.notifications_none_outlined, showDot: true),
