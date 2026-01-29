@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class OrderExpenseModel {
   final String id;
   final String orderId;
+  final String clientId;
 
   final String direction;
 
@@ -28,6 +29,7 @@ class OrderExpenseModel {
   const OrderExpenseModel( {
     required this.id,
     required this.orderId,
+    required this.clientId,
   required this.direction,
     required this.stage,
     required this.category,
@@ -50,6 +52,7 @@ class OrderExpenseModel {
     return OrderExpenseModel(
       id: doc.id,
       orderId: d['orderId'],
+      clientId: d['clientId'],
       direction: d['direction'] ?? 'out', // 🔥
       stage: d['stage'],
       category: d['category'],
@@ -70,6 +73,7 @@ class OrderExpenseModel {
   Map<String, dynamic> toMap() {
     return {
       'orderId': orderId,
+      'clientId': clientId,
       'stage': stage,
       'direction': direction,
       'category': category,
@@ -98,6 +102,7 @@ class OrderExpenseModel {
     return OrderExpenseModel(
       id: id?? this.id,
       orderId: orderId,
+      clientId: clientId,
       direction: direction,
       stage: stage,
       category: category,

@@ -1,15 +1,9 @@
 import 'package:clwb_crm/screens/client/models/client_model.dart';
+import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_orders_summary_controller.dart';
 import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_stat_widget/stat_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-List<double> revenues = [
-  18000,
-  22000,
-  26000,
-  21000,
-  26000,
-  29000,
-];
 
 
 class OrdersSummaryCard extends StatelessWidget {
@@ -22,6 +16,8 @@ class OrdersSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final summary = Get.find<ClientOrdersSummaryController>(tag: client.id);
+
     return StatCard(
       child: Stack(
         children: [
@@ -30,11 +26,21 @@ class OrdersSummaryCard extends StatelessWidget {
           Positioned(
             right: 0,
             bottom: 4,
-            child:             SizedBox(
-              width: 160,
-              height: 75,
-              child: _SparkLine(values: revenues),
-            ),
+            child:           Obx(() {
+              final trend = summary.revenueTrend;
+
+              final values = trend.length >= 2
+                  ? trend.toList()
+                  : summary.fallbackRevenueTrend;
+
+              return SizedBox(
+                width: 160,
+                height: 75,
+                child: _SparkLine(values: values),
+              );
+            }),
+
+
 
           ),
 
@@ -79,13 +85,14 @@ class OrdersSummaryCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
 
-                children: [Text(
-                  '${client.deliveredOrdersCount ?? 0} / ${client.totalOrders ?? 0}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 20,
-                  ),
-                ),
+                children: [
+                  Obx(() => Text(
+                    '${summary.deliveredOrders.value} / ${summary.totalOrders.value}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 20,
+                    ),
+                  )),
                   // const SizedBox(height: 16),
 
                   // RIGHT GRAPH (sparkline placeholder)
@@ -101,10 +108,15 @@ class OrdersSummaryCard extends StatelessWidget {
   }
 
   String _avgOrderValue(ClientModel c) {
-    if ((c.totalOrders ?? 0) == 0) return '0';
-    return (c.outstandingAmount / (c.totalOrders ?? 1))
-        .toStringAsFixed(0);
+    final summary = Get.find<ClientOrdersSummaryController>(tag: c.id);
+    final total = summary.totalOrders.value;
+    if (total == 0) return '0';
+
+    // Average order value from totalAmount
+    final sum = summary.orders.fold<double>(0, (s, o) => s + o.totalAmount);
+    return (sum / total).toStringAsFixed(0);
   }
+
 }
 
 
@@ -196,57 +208,5 @@ class _SmoothSparkLinePainter extends CustomPainter {
 
 
 
-
-// class _SmoothSparkLinePainter extends CustomPainter {
-//   @override
-//   void paint(Canvas canvas, Size size) {
-//     final linePaint = Paint()
-//       ..color = const Color(0xFF3B82F6)
-//       ..strokeWidth = 2
-//       ..style = PaintingStyle.stroke
-//       ..strokeCap = StrokeCap.round
-//       ..strokeJoin = StrokeJoin.round;
-//
-//     final fillPaint = Paint()
-//       ..color = const Color(0xFF3B82F6).withOpacity(0.14)
-//       ..style = PaintingStyle.fill;
-//
-//     final path = Path();
-//
-//     // Start point
-//     path.moveTo(0, size.height * 0.75);
-//
-//     // Cubic Bézier segments
-//     path.cubicTo(
-//       size.width * 0.15, size.height * 0.65,
-//       size.width * 0.25, size.height * 0.45,
-//       size.width * 0.35, size.height * 0.5,
-//     );
-//
-//     path.cubicTo(
-//       size.width * 0.45, size.height * 0.55,
-//       size.width * 0.55, size.height * 0.35,
-//       size.width * 0.65, size.height * 0.4,
-//     );
-//
-//     path.cubicTo(
-//       size.width * 0.75, size.height * 0.45,
-//       size.width * 0.85, size.height * 0.25,
-//       size.width, size.height * 0.3,
-//     );
-//
-//     // Area fill path
-//     final fillPath = Path.from(path)
-//       ..lineTo(size.width, size.height)
-//       ..lineTo(0, size.height)
-//       ..close();
-//
-//     canvas.drawPath(fillPath, fillPaint);
-//     canvas.drawPath(path, linePaint);
-//   }
-//
-//   @override
-//   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-// }
 
 

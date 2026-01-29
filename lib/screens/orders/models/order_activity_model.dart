@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class OrderActivityModel {
   final String id;
   final String orderId;
+  final String clientId;
+
 
   final String type;        // created / dispatch / production / delivery / payment
   final String title;       // Short headline
@@ -18,6 +20,7 @@ class OrderActivityModel {
 
   const OrderActivityModel({
     required this.id,
+    required this.clientId,
     required this.orderId,
     required this.type,
     required this.title,
@@ -34,6 +37,7 @@ class OrderActivityModel {
     return OrderActivityModel(
       id: doc.id,
       orderId: d['orderId'],
+      clientId: d['clientId'],
       type: d['type'],
       title: d['title'],
       description: d['description'],
@@ -47,6 +51,7 @@ class OrderActivityModel {
   Map<String, dynamic> toMap() {
     return {
       'orderId': orderId,
+      'clientId': clientId,
       'type': type,
       'title': title,
       'description': description,
@@ -64,6 +69,7 @@ class OrderActivityModel {
     return OrderActivityModel(
       id: id ?? this.id,
       orderId: orderId,
+      clientId: clientId,
       type: type,
       title: title,
       description: description,

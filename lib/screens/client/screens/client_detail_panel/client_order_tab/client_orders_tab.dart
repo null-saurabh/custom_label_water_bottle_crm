@@ -1,0 +1,205 @@
+import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_order_tab/client_orders_controller.dart';
+import 'package:clwb_crm/screens/orders/models/order_model.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
+class ClientOrdersTab extends StatelessWidget {
+  final String clientId;
+  const ClientOrdersTab({super.key, required this.clientId});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = Get.put(ClientOrdersController(clientId), tag: clientId);
+
+    return Obx(() {
+      if (c.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SummaryRow(
+              total: c.totalOrders.value,
+              active: c.activeOrders.value,
+              delivered: c.deliveredOrders.value,
+              billed: c.totalBilled.value,
+              paid: c.totalPaid.value,
+              due: c.totalDue.value,
+            ),
+            const SizedBox(height: 14),
+
+            _HeaderRow(),
+            const SizedBox(height: 10),
+
+            if (c.orders.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(16),
+                child: Text('No orders for this client'),
+              )
+            else
+              ...c.orders.map((o) => _OrderRow(order: o)),
+          ],
+        ),
+      );
+    });
+  }
+}
+
+class _SummaryRow extends StatelessWidget {
+  final int total;
+  final int active;
+  final int delivered;
+  final double billed;
+  final double paid;
+  final double due;
+
+  const _SummaryRow({
+    required this.total,
+    required this.active,
+    required this.delivered,
+    required this.billed,
+    required this.paid,
+    required this.due,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Widget chip(String label, String value, {Color? bg, Color? fg}) {
+      return Container(
+        height: 75,
+        width: 150,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: bg ?? const Color(0xFFF3F4F6),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade700)),
+            const SizedBox(height: 4),
+            Text(value, style: TextStyle(fontWeight: FontWeight.w800, color: fg ?? const Color(0xFF111827))),
+          ],
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 75, // adjust if your chips are taller
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            chip('Total Orders', '$total'),
+            const SizedBox(width: 16),
+            chip(
+              'Active',
+              '$active',
+              bg: const Color(0xFFE0F2FE),
+              fg: const Color(0xFF0369A1),
+            ),
+            const SizedBox(width: 16),
+            chip(
+              'Delivered',
+              '$delivered',
+              bg: const Color(0xFFD1FAE5),
+              fg: const Color(0xFF047857),
+            ),
+            const SizedBox(width: 16),
+            chip('Billed', '₹${billed.toStringAsFixed(0)}'),
+            const SizedBox(width: 16),
+            chip(
+              'Paid',
+              '₹${paid.toStringAsFixed(0)}',
+              bg: const Color(0xFFF0FDF4),
+              fg: const Color(0xFF166534),
+            ),
+            const SizedBox(width: 16),
+            chip(
+              'Due',
+              '₹${due.toStringAsFixed(0)}',
+              bg: const Color(0xFFFEF2F2),
+              fg: const Color(0xFF991B1B),
+            ),
+          ],
+        ),
+      ),
+    );
+
+  }
+}
+
+class _HeaderRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    const style = TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w800,
+      color: Color(0xFF6B7280),
+    );
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF3F4F6),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Row(
+        children: [
+          Expanded(flex: 4, child: Text('Order', style: style)),
+          Expanded(flex: 3, child: Text('Delivery', style: style)),
+          Expanded(flex: 3, child: Text('Paid', style: style)),
+          Expanded(flex: 3, child: Text('Due', style: style)),
+          Expanded(flex: 3, child: Text('Status', style: style)),
+          SizedBox(width: 40),
+        ],
+      ),
+    );
+  }
+}
+
+class _OrderRow extends StatelessWidget {
+  final OrderModel order;
+  const _OrderRow({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    final d = order.expectedDeliveryDate;
+    final delivery = d == null ? '—' : DateFormat('d MMM').format(d);
+
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 4,
+            child: Text(order.orderNumber, style: const TextStyle(fontWeight: FontWeight.w800)),
+          ),
+          Expanded(flex: 3, child: Text(delivery)),
+          Expanded(flex: 3, child: Text('₹${order.paidAmount.toStringAsFixed(0)}')),
+          Expanded(flex: 3, child: Text('₹${order.dueAmount.toStringAsFixed(0)}')),
+          Expanded(flex: 3, child: Text(order.orderStatus)),
+          IconButton(
+            tooltip: 'Open',
+            onPressed: () {
+              // TODO: hook into Orders screen selection if you want:
+              // Get.find<OrdersController>().selectOrder(order);
+              // Or navigate to orders screen and pass orderId
+            },
+            icon: const Icon(Icons.open_in_new, size: 18),
+          ),
+        ],
+      ),
+    );
+  }
+}

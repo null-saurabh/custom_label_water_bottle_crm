@@ -123,6 +123,7 @@ class DeliveryController extends GetxController {
         OrderActivityModel(
           id: '',
           orderId: order.id,
+          clientId: order.clientId,
           type: 'delivery',
           title: 'Delivery Updated',
           description:

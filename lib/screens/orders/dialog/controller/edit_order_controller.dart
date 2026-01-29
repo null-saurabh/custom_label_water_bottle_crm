@@ -203,6 +203,7 @@ class EditOrderController extends GetxController {
         OrderActivityModel(
           id: '',
           orderId: order.id,
+          clientId: order.clientId,
           type: 'edit',
           title: 'Order Updated',
           description: 'Order details edited',

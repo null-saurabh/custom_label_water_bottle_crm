@@ -107,6 +107,7 @@ class MaterialDispatchController extends GetxController {
         OrderActivityModel(
           id: '',
           orderId: order.id,
+          clientId: order.clientId,
           type: 'dispatch',
           title: 'Materials Dispatched',
           description:

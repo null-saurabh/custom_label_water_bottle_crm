@@ -191,6 +191,7 @@ class CancelOrderController extends GetxController {
             OrderExpenseModel(
               id: '',
               orderId: order.id,
+              clientId: order.clientId,
               stage: 'production',
               direction: 'out',
               category: 'wip_writeoff',
@@ -219,6 +220,7 @@ class CancelOrderController extends GetxController {
           OrderExpenseModel(
             id: '',
             orderId: order.id,
+            clientId: order.clientId,
             stage: 'finance',
             direction: 'out',
             category: 'client_refund',
@@ -268,6 +270,7 @@ class CancelOrderController extends GetxController {
         OrderActivityModel(
           id: '',
           orderId: order.id,
+          clientId: order.clientId,
           type: 'cancellation',
           title: 'Order Cancelled',
           description:

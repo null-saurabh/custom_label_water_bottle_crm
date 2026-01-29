@@ -385,6 +385,7 @@ class ProductionController extends GetxController {
         OrderActivityModel(
           id: '',
           orderId: o.id,
+          clientId: o.clientId,
           type: 'production',
           title: 'Production Updated',
           description:
@@ -479,6 +480,7 @@ class ProductionController extends GetxController {
       OrderActivityModel(
         id: '',
         orderId: o.id,
+        clientId: o.clientId,
         type: 'delivery',
         title: 'Delivery Updated',
         description:
@@ -497,6 +499,8 @@ class ProductionController extends GetxController {
         OrderActivityModel(
           id: '',
           orderId: o.id,
+          clientId: o.clientId,
+
           type: 'order_complete',
           title: 'Order Completed',
           description: 'Order fully delivered',
@@ -552,6 +556,7 @@ class ProductionController extends GetxController {
       final expense = OrderExpenseModel(
         id: '',
         orderId: o.id,
+        clientId: o.clientId,
         direction: 'out', //
         stage: expenseStage.value,
         category: expenseCategory.value,
@@ -575,6 +580,8 @@ class ProductionController extends GetxController {
         OrderActivityModel(
           id: '',
           orderId: o.id,
+          clientId: o.clientId,
+
           type: 'expense',
           title: 'Expense Added',
           description:
@@ -645,6 +652,7 @@ class ProductionController extends GetxController {
       final paymentExpense = OrderExpenseModel(
         id: '',
         orderId: o.id,
+        clientId: o.clientId,
         stage: 'payment',
         direction: 'in', //
         category: 'client_payment',
@@ -679,6 +687,7 @@ class ProductionController extends GetxController {
         OrderActivityModel(
           id: '',
           orderId: o.id,
+          clientId: o.clientId,
           type: 'payment',
           title: 'Client Payment',
           description: 'Received ₹$amount',

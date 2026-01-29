@@ -64,7 +64,8 @@ class AddOrderController extends GetxController {
   final RxBool isPriority = false.obs;
   final RxDouble advancePaid = 0.0.obs;
 
-  DateTime? deliveryDate;
+  final deliveryDate = Rxn<DateTime>();
+
   String? _generatedOrderNo;
 
   final RxBool isSaving = false.obs;
@@ -132,7 +133,7 @@ class AddOrderController extends GetxController {
   void togglePriority(bool v) => isPriority.value = v;
 
   void setDeliveryDate(DateTime d) {
-    deliveryDate = d;
+    deliveryDate.value = d;
     update();
   }
 
@@ -255,7 +256,7 @@ class AddOrderController extends GetxController {
 
     final DateTime? nextRecurring =
     recurring && interval != null
-        ? deliveryDate!.add(Duration(days: interval))
+        ? deliveryDate.value!.add(Duration(days: interval))
         : null;
 
 
@@ -327,8 +328,8 @@ class AddOrderController extends GetxController {
         deliveryStatus: 'pending',
 
         expectedProductionStartDate: DateTime.now(),
-        expectedDeliveryDate: deliveryDate,
-        nextDeliveryDate: deliveryDate,
+        expectedDeliveryDate: deliveryDate.value,
+        nextDeliveryDate: deliveryDate.value,
 
         isRecurring: recurring,
         recurringIntervalDays: interval,
@@ -354,6 +355,7 @@ class AddOrderController extends GetxController {
         OrderActivityModel(
           id: '',
           orderId: createdOrder.id,
+          clientId: createdOrder.clientId,
           type: 'created',
           title: 'Order Created',
           description:
@@ -371,6 +373,8 @@ class AddOrderController extends GetxController {
         final expense = OrderExpenseModel(
           id: '',
           orderId: createdOrder.id,
+          clientId: order.clientId,
+
           direction: 'in',
 
           stage: 'order_created',

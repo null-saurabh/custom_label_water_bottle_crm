@@ -11,25 +11,20 @@ class ClientActivityController extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
+
     FirebaseFirestore.instance
-        .collection('clients')
-        .doc(clientId)
-        .collection('activities')
-        .orderBy('at', descending: true)
+        .collection('order_activities')
+        .where('clientId', isEqualTo: clientId)
+        .orderBy('activityDate', descending: true)
+        .limit(50)
         .snapshots()
         .listen((s) {
-      print(
-        'ClientActivityController(${clientId}) fetched: ${s.docs.length}',
-      );
-
-
       activities.assignAll(
-        s.docs.map(
-              (d) => ClientActivity.fromDoc(d.data(), d.id),
-        ),
+        s.docs.map((d) => ClientActivity.fromOrderActivityDoc(d)).toList(),
       );
     });
-
-    super.onInit();
   }
+
+
 }

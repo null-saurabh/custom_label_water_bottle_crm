@@ -107,7 +107,7 @@ class AddOrderDialog extends GetView<AddOrderController> {
             // =====================
             DatePickerField(
               label: 'Delivery Date',
-              value: controller.deliveryDate,
+              value: controller.deliveryDate.value,
               onChanged: controller.setDeliveryDate,
             ),
 

@@ -58,25 +58,12 @@ class AppPages {
         GetPage(
           name: AppRoutes.clients,
           page: () => const ClientsSplitScreen(),
-          // binding: BindingsBuilder(() {
-          //   Get.lazyPut(() => ClientsController());
-          // }),
         ),
 
         GetPage(
           name: AppRoutes.inventory,
           page: () => InventoryScreen(),
-          // binding: BindingsBuilder(() {
-          //   Get.lazyPut(
-          //     () => InventoryController(
-          //       SupplierItemRepository(),
-          //       OrdersRepository(),
-          //       itemRepo: InventoryItemRepository(),
-          //       supplierRepo: SupplierRepository(),
-          //       stockRepo: InventoryStockRepository(),
-          //     ),
-          //   );
-          // }),
+
         ),
         // more pages...
       ],

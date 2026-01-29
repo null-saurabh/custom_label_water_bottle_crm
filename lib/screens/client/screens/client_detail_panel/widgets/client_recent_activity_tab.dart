@@ -5,33 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class RecentActivityList extends GetView<ClientsController> {
-  const RecentActivityList({super.key});
+class RecentActivityTab extends StatelessWidget {
+  final String clientId;
+  const RecentActivityTab({super.key, required this.clientId});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(
+      ClientActivityController(clientId),
+      tag: clientId,
+    );
+
     return Obx(() {
-
-
-
-      final clientId = controller.selectedClientId.value;
-
-      if (clientId == null) {
-        return const Center(
-          child: Text('Select a client to view activity'),
-        );
-      }
-
-      if (!Get.isRegistered<ClientActivityController>(tag: clientId)) {
-        return const Center(
-          child: Text('Select a client to view activity'),
-        );
-      }
-
-      final activityController =
-      Get.find<ClientActivityController>(tag: clientId);
-
-      final activities = activityController.activities;
+      final activities = controller.activities;
 
       if (activities.isEmpty) {
         return const Center(
@@ -44,33 +30,35 @@ class RecentActivityList extends GetView<ClientsController> {
 
       final grouped = _groupByDate(activities);
 
-      return Container(
-        key: ValueKey(clientId), // 🔥 FORCE REBUILD ON CLIENT CHANGE
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Recent Activity',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+      return SingleChildScrollView(
+        child: Container(
+          key: ValueKey(clientId),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Recent Activity',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-
-            ...grouped.entries.map(
-                  (entry) => _dateSection(entry.key, entry.value),
-            ),
-          ],
+              const SizedBox(height: 12),
+              ...grouped.entries.map(
+                    (e) => _dateSection(e.key, e.value),
+              ),
+            ],
+          ),
         ),
       );
     });
   }
+
 
   // ----------------------------
   // UI HELPERS (UNCHANGED LOOK)
@@ -145,10 +133,10 @@ class RecentActivityList extends GetView<ClientsController> {
               ],
             ),
           ),
-          TextButton(
-            onPressed: () {},
-            child: const Text('View'),
-          ),
+          // TextButton(
+          //   onPressed: () {},
+          //   child: const Text('View'),
+          // ),
         ],
       ),
     );

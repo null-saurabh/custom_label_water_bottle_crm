@@ -17,6 +17,17 @@ class OrderExpenseRepository {
         .toList());
   }
 
+  Stream<List<OrderExpenseModel>> watchClientPayments(String clientId) {
+    return _ref
+        .where('clientId', isEqualTo: clientId)
+        // .where('direction', isEqualTo: 'in')
+        .where('category', isEqualTo: 'client_payment')
+        .orderBy('expenseDate', descending: true)
+        .snapshots()
+        .map((s) => s.docs.map((d) => OrderExpenseModel.fromDoc(d)).toList());
+  }
+
+
   Future<void> addExpense(OrderExpenseModel e) async {
     final doc = _ref.doc();
 

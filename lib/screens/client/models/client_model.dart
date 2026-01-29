@@ -186,7 +186,7 @@ class ClientModel {
       'totalOrders': totalOrders,
       'dueOrdersCount': dueOrdersCount,
       'deliveredOrdersCount': deliveredOrdersCount,
-      'labelItemId': labelLargeItemId, // 🔥
+      'labelLargeItemId': labelLargeItemId, // 🔥
       'labelSmallItemId': labelSmallItemId, // 🔥
     };
   }
@@ -459,5 +459,29 @@ class ClientActivity {
 
     );
   }
+
+  factory ClientActivity.fromOrderActivityDoc(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
+    final typeStr = (data['type'] ?? '').toString();
+
+    ClientActivityType mapped;
+    if (typeStr == 'order_created' || typeStr == 'created') mapped = ClientActivityType.created;
+    else if (typeStr.contains('delivery')) mapped = ClientActivityType.order;
+    else if (typeStr.contains('payment')) mapped = ClientActivityType.other;
+    else if (typeStr.contains('production')) mapped = ClientActivityType.order;
+    else mapped = ClientActivityType.other;
+
+    return ClientActivity(
+      id: doc.id,
+      type: mapped,
+      title: (data['title'] ?? '').toString(),
+      note: (data['description'] ?? '').toString(),
+      userName: (data['createdBy'] ?? 'system').toString(),
+      at: (data['activityDate'] as Timestamp).toDate(),
+    );
+  }
+
+
 }
 

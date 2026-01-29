@@ -16,23 +16,20 @@ import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/widgets/produ
 import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/widgets/production_tab/order_production_controller.dart';
 import 'package:get/get.dart';
 
+
+
+
+
+
+
+
+
+
 class OrdersBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(OrdersRepository());
-    Get.put(OrderMaterialDispatchRepository());
-    Get.put(OrderProductionRepository());
-    Get.put(OrderDeliveryRepository());
-    Get.put(OrderExpenseRepository());
-    Get.put(OrderActivityRepository(), permanent: true);
-    Get.put(InventoryActivityRepository(), permanent: true);
-    Get.put(OrdersController(Get.find()),permanent: true);
-    Get.put(OrderDetailController(Get.find(),Get.find()));
-    Get.put(OrderDetailTabsController(), permanent: true);
-
-
-
-
+    Get.put(OrderDetailController(Get.find(), Get.find()));
+    Get.put(OrderDetailTabsController());
 
     Get.lazyPut(
           () => AddOrderController(
@@ -40,40 +37,103 @@ class OrdersBinding extends Bindings {
         Get.find<ClientsController>(),
         Get.find<InventoryController>(),
         Get.find<OrderExpenseRepository>(),
-        Get.find<OrderActivityRepository>()
+        Get.find<OrderActivityRepository>(),
       ),
       fenix: true,
     );
 
-  // Get.lazyPut(
-  //       () => MaterialDispatchController(
-  //     Get.find<OrderMaterialDispatchRepository>(),
-  //     Get.find<OrdersRepository>(),
-  //     Get.find<InventoryController>(),
-  //     Get.find<OrderExpenseRepository>(),
-  //     Get.find<OrderActivityRepository>()
-  //   ),
-  // );
-
-
-    Get.put( ProductionController(
-              Get.find<OrderProductionRepository>(),
-              Get.find<OrderDeliveryRepository>(),
-              Get.find<OrdersRepository>(),
-              Get.find<OrderExpenseRepository>(),
-              Get.find<OrderActivityRepository>(),
-              Get.find<InventoryActivityRepository>(),
-              Get.find<InventoryController>(),
-
+    Get.put(
+      ProductionController(
+        Get.find<OrderProductionRepository>(),
+        Get.find<OrderDeliveryRepository>(),
+        Get.find<OrdersRepository>(),
+        Get.find<OrderExpenseRepository>(),
+        Get.find<OrderActivityRepository>(),
+        Get.find<InventoryActivityRepository>(),
+        Get.find<InventoryController>(),
       ),
     );
 
     Get.lazyPut(
           () => DeliveryController(
-              Get.find<OrderDeliveryRepository>(),
-              Get.find<OrdersRepository>(),
-              Get.find<OrderActivityRepository>()
+        Get.find<OrderDeliveryRepository>(),
+        Get.find<OrdersRepository>(),
+        Get.find<OrderActivityRepository>(),
       ),
     );
   }
 }
+
+
+
+
+
+
+
+
+
+// class OrdersBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.put(OrdersRepository());
+//     Get.put(OrderMaterialDispatchRepository());
+//     Get.put(OrderProductionRepository());
+//     Get.put(OrderDeliveryRepository());
+//     Get.put(OrderExpenseRepository());
+//     Get.put(OrderActivityRepository(), permanent: true);
+//     Get.put(InventoryActivityRepository(), permanent: true);
+//     Get.put(OrdersController(Get.find()),permanent: true);
+//     Get.put(OrderDetailController(Get.find(),Get.find()));
+//     Get.put(OrderDetailTabsController(), permanent: true);
+//
+//
+//
+//
+//
+//     Get.lazyPut(
+//           () => AddOrderController(
+//         Get.find<OrdersRepository>(),
+//         Get.find<ClientsController>(),
+//         Get.find<InventoryController>(),
+//         Get.find<OrderExpenseRepository>(),
+//         Get.find<OrderActivityRepository>()
+//       ),
+//       fenix: true,
+//     );
+//
+//   // Get.lazyPut(
+//   //       () => MaterialDispatchController(
+//   //     Get.find<OrderMaterialDispatchRepository>(),
+//   //     Get.find<OrdersRepository>(),
+//   //     Get.find<InventoryController>(),
+//   //     Get.find<OrderExpenseRepository>(),
+//   //     Get.find<OrderActivityRepository>()
+//   //   ),
+//   // );
+//
+//
+//     Get.put( ProductionController(
+//               Get.find<OrderProductionRepository>(),
+//               Get.find<OrderDeliveryRepository>(),
+//               Get.find<OrdersRepository>(),
+//               Get.find<OrderExpenseRepository>(),
+//               Get.find<OrderActivityRepository>(),
+//               Get.find<InventoryActivityRepository>(),
+//               Get.find<InventoryController>(),
+//
+//       ),
+//     );
+//
+//     Get.lazyPut(
+//           () => DeliveryController(
+//               Get.find<OrderDeliveryRepository>(),
+//               Get.find<OrdersRepository>(),
+//               Get.find<OrderActivityRepository>()
+//       ),
+//     );
+//   }
+// }
+
+
+
+

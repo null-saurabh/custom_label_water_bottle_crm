@@ -193,9 +193,19 @@ class OrdersRepository {
         snap.docs.map((d) => OrderActivityModel.fromDoc(d)).toList());
   }
 
+  Stream<List<OrderModel>> watchOrdersByClient(String clientId) {
+    return _ordersRef
+        .where('clientId', isEqualTo: clientId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => OrderModel.fromDoc(d)).toList());
+  }
+
+
   // ===========================
   // TRANSACTIONAL UPDATES
   // ===========================
+
 
   Future<void> runOrderTransaction(
       String orderId, {

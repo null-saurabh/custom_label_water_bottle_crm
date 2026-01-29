@@ -1,20 +1,9 @@
 import 'package:clwb_crm/screens/client/models/client_model.dart';
+import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_orders_summary_controller.dart';
 import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_stat_widget/client_stat_widget.dart';
-import 'package:clwb_crm/screens/client/screens/client_detail_panel/widgets/client_recent_activity.dart';
+import 'package:clwb_crm/screens/client/screens/client_detail_panel/widgets/client_recent_activity_tab.dart';
 import 'package:flutter/material.dart';
-
-
-
-
-
-
-
-
-
-
-
-
-
+import 'package:get/get.dart';
 
 
 
@@ -26,35 +15,44 @@ class ClientOverviewTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final summary = Get.put(
+      ClientOrdersSummaryController(client.id),
+      tag: client.id,
+    );
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              _infoCard('Status', client.isActive ? 'Active' : 'Inactive'),
-              const SizedBox(width: 16),
-              _infoCard(
-                'Orders',
-                '${client.deliveredOrdersCount} / ${client.deliveredOrdersCount}',
-              ),
-              const SizedBox(width: 16),
-              _infoCard(
-                'Outstanding',
-                '₹${client.outstandingAmount.toStringAsFixed(0)}',
-              ),
-              const SizedBox(width: 16),
-              _infoCard(
-                'Credit Days',
-                '${client.creditDays} days',
-              ),
-      
-            ],
-          ),
-          const SizedBox(height: 24),
+
+
+    Row(
+      children: [
+        _infoCard('Status', client.isActive ? 'Active' : 'Inactive'),
+        const SizedBox(width: 16),
+
+        Obx(() => _infoCard(
+          'Orders',
+          '${summary.deliveredOrders.value} / ${summary.totalOrders.value}',
+        )),
+        const SizedBox(width: 16),
+
+        Obx(() => _infoCard(
+          'Outstanding',
+          '₹${summary.outstanding.value.toStringAsFixed(0)}',
+        )),
+        const SizedBox(width: 16),
+
+        Obx(() => _infoCard(
+          'Credit Days',
+          '${summary.maxOverdueDays.value} days',
+        )),
+
+      ],
+    ),
+
+    const SizedBox(height: 24),
           ClientStatSection(client: client,),
           const SizedBox(height: 24),
-          RecentActivityList(),
         ],
       ),
     );

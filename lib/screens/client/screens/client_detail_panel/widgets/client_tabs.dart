@@ -5,20 +5,17 @@ class ClientTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 5,
-      child: TabBar(
-        labelColor: Colors.blue,
-        unselectedLabelColor: Colors.grey,
-        indicatorColor: Colors.blue,
-        tabs: const [
-          Tab(text: 'Overview'),
-          Tab(text: 'Pricing & Packs'),
-          Tab(text: 'Orders'),
-          Tab(text: 'Payments'),
-          Tab(text: 'Notes & Communication'),
-        ],
-      ),
+    return const TabBar(
+      labelColor: Colors.blue,
+      unselectedLabelColor: Colors.grey,
+      indicatorColor: Colors.blue,
+      tabs: [
+        Tab(text: 'Overview'),
+        Tab(text: 'Activity'),
+        Tab(text: 'Orders'),
+        Tab(text: 'Payments'),
+      ],
     );
   }
 }
+

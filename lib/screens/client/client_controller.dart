@@ -3,6 +3,7 @@ import 'package:clwb_crm/screens/client/models/client_location.dart';
 import 'package:clwb_crm/screens/client/models/client_media.dart';
 import 'package:clwb_crm/screens/client/models/client_model.dart';
 import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_activity_controller.dart';
+import 'package:clwb_crm/screens/client/screens/client_detail_panel/notes_widget/client_notes_controller.dart';
 import 'package:get/get.dart';
 
 enum ClientFilter {
@@ -48,6 +49,10 @@ class ClientsController extends GetxController {
           tag: selectedClientId.value!,
         );
       }
+      if (Get.isRegistered<ClientNotesController>(tag: selectedClientId.value!)) {
+        Get.delete<ClientNotesController>(tag: selectedClientId.value!);
+      }
+
     }
 
     // ✅ SET NEW CLIENT
@@ -112,16 +117,6 @@ class ClientsController extends GetxController {
 
 
 
-  // Future<void> seedOnce() async {
-  //   // final existing = await repo.ref.limit(4).get();
-  //   print("dum 1");
-  //   // if (existing.docs.isNotEmpty) return; // already seeded
-  //   print("dum a");
-  //
-  //   // await repo.seedDemoClients();
-  //   print("dum 1a");
-  //
-  // }
 
 
 }
