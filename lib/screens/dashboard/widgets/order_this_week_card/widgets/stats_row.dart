@@ -29,7 +29,7 @@ class StatsRow extends GetView<DashboardController> {
           SizedBox(width: 20,),
           StatItem(
             icon: Icons.trending_up,
-            label: 'Total Order',
+            label: 'New Order',
             value: controller.weekNewOrders.value,
             color: const Color(0xFF7CBFA2),
           ),

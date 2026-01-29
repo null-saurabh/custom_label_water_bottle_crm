@@ -5,6 +5,7 @@ import 'package:clwb_crm/screens/inventory/repositories/inventory_item_repo.dart
 import 'package:clwb_crm/screens/inventory/repositories/inventory_stocks_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/supplier_item_repo.dart';
 import 'package:clwb_crm/screens/inventory/repositories/supplier_repo.dart';
+import 'package:clwb_crm/screens/leads/leads_controller.dart';
 import 'package:clwb_crm/screens/orders/order_controller.dart';
 import 'package:clwb_crm/screens/orders/repo/order_activity_repository.dart';
 import 'package:clwb_crm/screens/orders/repo/order_delivery_repository.dart';
@@ -32,6 +33,7 @@ class InitialBinding extends Bindings {
     // Core Controllers
     Get.put(AppController(), permanent: true);
     Get.put(ClientsController(), permanent: true);
+    Get.put(LeadsController(), permanent: true);
 
     Get.put(
       InventoryController(

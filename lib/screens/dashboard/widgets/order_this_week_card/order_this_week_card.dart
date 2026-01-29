@@ -73,15 +73,6 @@ class _WeeklyBarChart extends GetView<DashboardController> {
   }
 }
 
-// lib/features/dashboard/widgets/_orders_week_stats.dart
-
-
-
-
-
-
-
-// lib/features/dashboard/widgets/_orders_week_legend.dart
 
 
 

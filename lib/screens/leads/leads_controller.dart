@@ -29,6 +29,12 @@ class LeadsController extends GetxController {
     super.onInit();
   }
 
+
+  int get newLeadsCount {
+    return leads.where((l) => l.status == LeadStatus.newLead).length;
+  }
+
+
   String lastActivityLabel(LeadModel lead) {
     if (lead.lastActivityAt == null) return 'No activity';
     final diff = DateTime.now().difference(lead.lastActivityAt ?? DateTime.now());

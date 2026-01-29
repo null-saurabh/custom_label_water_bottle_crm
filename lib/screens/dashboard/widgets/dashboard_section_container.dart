@@ -28,9 +28,9 @@ class DashboardSectionContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black26,
+            blurRadius: 10,
+            offset: const Offset(0, 10),
           ),
         ],
       ),

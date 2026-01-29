@@ -4,17 +4,9 @@ import 'package:clwb_crm/screens/dashboard/dashboard_binding.dart';
 import 'package:clwb_crm/screens/dashboard/dashboard_screen.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/inventory_screen.dart';
-import 'package:clwb_crm/screens/inventory/repositories/inventory_item_repo.dart';
-import 'package:clwb_crm/screens/inventory/repositories/inventory_stocks_repo.dart';
-import 'package:clwb_crm/screens/inventory/repositories/supplier_item_repo.dart';
-import 'package:clwb_crm/screens/inventory/repositories/supplier_repo.dart';
-import 'package:clwb_crm/screens/orders/order_controller.dart';
 import 'package:clwb_crm/screens/orders/orders_binding.dart';
 import 'package:clwb_crm/screens/orders/orders_screen.dart';
-import 'package:clwb_crm/screens/orders/repo/order_repo.dart';
 import 'package:get/get.dart';
-
-import '../../screens/dashboard/dashboard_controller.dart';
 import '../../screens/leads/leads_controller.dart';
 import '../../screens/leads/leads_screen.dart';
 import '../layouts/shell_screen.dart';
@@ -49,9 +41,9 @@ class AppPages {
         GetPage(
           name: AppRoutes.leads,
           page: () => const LeadsView(),
-          binding: BindingsBuilder(() {
-            Get.lazyPut(() => LeadsController());
-          }),
+          // binding: BindingsBuilder(() {
+          //   Get.lazyPut(() => LeadsController());
+          // }),
         ),
 
         GetPage(

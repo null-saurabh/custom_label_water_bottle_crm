@@ -33,6 +33,15 @@ class DashboardController extends GetxController {
   // (You can use b.delivered + b.scheduled, or show delivered/scheduled separately)
   int barTotal(WeeklyBarData b) => b.delivered + b.scheduled;
 
+
+
+  // ===== KPI OUTPUTS =====
+  final dueTodayCount = 0.obs;
+  final dueThisWeekCount = 0.obs;     // due in selectedDueWeekAnchor week
+  final salesThisWeek = 0.0.obs;      // delivered revenue in selectedOrdersWeekAnchor week
+
+
+
   // =========================
   // PAGING STATE (independent)
   // =========================
@@ -244,6 +253,9 @@ class DashboardController extends GetxController {
           ),
         );
 
+    dueTodayCount.value = dueTodayOrders.length;
+
+
     final dueTodayById = {for (final o in dueTodayOrders) o.id: o};
 
     // Completed today (only relevant for orders shown today)
@@ -257,7 +269,7 @@ class DashboardController extends GetxController {
     }
 
     dueDeliveriesToday.assignAll(
-      dueTodayOrders.take(8).map((o) {
+      dueTodayOrders.map((o) {
         final completed =
             o.orderStatus == 'completed' ||
             o.remainingQuantity <= 0 ||
@@ -290,7 +302,7 @@ class DashboardController extends GetxController {
         );
 
     dueNextWeek.assignAll(
-      dueWeekOrders.take(8).map((o) {
+      dueWeekOrders.map((o) {
         final due = _dueDateOf(o);
         final weekday = due == null ? '' : _weekdayLabel(due);
         final style = _weekdayChipStyle(weekday);
@@ -320,6 +332,11 @@ class DashboardController extends GetxController {
     }).toList();
 
     weekScheduled.value = scheduledOrdersWeek.length;
+    dueThisWeekCount.value = scheduledOrdersWeek.length;
+    // dueThisWeekCount.value = dueWeekOrders.length;
+
+
+
 
     final deliveredOrderIdsWeek = _deliveriesOrdersWeek
         .map((e) => e.orderId)
@@ -327,7 +344,54 @@ class DashboardController extends GetxController {
     weekDelivered.value = deliveredOrderIdsWeek.length;
 
     weeklyBars.assignAll(_computeWeeklyBars(ordersWeek, scheduledOrdersWeek));
+
+    final orderById = <String, OrderModel>{
+      for (final o in _ordersDueOrdersWeek) o.id: o,
+      for (final o in _ordersCreatedWeek) o.id: o,
+      // optional: include due-week and day cache too (safe)
+      for (final o in _ordersDueDueWeek) o.id: o,
+      for (final o in _ordersDueDay) o.id: o,
+    };
+
+    salesThisWeek.value = _computeSalesFromDeliveriesOrdersWeek(orderById);
+
+
+
+
   }
+
+  double _computeSalesFromDeliveriesOrdersWeek(Map<String, OrderModel> orderById) {
+    // Group entries per order and compute delta delivered from cumulativeDelivered
+    final byOrder = <String, List<OrderDeliveryEntryModel>>{};
+
+    for (final e in _deliveriesOrdersWeek) {
+      (byOrder[e.orderId] ??= <OrderDeliveryEntryModel>[]).add(e);
+    }
+
+    double total = 0;
+
+    byOrder.forEach((orderId, entries) {
+      final order = orderById[orderId];
+      if (order == null) return;
+
+      // must be chronological so cumulativeDelivered deltas work
+      entries.sort((a, b) => a.deliveryDate.compareTo(b.deliveryDate));
+
+      int prevCum = 0;
+      for (final e in entries) {
+        final cum = e.cumulativeDelivered;
+        final delta = cum - prevCum;
+
+        if (delta > 0) {
+          total += delta * order.ratePerBottle;
+        }
+        prevCum = cum;
+      }
+    });
+
+    return total;
+  }
+
 
   // Bars: counts per day in the selected orders week
   List<WeeklyBarData> _computeWeeklyBars(
