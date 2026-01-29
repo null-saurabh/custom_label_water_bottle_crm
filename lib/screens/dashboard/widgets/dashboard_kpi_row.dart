@@ -1,7 +1,7 @@
 // lib/features/dashboard/widgets/dashboard_kpi_row.dart
+import 'package:clwb_crm/screens/dashboard/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../dashboard_controller.dart';
 
 class DashboardKpiRow extends GetView<DashboardController> {
   const DashboardKpiRow({super.key});
@@ -25,7 +25,7 @@ class DashboardKpiRow extends GetView<DashboardController> {
                 children: [
                   _KpiCard(
                     title: 'Inventory',
-                    value: '${controller.totalBottles.value}',
+                    value: '${controller.maxWeeklyTotal}',
                     suffix: 'Bottles',
                     icon: Icons.inventory_2_outlined,
                     gradient: const LinearGradient(
@@ -35,7 +35,7 @@ class DashboardKpiRow extends GetView<DashboardController> {
                   SizedBox(width: 20,),
                   _KpiCard(
                     title: 'Total Orders',
-                    value: '${controller.newOrdersCount.value}',
+                    value: '${controller.maxWeeklyTotal}',
                     suffix: 'Orders This Week',
                     icon: Icons.shopping_cart_outlined,
                     gradient: const LinearGradient(
@@ -47,7 +47,7 @@ class DashboardKpiRow extends GetView<DashboardController> {
 
                   _KpiCard(
                     title: 'Sales',
-                    value: '\$${controller.weeklySalesAmount.value.toStringAsFixed(0)}',
+                    value: '\$${controller.maxWeeklyTotal.toStringAsFixed(0)}',
                     suffix: 'This Week',
                     icon: Icons.payments_outlined,
                     gradient: const LinearGradient(
@@ -59,7 +59,7 @@ class DashboardKpiRow extends GetView<DashboardController> {
 
                   _KpiCard(
                     title: 'Leads',
-                    value: '${controller.newLeadsCount.value}',
+                    value: '${controller.maxWeeklyTotal}',
                     suffix: 'New Leads',
                     icon: Icons.person_outline,
                     gradient: const LinearGradient(
@@ -71,7 +71,7 @@ class DashboardKpiRow extends GetView<DashboardController> {
 
                   _KpiCard(
                     title: 'Low Stock Alerts',
-                    value: '${controller.lowStockSkuCount.value}',
+                    value: '${controller.maxWeeklyTotal}',
                     suffix: 'SKUs',
                     icon: Icons.warning_amber_rounded,
                     gradient: const LinearGradient(
@@ -84,7 +84,7 @@ class DashboardKpiRow extends GetView<DashboardController> {
 
                   _KpiCard(
                     title: 'Orders Due Today',
-                    value: '${controller.ordersDueToday.value}',
+                    value: '${controller.maxWeeklyTotal}',
                     suffix: 'Orders',
                     icon: Icons.today_outlined,
                     gradient: const LinearGradient(
@@ -96,7 +96,7 @@ class DashboardKpiRow extends GetView<DashboardController> {
 
                   _KpiCard(
                     title: 'Orders Due This Week',
-                    value: '${controller.ordersDueThisWeek.value}',
+                    value: '${controller.maxWeeklyTotal}',
                     suffix: 'Orders',
                     icon: Icons.date_range_outlined,
                     gradient: const LinearGradient(

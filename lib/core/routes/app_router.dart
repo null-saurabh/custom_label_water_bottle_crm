@@ -1,5 +1,6 @@
 import 'package:clwb_crm/screens/client/client_controller.dart';
 import 'package:clwb_crm/screens/client/client_split_screen.dart';
+import 'package:clwb_crm/screens/dashboard/dashboard_binding.dart';
 import 'package:clwb_crm/screens/dashboard/dashboard_screen.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/inventory_screen.dart';
@@ -37,9 +38,7 @@ class AppPages {
         GetPage(
           name: AppRoutes.dashboard,
           page: () => DashboardScreen(),
-          binding: BindingsBuilder(() {
-            Get.lazyPut(() => DashboardController());
-          }),
+          binding: DashboardBinding()
         ),
         GetPage(
           name: AppRoutes.orders,

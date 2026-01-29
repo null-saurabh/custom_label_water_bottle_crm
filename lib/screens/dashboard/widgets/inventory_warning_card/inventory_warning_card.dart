@@ -19,14 +19,16 @@ class InventoryWarningCard extends GetView<DashboardController> {
         onPressed: () {},
         child: const Text('View All >'),
       ),
-      child: Obx(
-            () => Column(
+      child:
+      // Obx(
+      //       () =>
+                Column(
           children: [
             _HeaderRow(),
             const SizedBox(height: 8),
-            ...controller.inventoryWarnings.map(
-                  (w) => InventoryWarningRow(data:w ),
-            ),
+            // ...controller.inventoryWarnings.map(
+            //       (w) => InventoryWarningRow(data:w ),
+            // ),
             // const SizedBox(height: 12),
             // _SummaryRow(z
             //   totalDue: controller.totalInventoryDue,
@@ -35,7 +37,8 @@ class InventoryWarningCard extends GetView<DashboardController> {
             // ),
           ],
         ),
-      ),
+
+      // ),
     );
   }
 }

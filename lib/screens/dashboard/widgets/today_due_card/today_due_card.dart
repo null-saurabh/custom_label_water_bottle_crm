@@ -1,10 +1,10 @@
 // lib/features/dashboard/widgets/due_deliveries_today_card.dart
+import 'package:clwb_crm/screens/dashboard/dashboard_controller.dart';
+import 'package:clwb_crm/screens/dashboard/widgets/dashboard_section_container.dart';
+import 'package:clwb_crm/screens/dashboard/widgets/delivery_list_row.dart';
 import 'package:clwb_crm/screens/dashboard/widgets/today_due_card/widgets/pager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../dashboard_controller.dart';
-import '../dashboard_section_container.dart';
-import '../delivery_list_row.dart';
 
 class DueDeliveriesTodayCard extends GetView<DashboardController> {
   const DueDeliveriesTodayCard({super.key});

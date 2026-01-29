@@ -1,7 +1,7 @@
 // ✅ REUSABLE ROW FOR STANDING / RECURRING ORDERS
+import 'package:clwb_crm/screens/dashboard/models.dart';
 import 'package:flutter/material.dart';
 
-import '../../dashboard_controller.dart';
 
 class RecurringOrderRow extends StatelessWidget {
   final StandingOrderSummary data;

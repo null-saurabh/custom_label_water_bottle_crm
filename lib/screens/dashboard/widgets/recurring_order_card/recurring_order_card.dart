@@ -1,10 +1,11 @@
 // ✅ WEEKLY STANDING ORDERS CARD (NO LEAD CONTEXT, ONLY OPERATIONS)
+
+import 'package:clwb_crm/screens/dashboard/dashboard_controller.dart';
+import 'package:clwb_crm/screens/dashboard/widgets/dashboard_section_container.dart';
 import 'package:clwb_crm/screens/dashboard/widgets/recurring_order_card/recurring_order_row.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../dashboard_controller.dart';
-import '../dashboard_section_container.dart';
 
 class RecurringOrdersCard extends GetView<DashboardController> {
   const RecurringOrdersCard({super.key});
