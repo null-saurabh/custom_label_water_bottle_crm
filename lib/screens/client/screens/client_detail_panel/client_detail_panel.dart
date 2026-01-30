@@ -45,7 +45,7 @@ class ClientDetailScreen extends GetView<ClientsController> {
                   children: [
                     ClientOverviewTab(client: client),
                     RecentActivityTab(clientId: client.id),
-                    ClientOrdersTab(clientId: client.id),
+                    ClientOrdersTab(clientId: client.id,client: client,),
                     ClientPaymentsTab(clientId: client.id),
 
                   ],

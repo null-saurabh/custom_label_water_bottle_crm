@@ -31,23 +31,22 @@ class AppSidebar extends StatelessWidget {
               children: [
                 Image.asset(
                   'assets/icons/main_logo.png',
-                  height: 40, // smaller, tighter like reference
+                  height: 60, // smaller, tighter like reference
                   fit: BoxFit.contain,
-                  color: Colors.blue,
                 ),
                 const SizedBox(width: 10),
                 const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Custom Label',
+                      'Ink & Drink',
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
                       ),
                     ),
                     Text(
-                      'Bottling',
+                      'Crm',
                       style: TextStyle(fontSize: 13, color: Colors.grey),
                     ),
                   ],

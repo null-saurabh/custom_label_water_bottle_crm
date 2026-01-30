@@ -1,12 +1,18 @@
+import 'package:clwb_crm/screens/client/models/client_model.dart';
 import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_order_tab/client_orders_controller.dart';
 import 'package:clwb_crm/screens/orders/models/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+
+
+
 class ClientOrdersTab extends StatelessWidget {
   final String clientId;
-  const ClientOrdersTab({super.key, required this.clientId});
+  final ClientModel client;
+
+  const ClientOrdersTab({super.key, required this.clientId,required this.client});
 
   @override
   Widget build(BuildContext context) {
@@ -17,33 +23,66 @@ class ClientOrdersTab extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       }
 
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _SummaryRow(
-              total: c.totalOrders.value,
-              active: c.activeOrders.value,
-              delivered: c.deliveredOrders.value,
-              billed: c.totalBilled.value,
-              paid: c.totalPaid.value,
-              due: c.totalDue.value,
+      return Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _SummaryRow(
+                  total: c.totalOrders.value,
+                  active: c.activeOrders.value,
+                  delivered: c.deliveredOrders.value,
+                  billed: c.totalBilled.value,
+                  paid: c.totalPaid.value,
+                  due: c.totalDue.value,
+                ),
+                const SizedBox(height: 14),
+
+                _HeaderRow(),
+                const SizedBox(height: 10),
+
+                if (c.orders.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text('No orders for this client'),
+                  )
+                else
+                  ...c.orders.map((o) => _OrderRow(order: o,client: client,c: c,)),
+              ],
             ),
-            const SizedBox(height: 14),
+          ),
 
-            _HeaderRow(),
-            const SizedBox(height: 10),
 
-            if (c.orders.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: Text('No orders for this client'),
-              )
-            else
-              ...c.orders.map((o) => _OrderRow(order: o)),
-          ],
-        ),
+          Obx(() {
+            if (!c.isGeneratingInvoice.value) {
+              return const SizedBox.shrink();
+            }
+
+            return Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.35),
+                child: const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(color: Colors.white),
+                      SizedBox(height: 12),
+                      Text(
+                        'Generating invoice…',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        ],
       );
     });
   }
@@ -155,7 +194,7 @@ class _HeaderRow extends StatelessWidget {
           Expanded(flex: 3, child: Text('Paid', style: style)),
           Expanded(flex: 3, child: Text('Due', style: style)),
           Expanded(flex: 3, child: Text('Status', style: style)),
-          SizedBox(width: 40),
+          SizedBox(width: 80),
         ],
       ),
     );
@@ -164,11 +203,14 @@ class _HeaderRow extends StatelessWidget {
 
 class _OrderRow extends StatelessWidget {
   final OrderModel order;
-  const _OrderRow({required this.order});
+  final ClientModel client;
+  final ClientOrdersController c;
+  const _OrderRow({required this.order,required this.client, required this.c});
 
   @override
   Widget build(BuildContext context) {
     final d = order.expectedDeliveryDate;
+
     final delivery = d == null ? '—' : DateFormat('d MMM').format(d);
 
     return Container(
@@ -190,16 +232,39 @@ class _OrderRow extends StatelessWidget {
           Expanded(flex: 3, child: Text('₹${order.dueAmount.toStringAsFixed(0)}')),
           Expanded(flex: 3, child: Text(order.orderStatus)),
           IconButton(
-            tooltip: 'Open',
-            onPressed: () {
-              // TODO: hook into Orders screen selection if you want:
-              // Get.find<OrdersController>().selectOrder(order);
-              // Or navigate to orders screen and pass orderId
+            icon: const Icon(Icons.picture_as_pdf),
+            tooltip: 'Generate Invoice Without Payment',
+            onPressed: c.isGeneratingInvoice.value
+                ? null
+                : () {
+              c.generateInvoiceWithoutPaymentPdf(
+                order: order,
+                client: client,
+              );
             },
-            icon: const Icon(Icons.open_in_new, size: 18),
           ),
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf),
+            tooltip: 'Generate Invoice With Payment',
+            onPressed: c.isGeneratingInvoice.value
+                ? null
+                : () {
+              c.generateInvoiceWithPaymentPdf(
+                order: order,
+                client: client,
+              );
+            },
+          )
+
         ],
       ),
     );
   }
 }
+
+
+
+
+
+
+
