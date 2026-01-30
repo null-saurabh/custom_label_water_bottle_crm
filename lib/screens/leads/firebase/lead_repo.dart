@@ -3,11 +3,15 @@ import 'package:clwb_crm/screens/leads/add_lead_model.dart';
 
 class LeadRepository {
   final _db = FirebaseFirestore.instance;
-
   CollectionReference get _ref => _db.collection('leads');
 
   Future<String> addLead(LeadModel lead) async {
-    final doc = await _ref.add(lead.toMap());
+    final doc = await _ref.add({
+      ...lead.toMap(),
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+      'lastActivityAt': FieldValue.serverTimestamp(),
+    });
     return doc.id;
   }
 
@@ -18,20 +22,15 @@ class LeadRepository {
         .map((s) => s.docs.map(LeadModel.fromDoc).toList());
   }
 
-
   Future<void> deleteLead(String leadId) async {
     final leadRef = _db.collection('leads').doc(leadId);
 
-    // delete activities subcollection
     final activities = await leadRef.collection('activities').get();
     for (final doc in activities.docs) {
       await doc.reference.delete();
     }
-
-    // delete lead
     await leadRef.delete();
   }
-
 
   Future<void> updateLead({
     required String leadId,
@@ -39,35 +38,58 @@ class LeadRepository {
   }) async {
     await _db.collection('leads').doc(leadId).update({
       ...data,
+      'updatedAt': FieldValue.serverTimestamp(),
       'lastActivityAt': FieldValue.serverTimestamp(),
     });
   }
 
-  
-
-  Future<void> updateLeadStatus({
+  Future<void> updateStage({
     required String leadId,
-    required LeadStatus status,
+    required LeadStage stage,
   }) async {
     await _db.collection('leads').doc(leadId).update({
-      'status': status.name,
+      'stage': stage.name,
+      'updatedAt': FieldValue.serverTimestamp(),
       'lastActivityAt': FieldValue.serverTimestamp(),
     });
   }
 
-
-  Future<void> updateFollowUpNote({
+  Future<void> updateNextFollowUp({
     required String leadId,
+    required DateTime? nextAt,
     required String note,
   }) async {
     await _db.collection('leads').doc(leadId).update({
-      'followUpNotes': note,
+      'nextFollowUpAt': nextAt == null ? null : Timestamp.fromDate(nextAt),
+      'nextFollowUpNote': note,
+      'updatedAt': FieldValue.serverTimestamp(),
       'lastActivityAt': FieldValue.serverTimestamp(),
     });
   }
 
+  Future<void> markContactedNow({
+    required String leadId,
+  }) async {
+    await _db.collection('leads').doc(leadId).update({
+      'lastContactedAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+      'lastActivityAt': FieldValue.serverTimestamp(),
+    });
+  }
 
-
-
-
+  /// One-way conversion marker (actual client creation can be done elsewhere)
+  Future<void> markConverted({
+    required String leadId,
+    required String clientId,
+  }) async {
+    await _db.collection('leads').doc(leadId).update({
+      'stage': LeadStage.convertedToClient.name,
+      'convertedClientId': clientId,
+      'convertedAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+      'lastActivityAt': FieldValue.serverTimestamp(),
+      'nextFollowUpAt': null,
+      'nextFollowUpNote': '',
+    });
+  }
 }

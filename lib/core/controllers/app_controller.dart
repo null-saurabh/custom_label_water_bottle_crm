@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -20,11 +21,19 @@ class AppController extends GetxController {
     Get.rootDelegate.toNamed(menu.route); // ✅ FIX
 
   }
+  final Rxn<User> user = Rxn<User>();
 
+  @override
+  void onInit() {
+    super.onInit();
 
+    // 🔥 Bind Firebase auth stream to Rx
+    user.bindStream(
+      FirebaseAuth.instance.authStateChanges(),
+    );
+  }
+  bool get isAdmin => user.value != null;
 
-  // Dashboard Header
-  final userName = 'John'.obs;
 
   String get todayFormatted =>
       DateFormat('EEEE, MMMM d').format(DateTime.now());

@@ -1,7 +1,9 @@
 // lib/core/widgets/app_sidebar.dart
+import 'package:clwb_crm/core/controllers/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/app_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class AppSidebar extends StatelessWidget {
   const AppSidebar({super.key});
@@ -9,6 +11,7 @@ class AppSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<AppController>();
+
 
     return Container(
       width: 180,
@@ -113,16 +116,40 @@ class AppSidebar extends StatelessWidget {
           ),
 
           // FOOTER ACTIONS
-          Padding(
+          Obx(() {
+          return Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                _FooterItem(icon: Icons.settings_outlined, label: 'Settings'),
-                const SizedBox(height: 8),
-                _FooterItem(icon: Icons.logout, label: 'Logout'),
-              ],
-            ),
-          ),
+            child: InkWell(
+                onTap: () async {
+
+                  if (!controller.isAdmin) {
+                    // 🔐 LOGIN
+                    final result = await FirebaseAuth.instance.signInWithPopup(
+                      GoogleAuthProvider(),
+                    );
+
+                    if (result.user?.email != null) {
+                      Get.snackbar(
+                        'Admin mode enabled',
+                        result.user!.email!,
+                      );
+                    }
+                  } else {
+                    // 🚪 LOGOUT
+                    await FirebaseAuth.instance.signOut();
+                    Get.snackbar(
+                      'Logged out',
+                      'Read-only mode',
+                    );
+                  }
+                },
+                child: _FooterItem(
+                  icon: !controller.isAdmin ? Icons.login : Icons.logout,
+                  label: !controller.isAdmin ? 'Admin Login' : 'Logout',
+                ),
+              ),
+          );}),
+
         ],
       ),
     );

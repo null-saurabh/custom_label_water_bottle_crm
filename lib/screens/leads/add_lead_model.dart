@@ -1,246 +1,498 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum LeadStatus {
-  newLead,
+/// =======================
+/// Lead Pipeline (Primary)
+/// =======================
+enum LeadStage {
+  newInquiry,
+  attemptingContact,
   contacted,
-  followUp,
   qualified,
-  converted,
-  lost,
+
+  sampleRequested,
+  sampleSent,
+  sampleFeedbackAwaited,
+  requirementsClarifying,
+
+  priceShared,
+  negotiation,
+  decisionPending,
+
+  meetingScheduled,
+  visitScheduled,
+  followUpRequired,
+
+  callMeLater,
+  interestedNotReady,
+
+  lostPrice,
+  lostNoRequirement,
+  lostNoResponse,
+  lostCompetitor,
+
+  convertedToClient,
 }
 
-enum LeadActivityType {
-  created,
-  call,
-  whatsapp,
-  visit,
-  note,
-  statusChanged,
-  followUp,
+enum LeadTemperature { hot, warm, cold }
+
+enum LeadSource {
+  walkIn,
+  referral,
+  instagram,
+  website,
+  coldCall,
+  whatsappInbound,
+  existingClientRef,
+  distributor,
   other,
 }
 
-class LeadActivity {
-  final String id; // can be a uuid or timestamp-based id
-  final LeadActivityType type;
-  final String title; // short label e.g. "Called customer"
-  final String note;  // detailed note
-  final DateTime at;
-  final String? createdBy; // optional: user id/name later
+/// =======================
+/// Product Interest (Sales-language, NO SKU/stock links)
+/// =======================
+class ProductInterest {
+  final String bottleSize; // "250 ml" / "500 ml" / "1 L" / "Not sure"
+  final String material; // "PET" / "Glass" / "Steel" / "Not sure"
+  final String capType; // "Flip" / "Sipper" / "Normal" / "Not sure"
+  final String labelType; // "Sticker" / "Screen Print" / "Sleeve" / "Not sure"
+  final String packaging; // "Carton" / "Shrink" / "Loose" / "Not sure"
+  final String notes;
 
-  LeadActivity({
-    required this.id,
-    required this.type,
-    required this.title,
-    required this.note,
-    required this.at,
-    this.createdBy,
+  const ProductInterest({
+    required this.bottleSize,
+    required this.material,
+    required this.capType,
+    required this.labelType,
+    required this.packaging,
+    required this.notes,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'type': type.name,
-      'title': title,
-      'note': note,
-      'at': Timestamp.fromDate(at),
-      'createdBy': createdBy,
-    };
-  }
-
-  factory LeadActivity.fromMap(Map<String, dynamic> d) {
-    return LeadActivity(
-      id: d['id'] ?? '',
-      type: LeadActivityType.values.firstWhere(
-            (e) => e.name == d['type'],
-        orElse: () => LeadActivityType.other,
-      ),
-      title: d['title'] ?? '',
-      note: d['note'] ?? '',
-      at: (d['at'] is Timestamp)
-          ? (d['at'] as Timestamp).toDate()
-          : DateTime.tryParse(d['at']?.toString() ?? '') ?? DateTime.now(),
-      createdBy: d['createdBy'],
+  factory ProductInterest.empty({String bottleSize = 'Not sure'}) {
+    return ProductInterest(
+      bottleSize: bottleSize,
+      material: 'Not sure',
+      capType: 'Not sure',
+      labelType: 'Not sure',
+      packaging: 'Not sure',
+      notes: '',
     );
   }
+
+  Map<String, dynamic> toMap() => {
+    'bottleSize': bottleSize,
+    'material': material,
+    'capType': capType,
+    'labelType': labelType,
+    'packaging': packaging,
+    'notes': notes,
+  };
+
+  factory ProductInterest.fromMap(Map<String, dynamic> m) => ProductInterest(
+    bottleSize: (m['bottleSize'] ?? 'Not sure').toString(),
+    material: (m['material'] ?? 'Not sure').toString(),
+    capType: (m['capType'] ?? 'Not sure').toString(),
+    labelType: (m['labelType'] ?? 'Not sure').toString(),
+    packaging: (m['packaging'] ?? 'Not sure').toString(),
+    notes: (m['notes'] ?? '').toString(),
+  );
 }
 
+/// =======================
+/// Lead Contact (Messy reality)
+/// =======================
+class LeadContact {
+  final String name;
+  final String role; // owner/manager/procurement/other
+  final String phone;
+  final String whatsapp;
+  final String email;
+  final bool isPrimary;
+
+  const LeadContact({
+    required this.name,
+    required this.role,
+    required this.phone,
+    required this.whatsapp,
+    required this.email,
+    required this.isPrimary,
+  });
+
+  Map<String, dynamic> toMap() => {
+    'name': name,
+    'role': role,
+    'phone': phone,
+    'whatsapp': whatsapp,
+    'email': email,
+    'isPrimary': isPrimary,
+  };
+
+  factory LeadContact.fromMap(Map<String, dynamic> m) => LeadContact(
+    name: (m['name'] ?? '').toString(),
+    role: (m['role'] ?? 'other').toString(),
+    phone: (m['phone'] ?? '').toString(),
+    whatsapp: (m['whatsapp'] ?? '').toString(),
+    email: (m['email'] ?? '').toString(),
+    isPrimary: (m['isPrimary'] ?? false) == true,
+  );
+}
+
+/// =======================
+/// Lead Model (Pipeline + Next Action)
+/// =======================
 class LeadModel {
   final String id;
 
-  // Core details
+  // identity
   final String businessName;
-  final String contactName;
-  final String phone;
-  final String email;
+  final String businessType; // "Restaurant/Café/Office/Brand/Other"
 
-  // Lead fields
-  final String businessType;     // Restaurant/Cafe/Hotel/Resort/Banquet/Other
-  final String monthlyQuantity;
+  // primary contact (quick access)
+  final String primaryContactName;
+  final String primaryPhone;
+  final String primaryWhatsApp;
+  final String primaryEmail;
 
-  // Product interest (bottle only, but you can store details)
-  final List<String> bottleSizes; // e.g. ["500ml","1L"]
-  final String bottleDesign;      // "round" or "square" or "" (optional)
+  // optional multiple contacts
+  final List<LeadContact> contacts;
 
-  // Location
+  // pipeline
+  final LeadStage stage;
+  final LeadTemperature temperature;
+
+  // next action
+  final DateTime? nextFollowUpAt;
+  final String nextFollowUpNote;
+
+  // timestamps
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  final DateTime? lastActivityAt;
+  final DateTime? lastContactedAt;
+
+  // sales ownership
+  final String assignedToUserId;
+  final String assignedToUserName;
+
+  // context
+  final LeadSource source;
+  final String sourceDetail;
+
+  // sales interest
+  final List<ProductInterest> interests; // reference-only
+  final String expectedMonthlyVolume; // "0-500" / "500-2000" / "Not sure"
+  final String priceSensitivity; // "High/Medium/Low/Not sure"
+
+  // location
   final String city;
   final String state;
-  final String area;             // ✅ NEW
-  final String deliveryLocation; // optional (can be address / landmark)
+  final String area;
 
-  // Notes
-  final String notes;            // long notes
-  final String followUpNotes;    // ✅ NEW (quick follow-up note)
+  // notes/tags
+  final String notes;
+  final List<String> tags;
 
-  // Status + activity
-  final LeadStatus status;
-  final DateTime createdAt;
-  final DateTime? lastActivityAt;
+  // terminal fields
+  final String? convertedClientId;
+  final DateTime? convertedAt;
 
-  // ✅ NEW: timeline of all activities for this lead
-  final List<LeadActivity> activities;
-
-  LeadModel({
+  const LeadModel({
     required this.id,
     required this.businessName,
-    required this.contactName,
-    required this.phone,
-    required this.email,
     required this.businessType,
-    required this.monthlyQuantity,
-    required this.bottleSizes,
-    required this.bottleDesign,
+    required this.primaryContactName,
+    required this.primaryPhone,
+    required this.primaryWhatsApp,
+    required this.primaryEmail,
+    required this.contacts,
+    required this.stage,
+    required this.temperature,
+    required this.nextFollowUpAt,
+    required this.nextFollowUpNote,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.lastActivityAt,
+    required this.lastContactedAt,
+    required this.assignedToUserId,
+    required this.assignedToUserName,
+    required this.source,
+    required this.sourceDetail,
+    required this.interests,
+    required this.expectedMonthlyVolume,
+    required this.priceSensitivity,
     required this.city,
     required this.state,
     required this.area,
-    required this.deliveryLocation,
     required this.notes,
-    required this.followUpNotes,
-    required this.status,
-    required this.createdAt,
-    this.lastActivityAt,
-    required this.activities,
+    required this.tags,
+    required this.convertedClientId,
+    required this.convertedAt,
   });
 
-  /// Firestore write
-  Map<String, dynamic> toMap() {
-    return {
-      'businessName': businessName,
-      'contactName': contactName,
-      'phone': phone,
-      'email': email,
+  bool get isConverted => convertedClientId != null || stage == LeadStage.convertedToClient;
+  bool get isLost =>
+      stage == LeadStage.lostPrice ||
+          stage == LeadStage.lostNoRequirement ||
+          stage == LeadStage.lostNoResponse ||
+          stage == LeadStage.lostCompetitor;
 
-      'businessType': businessType,
-      'monthlyQuantity': monthlyQuantity,
+  Map<String, dynamic> toMap() => {
+    'businessName': businessName,
+    'businessType': businessType,
+    'primaryContactName': primaryContactName,
+    'primaryPhone': primaryPhone,
+    'primaryWhatsApp': primaryWhatsApp,
+    'primaryEmail': primaryEmail,
+    'contacts': contacts.map((c) => c.toMap()).toList(),
 
-      'bottleSizes': bottleSizes,
-      'bottleDesign': bottleDesign,
+    'stage': stage.name,
+    'temperature': temperature.name,
 
-      'city': city,
-      'state': state,
-      'area': area, // ✅
-      'deliveryLocation': deliveryLocation,
+    'nextFollowUpAt': nextFollowUpAt == null ? null : Timestamp.fromDate(nextFollowUpAt!),
+    'nextFollowUpNote': nextFollowUpNote,
 
-      'notes': notes,
-      'followUpNotes': followUpNotes, // ✅
+    'createdAt': Timestamp.fromDate(createdAt),
+    'updatedAt': updatedAt == null ? null : Timestamp.fromDate(updatedAt!),
+    'lastActivityAt': lastActivityAt == null ? null : Timestamp.fromDate(lastActivityAt!),
+    'lastContactedAt': lastContactedAt == null ? null : Timestamp.fromDate(lastContactedAt!),
 
-      'status': status.name,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'lastActivityAt':
-      lastActivityAt != null ? Timestamp.fromDate(lastActivityAt!) : null,
+    'assignedToUserId': assignedToUserId,
+    'assignedToUserName': assignedToUserName,
 
-      // 'activities': activities.map((a) => a.toMap()).toList(), // ✅
-    };
-  }
+    'source': source.name,
+    'sourceDetail': sourceDetail,
 
-  /// Firestore read
+    'interests': interests.map((i) => i.toMap()).toList(),
+    'expectedMonthlyVolume': expectedMonthlyVolume,
+    'priceSensitivity': priceSensitivity,
+
+    'city': city,
+    'state': state,
+    'area': area,
+
+    'notes': notes,
+    'tags': tags,
+
+    'convertedClientId': convertedClientId,
+    'convertedAt': convertedAt == null ? null : Timestamp.fromDate(convertedAt!),
+  };
+
   factory LeadModel.fromDoc(DocumentSnapshot doc) {
-    final d = doc.data() as Map<String, dynamic>? ?? {};
+    final m = (doc.data() as Map<String, dynamic>? ?? {});
+    DateTime? ts(dynamic v) => v is Timestamp ? v.toDate() : null;
 
-    // Activities safe read
-    final rawActivities = (d['activities'] as List?) ?? [];
-    final activities = rawActivities
+    final interestsRaw = (m['interests'] as List? ?? [])
         .whereType<Map>()
-        .map((e) => LeadActivity.fromMap(Map<String, dynamic>.from(e)))
+        .map((x) => ProductInterest.fromMap(Map<String, dynamic>.from(x)))
         .toList();
 
-    Timestamp? createdTs = d['createdAt'] as Timestamp?;
-    Timestamp? lastActTs = d['lastActivityAt'] as Timestamp?;
+    final contactsRaw = (m['contacts'] as List? ?? [])
+        .whereType<Map>()
+        .map((x) => LeadContact.fromMap(Map<String, dynamic>.from(x)))
+        .toList();
 
     return LeadModel(
       id: doc.id,
-      businessName: d['businessName'] ?? '',
-      contactName: d['contactName'] ?? '',
-      phone: d['phone'] ?? '',
-      email: d['email'] ?? '',
+      businessName: (m['businessName'] ?? '').toString(),
+      businessType: (m['businessType'] ?? '').toString(),
 
-      businessType: d['businessType'] ?? '',
-      monthlyQuantity: d['monthlyQuantity'] ?? '',
+      primaryContactName: (m['primaryContactName'] ?? '').toString(),
+      primaryPhone: (m['primaryPhone'] ?? '').toString(),
+      primaryWhatsApp: (m['primaryWhatsApp'] ?? '').toString(),
+      primaryEmail: (m['primaryEmail'] ?? '').toString(),
 
-      bottleSizes: List<String>.from(d['bottleSizes'] ?? const []),
-      bottleDesign: d['bottleDesign'] ?? '',
+      contacts: contactsRaw,
 
-      city: d['city'] ?? '',
-      state: d['state'] ?? '',
-      area: d['area'] ?? '', // ✅
-      deliveryLocation: d['deliveryLocation'] ?? '',
-
-      notes: d['notes'] ?? '',
-      followUpNotes: d['followUpNotes'] ?? '', // ✅
-
-      status: LeadStatus.values.firstWhere(
-            (e) => e.name == d['status'],
-        orElse: () => LeadStatus.newLead,
+      stage: LeadStage.values.firstWhere(
+            (e) => e.name == (m['stage'] ?? 'newInquiry'),
+        orElse: () => LeadStage.newInquiry,
+      ),
+      temperature: LeadTemperature.values.firstWhere(
+            (e) => e.name == (m['temperature'] ?? 'warm'),
+        orElse: () => LeadTemperature.warm,
       ),
 
-      createdAt: createdTs?.toDate() ?? DateTime.now(),
-      lastActivityAt: lastActTs?.toDate(),
+      nextFollowUpAt: ts(m['nextFollowUpAt']),
+      nextFollowUpNote: (m['nextFollowUpNote'] ?? '').toString(),
 
-      activities: activities,
+      createdAt: ts(m['createdAt']) ?? DateTime.now(),
+      updatedAt: ts(m['updatedAt']),
+      lastActivityAt: ts(m['lastActivityAt']),
+      lastContactedAt: ts(m['lastContactedAt']),
+
+      assignedToUserId: (m['assignedToUserId'] ?? '').toString(),
+      assignedToUserName: (m['assignedToUserName'] ?? '').toString(),
+
+      source: LeadSource.values.firstWhere(
+            (e) => e.name == (m['source'] ?? 'other'),
+        orElse: () => LeadSource.other,
+      ),
+      sourceDetail: (m['sourceDetail'] ?? '').toString(),
+
+      interests: interestsRaw,
+      expectedMonthlyVolume: (m['expectedMonthlyVolume'] ?? 'Not sure').toString(),
+      priceSensitivity: (m['priceSensitivity'] ?? 'Not sure').toString(),
+
+      city: (m['city'] ?? '').toString(),
+      state: (m['state'] ?? '').toString(),
+      area: (m['area'] ?? '').toString(),
+
+      notes: (m['notes'] ?? '').toString(),
+      tags: (m['tags'] as List? ?? []).map((e) => e.toString()).toList(),
+
+      convertedClientId: (m['convertedClientId'] as String?),
+      convertedAt: ts(m['convertedAt']),
     );
   }
 
-  /// Handy helper for updates (optional)
   LeadModel copyWith({
     String? businessName,
-    String? contactName,
-    String? phone,
-    String? email,
     String? businessType,
-    String? monthlyQuantity,
-    List<String>? bottleSizes,
-    String? bottleDesign,
+    String? primaryContactName,
+    String? primaryPhone,
+    String? primaryWhatsApp,
+    String? primaryEmail,
+    List<LeadContact>? contacts,
+    LeadStage? stage,
+    LeadTemperature? temperature,
+    DateTime? nextFollowUpAt,
+    String? nextFollowUpNote,
+    DateTime? updatedAt,
+    DateTime? lastActivityAt,
+    DateTime? lastContactedAt,
+    String? assignedToUserId,
+    String? assignedToUserName,
+    LeadSource? source,
+    String? sourceDetail,
+    List<ProductInterest>? interests,
+    String? expectedMonthlyVolume,
+    String? priceSensitivity,
     String? city,
     String? state,
     String? area,
-    String? deliveryLocation,
     String? notes,
-    String? followUpNotes,
-    LeadStatus? status,
-    DateTime? createdAt,
-    DateTime? lastActivityAt,
-    List<LeadActivity>? activities,
+    List<String>? tags,
+    String? convertedClientId,
+    DateTime? convertedAt,
   }) {
     return LeadModel(
       id: id,
       businessName: businessName ?? this.businessName,
-      contactName: contactName ?? this.contactName,
-      phone: phone ?? this.phone,
-      email: email ?? this.email,
       businessType: businessType ?? this.businessType,
-      monthlyQuantity: monthlyQuantity ?? this.monthlyQuantity,
-      bottleSizes: bottleSizes ?? this.bottleSizes,
-      bottleDesign: bottleDesign ?? this.bottleDesign,
+      primaryContactName: primaryContactName ?? this.primaryContactName,
+      primaryPhone: primaryPhone ?? this.primaryPhone,
+      primaryWhatsApp: primaryWhatsApp ?? this.primaryWhatsApp,
+      primaryEmail: primaryEmail ?? this.primaryEmail,
+      contacts: contacts ?? this.contacts,
+      stage: stage ?? this.stage,
+      temperature: temperature ?? this.temperature,
+      nextFollowUpAt: nextFollowUpAt ?? this.nextFollowUpAt,
+      nextFollowUpNote: nextFollowUpNote ?? this.nextFollowUpNote,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      lastActivityAt: lastActivityAt ?? this.lastActivityAt,
+      lastContactedAt: lastContactedAt ?? this.lastContactedAt,
+      assignedToUserId: assignedToUserId ?? this.assignedToUserId,
+      assignedToUserName: assignedToUserName ?? this.assignedToUserName,
+      source: source ?? this.source,
+      sourceDetail: sourceDetail ?? this.sourceDetail,
+      interests: interests ?? this.interests,
+      expectedMonthlyVolume: expectedMonthlyVolume ?? this.expectedMonthlyVolume,
+      priceSensitivity: priceSensitivity ?? this.priceSensitivity,
       city: city ?? this.city,
       state: state ?? this.state,
       area: area ?? this.area,
-      deliveryLocation: deliveryLocation ?? this.deliveryLocation,
       notes: notes ?? this.notes,
-      followUpNotes: followUpNotes ?? this.followUpNotes,
-      status: status ?? this.status,
-      createdAt: createdAt ?? this.createdAt,
-      lastActivityAt: lastActivityAt ?? this.lastActivityAt,
-      activities: activities ?? this.activities,
+      tags: tags ?? this.tags,
+      convertedClientId: convertedClientId ?? this.convertedClientId,
+      convertedAt: convertedAt ?? this.convertedAt,
+    );
+  }
+}
+
+/// =======================
+/// Activity Timeline
+/// =======================
+enum LeadActivityType {
+  created,
+
+  callMade,
+  callReceived,
+  whatsappSent,
+  whatsappReceived,
+  emailSent,
+  emailReceived,
+
+  meetingScheduled,
+  meetingCompleted,
+  visitScheduled,
+  visitCompleted,
+
+  sampleRequested,
+  sampleDispatched,
+  sampleDelivered,
+  sampleFeedbackReceived,
+
+  priceShared,
+  quotationSent,
+  negotiationUpdate,
+
+  followUpScheduled,
+  followUpCompleted,
+
+  internalNote,
+
+  statusChanged,
+  assignedChanged,
+}
+
+class LeadActivity {
+  final String id;
+  final LeadActivityType type;
+  final String title;
+  final String note;
+  final String userId;
+  final String userName;
+  final DateTime at;
+
+  /// Optional structured info: { "phone": "...", "courier": "...", "meetingAt": Timestamp ... }
+  final Map<String, dynamic> meta;
+
+  const LeadActivity({
+    required this.id,
+    required this.type,
+    required this.title,
+    required this.note,
+    required this.userId,
+    required this.userName,
+    required this.at,
+    required this.meta,
+  });
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'type': type.name,
+    'title': title,
+    'note': note,
+    'userId': userId,
+    'userName': userName,
+    'at': Timestamp.fromDate(at),
+    'meta': meta,
+  };
+
+  factory LeadActivity.fromMap(Map<String, dynamic> m) {
+    DateTime ts(dynamic v) => v is Timestamp ? v.toDate() : DateTime.now();
+    return LeadActivity(
+      id: (m['id'] ?? '').toString(),
+      type: LeadActivityType.values.firstWhere(
+            (e) => e.name == (m['type'] ?? 'internalNote'),
+        orElse: () => LeadActivityType.internalNote,
+      ),
+      title: (m['title'] ?? '').toString(),
+      note: (m['note'] ?? '').toString(),
+      userId: (m['userId'] ?? '').toString(),
+      userName: (m['userName'] ?? '').toString(),
+      at: ts(m['at']),
+      meta: Map<String, dynamic>.from(m['meta'] ?? {}),
     );
   }
 }
