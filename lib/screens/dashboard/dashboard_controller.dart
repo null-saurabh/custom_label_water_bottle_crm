@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:clwb_crm/core/controllers/app_controller.dart';
 import 'package:clwb_crm/screens/dashboard/models/dashboard_models.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,6 +11,11 @@ import 'package:clwb_crm/screens/dashboard/repo/dashboard_repo.dart';
 class DashboardController extends GetxController {
   final DashboardRepository repo;
   DashboardController(this.repo);
+
+
+
+  final app = Get.find<AppController>();
+
 
   // =========================
   // OUTPUT (used by widgets)

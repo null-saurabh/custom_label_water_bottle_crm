@@ -333,6 +333,26 @@ class InventoryController extends GetxController {
     return items.firstWhere((e) => e.id == itemId).stock;
   }
 
+  double latestUnitCost(String itemId, {DateTime? asOf}) {
+    // Stock purchases for this item
+    final list = stockEntries
+        .where((s) => s.itemId == itemId)
+        .where((s) {
+      // If asOf provided, only consider purchases at/before that time
+      if (asOf == null) return true;
+      return !s.createdAt.isAfter(asOf);
+    })
+        .toList();
+
+    if (list.isEmpty) return 0.0;
+
+    // Prefer updatedAt if you trust it more; otherwise createdAt is fine.
+    list.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+
+    return list.first.ratePerUnit;
+  }
+
+
   int orderDueThisWeek(String itemId) {
     return orders
         .where((o) =>

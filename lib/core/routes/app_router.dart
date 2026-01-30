@@ -6,6 +6,11 @@ import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/inventory_screen.dart';
 import 'package:clwb_crm/screens/orders/orders_binding.dart';
 import 'package:clwb_crm/screens/orders/orders_screen.dart';
+import 'package:clwb_crm/screens/orders/repo/order_delivery_repository.dart';
+import 'package:clwb_crm/screens/orders/repo/order_expense_repository.dart';
+import 'package:clwb_crm/screens/orders/repo/order_repo.dart';
+import 'package:clwb_crm/screens/sales/sales_controller.dart';
+import 'package:clwb_crm/screens/sales/sales_screen.dart';
 import 'package:get/get.dart';
 import '../../screens/leads/leads_controller.dart';
 import '../../screens/leads/leads_screen.dart';
@@ -18,6 +23,7 @@ abstract class AppRoutes {
   static const orders = '/orders';
   static const leads = '/leads';
   static const clients = '/clients';
+  static const sales = '/sales';
 }
 
 class AppPages {
@@ -54,6 +60,20 @@ class AppPages {
         GetPage(
           name: AppRoutes.inventory,
           page: () => InventoryScreen(),
+
+        ),
+        GetPage(
+          name: AppRoutes.sales,
+          page: () => SalesScreen(),
+          binding: BindingsBuilder(() {
+            Get.put(
+              SalesController(
+                Get.find<OrdersRepository>(),
+                Get.find<OrderDeliveryRepository>(),
+                Get.find<OrderExpenseRepository>(),
+              ),
+            );
+          }),
 
         ),
         // more pages...

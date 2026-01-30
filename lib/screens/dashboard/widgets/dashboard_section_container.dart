@@ -26,13 +26,13 @@ class DashboardSectionContainer extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 10,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black26,
+        //     blurRadius: 1,
+        //     offset: const Offset(2, 2),
+        //   ),
+        // ],
       ),
       child: SingleChildScrollView(
         child: Column(

@@ -4,11 +4,11 @@ import 'package:clwb_crm/screens/orders/models/order_expense_model.dart';
 class OrderExpenseRepository {
   final _firestore = FirebaseFirestore.instance;
 
-  CollectionReference get _ref =>
+  CollectionReference get ref =>
       _firestore.collection('order_expenses');
 
   Stream<List<OrderExpenseModel>> watchByOrder(String orderId) {
-    return _ref
+    return ref
         .where('orderId', isEqualTo: orderId)
         .orderBy('expenseDate', descending: true)
         .snapshots()
@@ -18,7 +18,7 @@ class OrderExpenseRepository {
   }
 
   Stream<List<OrderExpenseModel>> watchClientPayments(String clientId) {
-    return _ref
+    return ref
         .where('clientId', isEqualTo: clientId)
         // .where('direction', isEqualTo: 'in')
         .where('category', isEqualTo: 'client_payment')
@@ -29,7 +29,7 @@ class OrderExpenseRepository {
 
 
   Future<void> addExpense(OrderExpenseModel e) async {
-    final doc = _ref.doc();
+    final doc = ref.doc();
 
     await doc.set(e.copyWith(
       id: doc.id,
@@ -38,7 +38,7 @@ class OrderExpenseRepository {
   }
 
   Future<void> updateExpense(OrderExpenseModel e) async {
-    await _ref.doc(e.id).update(
+    await ref.doc(e.id).update(
       e.copyWith(updatedAt: DateTime.now()).toMap(),
     );
   }

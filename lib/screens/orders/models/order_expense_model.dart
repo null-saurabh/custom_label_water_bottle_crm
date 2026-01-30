@@ -46,27 +46,63 @@ class OrderExpenseModel {
     required this.updatedAt,
   });
 
-  factory OrderExpenseModel.fromDoc(DocumentSnapshot doc) {
-    final d = doc.data() as Map<String, dynamic>;
+  // factory OrderExpenseModel.fromDoc(DocumentSnapshot doc) {
+  //   final d = doc.data() as Map<String, dynamic>;
+  //
+  //   return OrderExpenseModel(
+  //     id: doc.id,
+  //     orderId: d['orderId'],
+  //     clientId: d['clientId'],
+  //     direction: d['direction'] ?? 'out', // 🔥
+  //     stage: d['stage'],
+  //     category: d['category'],
+  //     description: d['description'],
+  //     amount: (d['amount'] ?? 0).toDouble(),
+  //     paidAmount: (d['paidAmount'] ?? 0).toDouble(),
+  //     dueAmount: (d['dueAmount'] ?? 0).toDouble(),
+  //     vendorName: d['vendorName'],
+  //     referenceNo: d['referenceNo'],
+  //     expenseDate: d['expenseDate'].toDate(),
+  //     status: d['status'],
+  //     createdBy: d['createdBy'],
+  //     createdAt: d['createdAt'].toDate(),
+  //     updatedAt: d['updatedAt'].toDate(),
+  //   );
+  // }
+  factory OrderExpenseModel.fromDoc(DocumentSnapshot d) {
+    final data = d.data() as Map<String, dynamic>? ?? {};
 
     return OrderExpenseModel(
-      id: doc.id,
-      orderId: d['orderId'],
-      clientId: d['clientId'],
-      direction: d['direction'] ?? 'out', // 🔥
-      stage: d['stage'],
-      category: d['category'],
-      description: d['description'],
-      amount: (d['amount'] ?? 0).toDouble(),
-      paidAmount: (d['paidAmount'] ?? 0).toDouble(),
-      dueAmount: (d['dueAmount'] ?? 0).toDouble(),
-      vendorName: d['vendorName'],
-      referenceNo: d['referenceNo'],
-      expenseDate: d['expenseDate'].toDate(),
-      status: d['status'],
-      createdBy: d['createdBy'],
-      createdAt: d['createdAt'].toDate(),
-      updatedAt: d['updatedAt'].toDate(),
+      id: d.id,
+      orderId: data['orderId'] ?? '',
+      clientId: data['clientId'] ?? '',
+
+      direction: data['direction'] ?? 'out',
+
+      stage: data['stage'] ?? 'unknown',
+      category: data['category'] ?? 'unknown',
+
+      description: data['description'] ?? '',
+
+      amount: (data['amount'] ?? 0).toDouble(),
+      paidAmount: (data['paidAmount'] ?? 0).toDouble(),
+      dueAmount: (data['dueAmount'] ?? 0).toDouble(),
+
+      vendorName: data['vendorName'], // nullable ✔
+      referenceNo: data['referenceNo'], // nullable ✔
+
+      expenseDate: (data['expenseDate'] as Timestamp?)?.toDate()
+          ?? DateTime.now(),
+
+      status: data['status'] ?? 'unknown',
+
+      createdBy: data['createdBy'] ?? 'system',
+
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate()
+          ?? DateTime.now(),
+
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate()
+          ?? DateTime.now(),
     );
   }
 

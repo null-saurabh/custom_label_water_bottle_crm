@@ -280,6 +280,36 @@ class ProductionController extends GetxController {
       final now = DateTime.now();
 
 
+      final cogsAmount = _calculateProductionCogs(
+        o: o,
+        qty: qty,
+        inventory: _inventory,
+      );
+
+      final cogsExpense = OrderExpenseModel(
+        id: '',
+        orderId: o.id,
+        clientId: o.clientId,
+        direction: 'out',
+        stage: 'production',
+        category: 'cogs_inventory',
+        description:
+        'Inventory used for producing $qty bottles (Order ${o.orderNumber})',
+        amount: cogsAmount,
+        paidAmount: cogsAmount, // inventory is already paid for
+        dueAmount: 0,
+        vendorName: 'Inventory',
+        referenceNo: null,
+        expenseDate: DateTime.now(),
+        status: 'paid',
+        createdBy: 'system',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      await _expenseRepo.addExpense(cogsExpense);
+
+
 // ======================
 // BOTTLES 🔥
 // ======================
@@ -622,6 +652,27 @@ class ProductionController extends GetxController {
   }
 
 
+
+  double _calculateProductionCogs({
+    required OrderModel o,
+    required int qty,
+    required InventoryController inventory,
+  }) {
+    double total = 0;
+
+    void add(String? itemId, int quantity) {
+      if (itemId == null || itemId.isEmpty || quantity <= 0) return;
+      final cost = inventory.latestUnitCost(itemId); // you already have this logic
+      total += cost * quantity;
+    }
+
+    add(o.itemId, qty);           // bottles
+    add(o.labelItemId, qty);      // labels
+    add(o.capItemId, qty);        // caps
+    add(o.packagingItemId, qty);  // packaging
+
+    return total;
+  }
 
 
 

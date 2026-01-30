@@ -54,7 +54,7 @@ extension SidebarMenuRoute on SidebarMenu {
       case SidebarMenu.inventory:
         return AppRoutes.inventory;
       case SidebarMenu.sales:
-        return AppRoutes.dashboard;
+        return AppRoutes.sales;
     }
   }
 }

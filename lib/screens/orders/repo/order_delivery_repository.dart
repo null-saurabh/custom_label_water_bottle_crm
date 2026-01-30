@@ -7,6 +7,19 @@ class OrderDeliveryRepository {
   CollectionReference get _ref =>
       _db.collection('order_delivery_entries');
 
+  // 🔁 Watch ALL delivery entries (for Sales / Dashboard)
+  Stream<List<OrderDeliveryEntryModel>> watchAll() {
+    return _ref
+        .orderBy('deliveryDate', descending: true)
+        .snapshots()
+        .map(
+          (s) => s.docs
+          .map((d) => OrderDeliveryEntryModel.fromDoc(d))
+          .toList(),
+    );
+  }
+
+
   // 🔁 Watch delivery entries for an order
   Stream<List<OrderDeliveryEntryModel>> watchByOrder(
       String orderId,
