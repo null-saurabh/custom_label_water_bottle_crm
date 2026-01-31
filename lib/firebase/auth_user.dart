@@ -6,5 +6,5 @@ class AuthUser {
   static String get uid => _u?.uid ?? 'anonymous';
   static String get email => _u?.email ?? '';
   static String get name =>
-      _u?.displayName ?? (_u?.email?.split('@').first ?? '');
+      _u?.displayName ?? (_u?.email?.split('@').first ?? 'Admin');
 }

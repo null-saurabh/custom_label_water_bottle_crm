@@ -2,6 +2,8 @@ import 'package:clwb_crm/screens/dashboard/models/global_search_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:clwb_crm/core/utils/responsive.dart';
+
 import 'global_search_controller.dart';
 
 class GlobalSearchBox extends StatefulWidget {
@@ -45,29 +47,63 @@ class _GlobalSearchBoxState extends State<GlobalSearchBox> {
     super.dispose();
   }
 
+  // void _showOverlay() {
+  //   if (_overlay != null) return;
+  //
+  //   final box = context.findRenderObject() as RenderBox?;
+  //   if (box == null) return;
+  //
+  //   final size = box.size;
+  //   final offset = box.localToGlobal(Offset.zero);
+  //
+  //   _overlay = OverlayEntry(
+  //     builder: (_) => Positioned(
+  //       left: offset.dx,
+  //       top: offset.dy + size.height + 8,
+  //       width: size.width,
+  //       child: Material(
+  //         color: Colors.transparent,
+  //         child: _SearchDropdown(),
+  //       ),
+  //     ),
+  //   );
+  //
+  //   Overlay.of(context, rootOverlay: true).insert(_overlay!);
+  // }
+
+
   void _showOverlay() {
     if (_overlay != null) return;
 
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) return;
 
+    final isMobile = context.isMobile;
+
     final size = box.size;
     final offset = box.localToGlobal(Offset.zero);
 
+    final screenWidth = MediaQuery.of(context).size.width;
+
     _overlay = OverlayEntry(
       builder: (_) => Positioned(
-        left: offset.dx,
+        left: isMobile ? 0 : offset.dx,
         top: offset.dy + size.height + 8,
-        width: size.width,
+        width: isMobile ? screenWidth : size.width,
         child: Material(
           color: Colors.transparent,
-          child: _SearchDropdown(),
+          child: Padding(
+            // small horizontal padding on mobile so it doesn’t touch edges
+            padding: EdgeInsets.symmetric(horizontal: isMobile ? 12 : 0),
+            child: _SearchDropdown(),
+          ),
         ),
       ),
     );
 
     Overlay.of(context, rootOverlay: true).insert(_overlay!);
   }
+
 
   void _removeOverlay() {
     _overlay?.remove();
