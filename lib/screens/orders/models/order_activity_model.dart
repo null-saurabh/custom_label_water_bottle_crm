@@ -32,21 +32,30 @@ class OrderActivityModel {
   });
 
   factory OrderActivityModel.fromDoc(DocumentSnapshot doc) {
-    final d = doc.data() as Map<String, dynamic>;
+    final d = (doc.data() as Map<String, dynamic>? ?? {});
+
+    DateTime _dt(dynamic v, {DateTime? fallback}) {
+      if (v is Timestamp) return v.toDate();
+      if (v is DateTime) return v;
+      if (v is String) return DateTime.tryParse(v) ?? (fallback ?? DateTime.now());
+      if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
+      return fallback ?? DateTime.now();
+    }
 
     return OrderActivityModel(
       id: doc.id,
-      orderId: d['orderId'],
-      clientId: d['clientId'],
-      type: d['type'],
-      title: d['title'],
-      description: d['description'],
-      stage: d['stage'],
-      activityDate: d['activityDate'].toDate(),
-      createdBy: d['createdBy'],
-      createdAt: d['createdAt'].toDate(),
+      orderId: (d['orderId'] ?? '').toString(),
+      clientId: (d['clientId'] ?? '').toString(),
+      type: (d['type'] ?? '').toString(),
+      title: (d['title'] ?? '').toString(),
+      description: (d['description'] ?? '').toString(),
+      stage: (d['stage'] ?? '').toString(),
+      activityDate: _dt(d['activityDate'], fallback: _dt(d['createdAt'])),
+      createdBy: (d['createdBy'] ?? d['createdByName'] ?? d['createdByEmail'] ?? 'system').toString(),
+      createdAt: _dt(d['createdAt']),
     );
   }
+
 
   Map<String, dynamic> toMap() {
     return {
@@ -56,9 +65,9 @@ class OrderActivityModel {
       'title': title,
       'description': description,
       'stage': stage,
-      'activityDate': activityDate,
       'createdBy': createdBy,
-      'createdAt': createdAt,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'activityDate': Timestamp.fromDate(activityDate),
     };
   }
 

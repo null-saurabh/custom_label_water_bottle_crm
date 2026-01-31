@@ -29,7 +29,7 @@ class LeadActivityDialog extends StatelessWidget {
                     child: Text(
                       lead.businessName.isNotEmpty
                           ? lead.businessName
-                          : lead.contactName,
+                          : lead.primaryContactName,
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,

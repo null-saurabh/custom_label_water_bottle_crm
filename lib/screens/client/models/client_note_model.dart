@@ -38,7 +38,13 @@ class ClientNoteModel {
       id: doc.id,
       clientId: (data['clientId'] ?? '').toString(),
       text: (data['text'] ?? '').toString(),
-      createdBy: (data['createdBy'] ?? 'system').toString(),
+      createdBy: (data['createdByName'] ??
+          data['createdByEmail'] ??
+          data['createdByUid'] ??
+          data['createdBy'] ??
+          'system')
+          .toString(),
+
       createdAt: _dt(data['createdAt']),
       updatedAt: _dt(data['updatedAt']),
     );

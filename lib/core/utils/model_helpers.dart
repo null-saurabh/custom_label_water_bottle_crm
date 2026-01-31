@@ -6,9 +6,13 @@ DateTime asDateTime(dynamic v) {
   if (v is DateTime) return v;
   if (v is Timestamp) return v.toDate();
   if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
-  if (v is String) return DateTime.tryParse(v) ?? DateTime.fromMillisecondsSinceEpoch(0);
-  throw ArgumentError('Unsupported date type: ${v.runtimeType}');
+  if (v is String) {
+    final parsed = DateTime.tryParse(v);
+    return parsed ?? DateTime.fromMillisecondsSinceEpoch(0);
+  }
+  return DateTime.fromMillisecondsSinceEpoch(0);
 }
+
 
 DateTime? asNullableDateTime(dynamic v) {
   if (v == null) return null;

@@ -73,6 +73,7 @@ class ClientListPanel extends GetView<ClientsController> {
 
   Widget _searchBar() {
     return TextField(
+      controller: controller.searchCtrl,
       onChanged: (value) => controller.searchQuery.value = value,
       decoration: InputDecoration(
         prefixIcon: const Icon(Icons.search),

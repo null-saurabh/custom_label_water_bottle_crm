@@ -33,17 +33,18 @@ class SupplierItemModel {
   }
 
   factory SupplierItemModel.fromDoc(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final data = (doc.data() as Map<String, dynamic>?) ?? {};
 
     return SupplierItemModel(
       id: doc.id,
-      itemId: data['itemId'],
-      supplierId: data['supplierId'],
-      costPerUnit: (data['costPerUnit'] as num).toDouble(),
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-        supplierSku: data['supplierId'],
+      itemId: (data['itemId'] ?? '').toString(),
+      supplierId: (data['supplierId'] ?? '').toString(),
+      supplierSku: (data['supplierSku'] ?? '').toString(), // ✅ FIX
+      costPerUnit: asDouble(data['costPerUnit']),
+      createdAt: asDateTime(data['createdAt']), // ✅ null-safe
     );
   }
+
 
 
   Map<String, dynamic> toMap() {

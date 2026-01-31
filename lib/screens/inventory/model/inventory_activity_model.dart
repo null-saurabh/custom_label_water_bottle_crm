@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:clwb_crm/core/utils/model_helpers.dart';
 
 class InventoryActivityModel {
   final String id;
@@ -64,10 +65,15 @@ class InventoryActivityModel {
       source: (data['source'] ?? '').toString(),
       title: (data['title'] ?? '').toString(),
       description: (data['description'] ?? '').toString(),
-      createdBy: (data['createdBy'] ?? 'system').toString(),
+      createdBy: (data['createdByName'] ??
+          data['createdByEmail'] ??
+          data['createdByUid'] ??
+          data['createdBy'] ??
+          'system')
+          .toString(),
       referenceId: data['referenceId']?.toString(),
       referenceType: data['referenceType']?.toString(),
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      createdAt: asDateTime(data['createdAt']),
       isActive: data['isActive'] ?? true,
     );
   }
@@ -87,7 +93,7 @@ class InventoryActivityModel {
       'referenceId': referenceId,
       'referenceType': referenceType,
       'createdBy': createdBy,
-      'createdAt': createdAt,
+      'createdAt': Timestamp.fromDate(createdAt),
       'isActive': isActive,
     };
   }

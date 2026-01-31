@@ -116,7 +116,7 @@ class GlobalSearchController extends GetxController {
 
       case GlobalSearchType.client:
         _app.selectMenu(SidebarMenu.clients);
-        _clients.searchQuery.value = r.id; // businessName
+        _clients.setSearch(r.id);
         // optional: if you want to auto-select
         final c = _clients.clients.firstWhereOrNull(
               (x) => x.id == r.subtitle, // not used in this simple approach
@@ -126,14 +126,15 @@ class GlobalSearchController extends GetxController {
 
       case GlobalSearchType.lead:
         _app.selectMenu(SidebarMenu.leads);
-        _leads.leadSearchQuery.value = r.id; // businessName
+        _leads.setSearch(r.id);
+
         break;
 
       case GlobalSearchType.inventoryItem:
         _app.selectMenu(SidebarMenu.inventory);
         final item = _inv.items.firstWhereOrNull((i) => i.id == r.id);
         if (item != null) {
-          _inv.itemSearchQuery.value = item.name;
+          _inv.setItemSearch(item.name);
           _inv.selectItem(item);
         }
         break;
@@ -142,7 +143,7 @@ class GlobalSearchController extends GetxController {
         _app.selectMenu(SidebarMenu.inventory);
         final s = _inv.suppliers.firstWhereOrNull((x) => x.id == r.id);
         if (s != null) {
-          _inv.supplierSearchQuery.value = s.name;
+          _inv.setSupplierSearch(s.name);
           _inv.selectSupplier(s);
         }
         break;
@@ -208,9 +209,9 @@ class GlobalSearchController extends GetxController {
           v != null && v.toLowerCase().contains(q);
 
       if (!contains(l.businessName) &&
-          !contains(l.contactName) &&
-          !contains(l.phone) &&
-          !contains(l.email) &&
+          !contains(l.primaryContactName) &&
+          !contains(l.primaryPhone) &&
+          !contains(l.primaryEmail) &&
           !contains(l.area)) {
         continue;
       }
@@ -220,7 +221,7 @@ class GlobalSearchController extends GetxController {
           type: GlobalSearchType.lead,
           id: l.businessName ?? '',
           title: 'Lead — ${l.businessName ?? '—'}',
-          subtitle: (l.status).name, // newLead/contacted/etc
+          subtitle: (l.state) // newLead/contacted/etc
         ),
       );
     }

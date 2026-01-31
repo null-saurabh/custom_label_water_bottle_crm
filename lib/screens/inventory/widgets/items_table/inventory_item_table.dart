@@ -33,6 +33,7 @@ class InventoryItemsTable extends GetView<InventoryController> {
 
           /// Search (UI-only for now)
           SearchBox(
+            controller: controller.itemSearchCtrl,
             hintText: 'Search Items...',
             onChanged: controller.itemSearchQuery.call,
           ),
@@ -95,11 +96,13 @@ class InventoryItemsTable extends GetView<InventoryController> {
 
 
 class SearchBox extends StatelessWidget {
+  final TextEditingController controller;
   final String hintText;
   final ValueChanged<String> onChanged;
 
   const SearchBox({
     super.key,
+    required this.controller,
     required this.onChanged,
     required this.hintText,
   });
@@ -113,6 +116,7 @@ class SearchBox extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade400),
       ),
       child: TextField(
+        controller: controller,
         onChanged: onChanged,
         decoration: InputDecoration(
           hintText: hintText,

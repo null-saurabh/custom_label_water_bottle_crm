@@ -278,7 +278,13 @@ class LeadModel {
 
   factory LeadModel.fromDoc(DocumentSnapshot doc) {
     final m = (doc.data() as Map<String, dynamic>? ?? {});
-    DateTime? ts(dynamic v) => v is Timestamp ? v.toDate() : null;
+    DateTime? ts(dynamic v) {
+      if (v is Timestamp) return v.toDate();
+      if (v is DateTime) return v;
+      if (v is String) return DateTime.tryParse(v);
+      return null;
+    }
+
 
     final interestsRaw = (m['interests'] as List? ?? [])
         .whereType<Map>()
@@ -480,7 +486,13 @@ class LeadActivity {
   };
 
   factory LeadActivity.fromMap(Map<String, dynamic> m) {
-    DateTime ts(dynamic v) => v is Timestamp ? v.toDate() : DateTime.now();
+    DateTime ts(dynamic v) {
+      if (v is Timestamp) return v.toDate();
+      if (v is DateTime) return v;
+      if (v is String) return DateTime.tryParse(v) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
+
     return LeadActivity(
       id: (m['id'] ?? '').toString(),
       type: LeadActivityType.values.firstWhere(
@@ -492,7 +504,17 @@ class LeadActivity {
       userId: (m['userId'] ?? '').toString(),
       userName: (m['userName'] ?? '').toString(),
       at: ts(m['at']),
-      meta: Map<String, dynamic>.from(m['meta'] ?? {}),
+      meta: Map<String, dynamic>.from(_normalizeMeta(m['meta'] ?? {}) as Map),
     );
   }
+}
+
+
+dynamic _normalizeMeta(dynamic v) {
+  if (v is Timestamp) return v.toDate();
+  if (v is Map) {
+    return v.map((k, val) => MapEntry(k.toString(), _normalizeMeta(val)));
+  }
+  if (v is List) return v.map(_normalizeMeta).toList();
+  return v;
 }

@@ -7,8 +7,8 @@ class OrderExpenseModel {
 
   final String direction;
 
-  final String stage;       // dispatch / production / delivery / misc
-  final String category;    // transport / plant_fee / labor / fuel / other
+  final String stage;
+  final String category;
 
   final String description;
 
@@ -20,17 +20,17 @@ class OrderExpenseModel {
   final String? referenceNo;
 
   final DateTime expenseDate;
-  final String status;      // pending / partial / paid
+  final String status;
 
   final String createdBy;
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  const OrderExpenseModel( {
+  const OrderExpenseModel({
     required this.id,
     required this.orderId,
     required this.clientId,
-  required this.direction,
+    required this.direction,
     required this.stage,
     required this.category,
     required this.description,
@@ -46,63 +46,61 @@ class OrderExpenseModel {
     required this.updatedAt,
   });
 
-  // factory OrderExpenseModel.fromDoc(DocumentSnapshot doc) {
-  //   final d = doc.data() as Map<String, dynamic>;
-  //
-  //   return OrderExpenseModel(
-  //     id: doc.id,
-  //     orderId: d['orderId'],
-  //     clientId: d['clientId'],
-  //     direction: d['direction'] ?? 'out', // 🔥
-  //     stage: d['stage'],
-  //     category: d['category'],
-  //     description: d['description'],
-  //     amount: (d['amount'] ?? 0).toDouble(),
-  //     paidAmount: (d['paidAmount'] ?? 0).toDouble(),
-  //     dueAmount: (d['dueAmount'] ?? 0).toDouble(),
-  //     vendorName: d['vendorName'],
-  //     referenceNo: d['referenceNo'],
-  //     expenseDate: d['expenseDate'].toDate(),
-  //     status: d['status'],
-  //     createdBy: d['createdBy'],
-  //     createdAt: d['createdAt'].toDate(),
-  //     updatedAt: d['updatedAt'].toDate(),
-  //   );
-  // }
+  static DateTime? _dtOpt(dynamic v) {
+    if (v is Timestamp) return v.toDate();
+    if (v is DateTime) return v;
+    if (v is String) return DateTime.tryParse(v);
+    if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
+    return null;
+  }
+
+  static DateTime _dtReq(dynamic v, {DateTime? fallback}) {
+    return _dtOpt(v) ?? fallback ?? DateTime.now();
+  }
+
+  static double _asDouble(dynamic v, {double fallback = 0}) {
+    if (v is double) return v;
+    if (v is num) return v.toDouble();
+    return double.tryParse(v?.toString() ?? '') ?? fallback;
+  }
+
+  static String? _asNullableString(dynamic v) {
+    if (v == null) return null;
+    final s = v.toString();
+    return s.isEmpty ? null : s;
+  }
+
   factory OrderExpenseModel.fromDoc(DocumentSnapshot d) {
-    final data = d.data() as Map<String, dynamic>? ?? {};
+    final data = (d.data() as Map<String, dynamic>? ?? {});
+
+    final createdAt = _dtReq(data['createdAt']);
+    final updatedAt = _dtReq(data['updatedAt'], fallback: createdAt);
 
     return OrderExpenseModel(
       id: d.id,
-      orderId: data['orderId'] ?? '',
-      clientId: data['clientId'] ?? '',
+      orderId: (data['orderId'] ?? '').toString(),
+      clientId: (data['clientId'] ?? '').toString(),
 
-      direction: data['direction'] ?? 'out',
+      direction: (data['direction'] ?? 'out').toString(),
+      stage: (data['stage'] ?? 'unknown').toString(),
+      category: (data['category'] ?? 'unknown').toString(),
 
-      stage: data['stage'] ?? 'unknown',
-      category: data['category'] ?? 'unknown',
+      description: (data['description'] ?? '').toString(),
 
-      description: data['description'] ?? '',
+      amount: _asDouble(data['amount']),
+      paidAmount: _asDouble(data['paidAmount']),
+      dueAmount: _asDouble(data['dueAmount']),
 
-      amount: (data['amount'] ?? 0).toDouble(),
-      paidAmount: (data['paidAmount'] ?? 0).toDouble(),
-      dueAmount: (data['dueAmount'] ?? 0).toDouble(),
+      vendorName: _asNullableString(data['vendorName']),
+      referenceNo: _asNullableString(data['referenceNo']),
 
-      vendorName: data['vendorName'], // nullable ✔
-      referenceNo: data['referenceNo'], // nullable ✔
+      expenseDate: _dtReq(data['expenseDate'], fallback: createdAt),
 
-      expenseDate: (data['expenseDate'] as Timestamp?)?.toDate()
-          ?? DateTime.now(),
+      status: (data['status'] ?? 'unknown').toString(),
 
-      status: data['status'] ?? 'unknown',
-
-      createdBy: data['createdBy'] ?? 'system',
-
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate()
-          ?? DateTime.now(),
-
-      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate()
-          ?? DateTime.now(),
+      createdBy: (data['createdBy'] ?? data['createdByName'] ?? data['createdByEmail'] ?? 'system').toString(),
+      createdAt: createdAt,
+      updatedAt: updatedAt,
     );
   }
 
@@ -119,16 +117,15 @@ class OrderExpenseModel {
       'dueAmount': dueAmount,
       'vendorName': vendorName,
       'referenceNo': referenceNo,
-      'expenseDate': expenseDate,
+      'expenseDate': Timestamp.fromDate(expenseDate),
       'status': status,
       'createdBy': createdBy,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
     };
   }
 
   OrderExpenseModel copyWith({
-
     String? id,
     double? paidAmount,
     double? dueAmount,
@@ -136,7 +133,7 @@ class OrderExpenseModel {
     DateTime? updatedAt,
   }) {
     return OrderExpenseModel(
-      id: id?? this.id,
+      id: id ?? this.id,
       orderId: orderId,
       clientId: clientId,
       direction: direction,

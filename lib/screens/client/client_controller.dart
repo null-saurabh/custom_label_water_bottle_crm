@@ -4,6 +4,7 @@ import 'package:clwb_crm/screens/client/models/client_media.dart';
 import 'package:clwb_crm/screens/client/models/client_model.dart';
 import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_activity_controller.dart';
 import 'package:clwb_crm/screens/client/screens/client_detail_panel/notes_widget/client_notes_controller.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 enum ClientFilter {
@@ -25,6 +26,20 @@ class ClientsController extends GetxController {
   final selectedFilter = ClientFilter.all.obs;
 
   final searchQuery = ''.obs;
+  final searchCtrl = TextEditingController();
+
+  void setSearch(String v) {
+    searchQuery.value = v;
+
+    if (searchCtrl.text != v) {
+      searchCtrl.value = searchCtrl.value.copyWith(
+        text: v,
+        selection: TextSelection.collapsed(offset: v.length),
+        composing: TextRange.empty,
+      );
+    }
+  }
+
   final selectedClientId = RxnString();
 
 
@@ -113,6 +128,11 @@ class ClientsController extends GetxController {
 
 
 
+  @override
+  void onClose() {
+    searchCtrl.dispose();
+    super.onClose();
+  }
 
 
 

@@ -14,9 +14,9 @@ class EditLeadController extends GetxController {
 
   // Controllers
   late final businessCtrl = TextEditingController(text: lead.businessName);
-  late final contactCtrl = TextEditingController(text: lead.contactName);
-  late final phoneCtrl = TextEditingController(text: lead.phone);
-  late final emailCtrl = TextEditingController(text: lead.email);
+  late final contactCtrl = TextEditingController(text: lead.primaryContactName);
+  late final phoneCtrl = TextEditingController(text: lead.primaryContactName);
+  late final emailCtrl = TextEditingController(text: lead.primaryEmail);
   late final cityCtrl = TextEditingController(text: lead.city);
   late final stateCtrl = TextEditingController(text: lead.state);
   late final areaCtrl = TextEditingController(text: lead.area);
@@ -40,8 +40,8 @@ class EditLeadController extends GetxController {
   void onInit() {
     super.onInit();
     selectedBusinessType.value = lead.businessType;
-    monthlyQuantity.value = lead.monthlyQuantity;
-    bottleSizes.assignAll(lead.bottleSizes);
+    // monthlyQuantity.value = lead.monthlyQuantity;
+    // bottleSizes.assignAll(lead.bottleSizes);
   }
 
   bool validate() {
@@ -83,21 +83,21 @@ class EditLeadController extends GetxController {
         'area': areaCtrl.text.trim(),
         'notes': notesCtrl.text.trim(),
         // keep status as-is unless you edit separately
-        'status': lead.status.name,
+        // 'status': lead.status.name,
       };
 
       await repo.updateLead(leadId: lead.id, data: updatedData);
 
       // Activity entry
-      final activity = LeadActivity(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        type: LeadActivityType.note,
-        title: 'Lead Updated',
-        note: _buildUpdateNote(lead),
-        at: DateTime.now(),
-      );
+      // final activity = LeadActivity(
+      //   id: DateTime.now().millisecondsSinceEpoch.toString(),
+      //   type: LeadActivityType.note,
+      //   title: 'Lead Updated',
+      //   note: _buildUpdateNote(lead),
+      //   at: DateTime.now(),
+      // );
 
-      await activityRepo.addActivity(lead.id, activity);
+      // await activityRepo.addActivity(lead.id, activity);
 
       if (isClosed) return;
       Get.back();
@@ -121,24 +121,24 @@ class EditLeadController extends GetxController {
     }
 
     check('Business name', oldLead.businessName, businessCtrl.text);
-    check('Contact name', oldLead.contactName, contactCtrl.text);
-    check('Phone', oldLead.phone, phoneCtrl.text);
-    check('Email', oldLead.email, emailCtrl.text);
-    check('Business type', oldLead.businessType, selectedBusinessType.value);
-    check('Monthly qty', oldLead.monthlyQuantity, monthlyQuantity.value);
+    // check('Contact name', oldLead.contactName, contactCtrl.text);
+    // check('Phone', oldLead.phone, phoneCtrl.text);
+    // check('Email', oldLead.email, emailCtrl.text);
+    // check('Business type', oldLead.businessType, selectedBusinessType.value);
+    // check('Monthly qty', oldLead.monthlyQuantity, monthlyQuantity.value);
     check('City', oldLead.city, cityCtrl.text);
     check('State', oldLead.state, stateCtrl.text);
     check('Area', oldLead.area, areaCtrl.text);
 
     // bottle sizes (list compare)
-    final oldSizes = oldLead.bottleSizes.join(', ');
+    // final oldSizes = oldLead.bottleSizes.join(', ');
     final newSizes = bottleSizes.join(', ');
-    if (oldSizes != newSizes) {
-      changes.add('Bottle sizes: "$oldSizes" → "$newSizes"');
-    }
-
-    if (changes.isEmpty) return 'Lead updated (no visible changes)';
-
+    // if (oldSizes != newSizes) {
+    //   changes.add('Bottle sizes: "$oldSizes" → "$newSizes"');
+    // }
+    //
+    // if (changes.isEmpty) return 'Lead updated (no visible changes)';
+    //
     return changes.join('\n');
   }
 

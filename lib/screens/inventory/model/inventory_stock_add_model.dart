@@ -67,41 +67,20 @@ class InventoryStockAddModel {
       paidAmount: (d['paidAmount'] as num?)?.toDouble() ?? 0.0,
       dueAmount: (d['dueAmount'] as num?)?.toDouble() ?? 0.0,
 
-      status: d['status'],
-      deliveryDate: d['deliveryDate']?.toDate(),
-      dueDate: d['dueDate']?.toDate(),
-      createdAt: d['createdAt'].toDate(),
-      updatedAt: d['updatedAt'].toDate(),
+      status: DeliveryStatus.values.byName((d['status'] ?? 'pending').toString()),
+
+      deliveryDate: asDateTime(d['deliveryDate']) == DateTime.fromMillisecondsSinceEpoch(0)
+          ? null
+          : asDateTime(d['deliveryDate']),
+      dueDate: asDateTime(d['dueDate']) == DateTime.fromMillisecondsSinceEpoch(0)
+          ? null
+          : asDateTime(d['dueDate']),
+      createdAt: asDateTime(d['createdAt']),
+      updatedAt: asDateTime(d['updatedAt']),
+
     );
   }
 
-
-  // factory InventoryStockAddModel.fromMap(Map<String, dynamic> d, {String id = ''}) {
-  //   final orderedQty = asInt(d['orderedQuantity']);
-  //   final rate = asDouble(d['ratePerUnit']);
-  //
-  //   // if totalAmount missing, compute safely
-  //   final total = d.containsKey('totalAmount')
-  //       ? asDouble(d['totalAmount'])
-  //       : (orderedQty * rate);
-  //
-  //   return InventoryStockAddModel(
-  //     id: (d['id'] ?? id).toString(),
-  //     itemId: (d['itemId'] ?? '').toString(),
-  //     supplierId: (d['supplierId'] ?? '').toString(),
-  //     orderedQuantity: orderedQty,
-  //     receivedQuantity: asInt(d['receivedQuantity']),
-  //     ratePerUnit: rate,
-  //     totalAmount: total,
-  //     paidAmount: asDouble(d['paidAmount']),
-  //     dueAmount: asDouble(d['dueAmount']),
-  //     status: enumFromName(DeliveryStatus.values, d['status'], DeliveryStatus.pending),
-  //     deliveryDate: asNullableDateTime(d['deliveryDate']),
-  //     dueDate: asNullableDateTime(d['dueDate']),
-  //     createdAt: asDateTime(d['createdAt']),
-  //     updatedAt: asDateTime(d['updatedAt']),
-  //   );
-  // }
 
   factory InventoryStockAddModel.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -112,10 +91,10 @@ class InventoryStockAddModel {
       supplierId: data['supplierId'],
       orderedQuantity: asInt(data['orderedQuantity']),
       receivedQuantity: asInt(data['receivedQuantity']),
-      ratePerUnit: (data['ratePerUnit'] as num).toDouble(),
-      totalAmount: (data['totalAmount'] as num).toDouble(),
-      paidAmount: (data['paidAmount'] as num).toDouble(),
-      dueAmount: (data['dueAmount'] as num).toDouble(),
+      ratePerUnit: asDouble(data['ratePerUnit']),
+      totalAmount: asDouble(data['totalAmount']),
+      paidAmount: asDouble(data['paidAmount']),
+      dueAmount: asDouble(data['dueAmount']),
       status: DeliveryStatus.values.byName(data['status']),
       deliveryDate: data['deliveryDate'] != null
           ? (data['deliveryDate'] as Timestamp).toDate()
@@ -123,8 +102,9 @@ class InventoryStockAddModel {
       dueDate: data['dueDate'] != null
           ? (data['dueDate'] as Timestamp).toDate()
           : null,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+      createdAt: asDateTime(data['createdAt']),
+      updatedAt: asDateTime(data['updatedAt']),
+
     );
   }
 

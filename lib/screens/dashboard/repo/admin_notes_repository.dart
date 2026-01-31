@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:clwb_crm/firebase/audit_activity.dart';
 import 'package:clwb_crm/screens/dashboard/widgets/notes/admin_note_model.dart';
 
 class AdminNotesRepository {
@@ -18,20 +19,14 @@ class AdminNotesRepository {
   Future<void> addNote({
     required String adminId,
     required String text,
-    required String createdBy,
   }) async {
-    final now = DateTime.now();
     final ref = _notesRef(adminId).doc();
 
-    final note = AdminNoteModel(
-      id: ref.id,
-      text: text,
-      createdBy: createdBy,
-      createdAt: now,
-      updatedAt: now,
-    );
 
-    await ref.set(note.toMap());
+    await ref.set({
+      'text': text,
+      ...Audit.created(),
+    });
   }
 
   Future<void> updateNote({
@@ -41,8 +36,9 @@ class AdminNotesRepository {
   }) async {
     await _notesRef(adminId).doc(noteId).update({
       'text': text,
-      'updatedAt': FieldValue.serverTimestamp(),
+      ...Audit.updated(),
     });
+
   }
 
   Future<void> deleteNote({

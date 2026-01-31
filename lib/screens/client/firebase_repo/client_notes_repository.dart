@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:clwb_crm/firebase/audit_activity.dart';
 import 'package:clwb_crm/screens/client/models/client_note_model.dart';
 
 class ClientNotesRepository {
@@ -17,21 +18,21 @@ class ClientNotesRepository {
   Future<void> addNote({
     required String clientId,
     required String text,
-    required String createdBy,
   }) async {
-    final now = DateTime.now();
     final ref = _notesRef(clientId).doc();
 
-    final note = ClientNoteModel(
-      id: ref.id,
-      clientId: clientId,
-      text: text,
-      createdBy: createdBy,
-      createdAt: now,
-      updatedAt: now,
-    );
+    await ref.set({
+      'id': ref.id,
+      'clientId': clientId,
+      'text': text,
+      ...Audit.created(), // createdBy + updatedBy + timestamps
+    });
 
-    await ref.set(note.toMap());
+    // optional: bump client lastActivityAt
+    await _db.collection('clients').doc(clientId).update({
+      'lastActivityAt': FieldValue.serverTimestamp(),
+      ...Audit.updated(),
+    });
   }
 
   Future<void> updateNote({
@@ -41,7 +42,12 @@ class ClientNotesRepository {
   }) async {
     await _notesRef(clientId).doc(noteId).update({
       'text': text,
-      'updatedAt': FieldValue.serverTimestamp(),
+      ...Audit.updated(),
+    });
+
+    await _db.collection('clients').doc(clientId).update({
+      'lastActivityAt': FieldValue.serverTimestamp(),
+      ...Audit.updated(),
     });
   }
 
@@ -50,5 +56,10 @@ class ClientNotesRepository {
     required String noteId,
   }) async {
     await _notesRef(clientId).doc(noteId).delete();
+
+    await _db.collection('clients').doc(clientId).update({
+      'lastActivityAt': FieldValue.serverTimestamp(),
+      ...Audit.updated(),
+    });
   }
 }

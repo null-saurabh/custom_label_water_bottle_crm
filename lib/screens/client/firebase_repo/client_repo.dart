@@ -1,13 +1,6 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import '../models/client_model.dart';
-//
-
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:clwb_crm/screens/client/models/client_location.dart';
-import 'package:clwb_crm/screens/client/models/client_media.dart';
-import '../models/client_model.dart';
+import 'package:clwb_crm/firebase/audit_activity.dart';
+import 'package:clwb_crm/screens/client/models/client_model.dart';
 
 class ClientRepository {
   final _db = FirebaseFirestore.instance;
@@ -16,7 +9,11 @@ class ClientRepository {
   CollectionReference get ref => _db.collection('clients');
 
   Future<String> addClient(ClientModel client) async {
-    final doc = await _ref.add(client.toJson());
+    final doc = await _ref.add({
+      ...client.toJson(),
+      ...Audit.created(),
+      'lastActivityAt': FieldValue.serverTimestamp(),
+    });
     return doc.id;
   }
 
@@ -25,7 +22,10 @@ class ClientRepository {
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
-          (s) => s.docs.map((d) => ClientModel.fromJson(d.data() as Map<String, dynamic>, id: d.id)).toList(),
+          (s) => s.docs
+          .map((d) =>
+          ClientModel.fromJson(d.data() as Map<String, dynamic>, id: d.id))
+          .toList(),
     );
   }
 
@@ -35,6 +35,7 @@ class ClientRepository {
   }) async {
     await _ref.doc(clientId).update({
       ...data,
+      ...Audit.updated(),
       'lastActivityAt': FieldValue.serverTimestamp(),
     });
   }
@@ -47,48 +48,42 @@ class ClientRepository {
       await doc.reference.delete();
     }
 
+    final notes = await ref.collection('notes').get();
+    for (final doc in notes.docs) {
+      await doc.reference.delete();
+    }
+
     await ref.delete();
   }
 
-
-  Future<ClientModel> createClientWithLabels(
-      ClientModel client,
-      ) async {
+  Future<ClientModel> createClientWithLabels(ClientModel client) async {
     final batch = _db.batch();
 
     // 1️⃣ Create client doc ref
     final clientRef = _ref.doc();
 
     // 2️⃣ Create small label item
-    final smallLabelRef =
-    _db.collection('inventory_items').doc();
-
+    final smallLabelRef = _db.collection('inventory_items').doc();
     final smallLabelData = {
       'name': '${client.businessName} - S Label',
       'category': 'label',
       'stock': 0,
       'reorderLevel': 500,
       'isActive': true,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
+      ...Audit.created(),
     };
-
     batch.set(smallLabelRef, smallLabelData);
 
     // 3️⃣ Create large label item
-    final largeLabelRef =
-    _db.collection('inventory_items').doc();
-
+    final largeLabelRef = _db.collection('inventory_items').doc();
     final largeLabelData = {
       'name': '${client.businessName} - L Label',
       'category': 'label',
       'stock': 0,
       'reorderLevel': 500,
       'isActive': true,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
+      ...Audit.created(),
     };
-
     batch.set(largeLabelRef, largeLabelData);
 
     // 4️⃣ Attach labels to client
@@ -97,23 +92,19 @@ class ClientRepository {
       labelLargeItemId: largeLabelRef.id,
     );
 
+    // 5️⃣ Create client doc with audit
     batch.set(
       clientRef,
-      clientWithLabels.toJson(),
+      {
+        ...clientWithLabels.toJson(),
+        ...Audit.created(),
+        'lastActivityAt': FieldValue.serverTimestamp(),
+      },
     );
 
-    // 5️⃣ Commit atomically
+    // 6️⃣ Commit atomically
     await batch.commit();
 
     return clientWithLabels.copyWith(id: clientRef.id);
   }
-
-
-
 }
-
-
-
-
-
-

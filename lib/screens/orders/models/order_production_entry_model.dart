@@ -27,25 +27,36 @@ class OrderProductionEntryModel {
     required this.updatedAt,
   });
 
-  factory OrderProductionEntryModel.fromDoc(
-      DocumentSnapshot doc) {
-    final d = doc.data() as Map<String, dynamic>;
+  factory OrderProductionEntryModel.fromDoc(DocumentSnapshot doc) {
+    final d = (doc.data() as Map<String, dynamic>? ?? {});
+
+    DateTime _dt(dynamic v, {DateTime? fallback}) {
+      if (v is Timestamp) return v.toDate();
+      if (v is DateTime) return v;
+      if (v is String) return DateTime.tryParse(v) ?? (fallback ?? DateTime.now());
+      if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
+      return fallback ?? DateTime.now();
+    }
+
+    int _int(dynamic v) {
+      if (v is int) return v;
+      if (v is num) return v.toInt();
+      return int.tryParse(v?.toString() ?? '') ?? 0;
+    }
 
     return OrderProductionEntryModel(
       id: doc.id,
-      orderId: d['orderId'],
-      quantityProducedToday:
-      d['quantityProducedToday'],
-      cumulativeProduced:
-      d['cumulativeProduced'],
-      productionDate:
-      d['productionDate'].toDate(),
-      notes: d['notes'],
-      createdBy: d['createdBy'],
-      createdAt: d['createdAt'].toDate(),
-      updatedAt: d['updatedAt'].toDate(),
+      orderId: (d['orderId'] ?? '').toString(),
+      quantityProducedToday: _int(d['quantityProducedToday']),
+      cumulativeProduced: _int(d['cumulativeProduced']),
+      productionDate: _dt(d['productionDate'], fallback: _dt(d['createdAt'])),
+      notes: (d['notes'] ?? '').toString(),
+      createdBy: (d['createdBy'] ?? d['createdByName'] ?? d['createdByEmail'] ?? 'system').toString(),
+      createdAt: _dt(d['createdAt']),
+      updatedAt: _dt(d['updatedAt'], fallback: _dt(d['createdAt'])),
     );
   }
+
 
   Map<String, dynamic> toMap() {
     return {
@@ -54,11 +65,12 @@ class OrderProductionEntryModel {
       quantityProducedToday,
       'cumulativeProduced':
       cumulativeProduced,
-      'productionDate': productionDate,
       'notes': notes,
       'createdBy': createdBy,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'productionDate': Timestamp.fromDate(productionDate),
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
+
     };
   }
   OrderProductionEntryModel copyWith({

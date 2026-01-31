@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:clwb_crm/firebase/audit_activity.dart';
 import 'package:clwb_crm/screens/leads/add_lead_model.dart';
 
 class LeadRepository {
@@ -8,8 +9,7 @@ class LeadRepository {
   Future<String> addLead(LeadModel lead) async {
     final doc = await _ref.add({
       ...lead.toMap(),
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
+      ...Audit.created(),
       'lastActivityAt': FieldValue.serverTimestamp(),
     });
     return doc.id;
@@ -38,7 +38,7 @@ class LeadRepository {
   }) async {
     await _db.collection('leads').doc(leadId).update({
       ...data,
-      'updatedAt': FieldValue.serverTimestamp(),
+      ...Audit.updated(),
       'lastActivityAt': FieldValue.serverTimestamp(),
     });
   }
@@ -49,7 +49,7 @@ class LeadRepository {
   }) async {
     await _db.collection('leads').doc(leadId).update({
       'stage': stage.name,
-      'updatedAt': FieldValue.serverTimestamp(),
+      ...Audit.updated(),
       'lastActivityAt': FieldValue.serverTimestamp(),
     });
   }
@@ -62,7 +62,7 @@ class LeadRepository {
     await _db.collection('leads').doc(leadId).update({
       'nextFollowUpAt': nextAt == null ? null : Timestamp.fromDate(nextAt),
       'nextFollowUpNote': note,
-      'updatedAt': FieldValue.serverTimestamp(),
+      ...Audit.updated(),
       'lastActivityAt': FieldValue.serverTimestamp(),
     });
   }
@@ -72,7 +72,7 @@ class LeadRepository {
   }) async {
     await _db.collection('leads').doc(leadId).update({
       'lastContactedAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
+      ...Audit.updated(),
       'lastActivityAt': FieldValue.serverTimestamp(),
     });
   }
@@ -86,7 +86,7 @@ class LeadRepository {
       'stage': LeadStage.convertedToClient.name,
       'convertedClientId': clientId,
       'convertedAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
+      ...Audit.updated(),
       'lastActivityAt': FieldValue.serverTimestamp(),
       'nextFollowUpAt': null,
       'nextFollowUpNote': '',

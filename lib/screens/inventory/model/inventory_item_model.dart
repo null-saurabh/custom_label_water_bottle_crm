@@ -69,8 +69,9 @@ class InventoryItemModel {
       stock: asInt(data['stock']),
       reorderLevel: asInt(data['reorderLevel']),
       isActive: data['isActive'] ?? true,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+      createdAt: asDateTime(data['createdAt']),
+      updatedAt: asDateTime(data['updatedAt']),
+
     );
   }
 

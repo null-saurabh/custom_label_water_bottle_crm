@@ -29,6 +29,7 @@ class LeadsView extends GetView<LeadsController> {
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: TextField(
+                  controller: controller.searchCtrl,
                   onChanged: controller.leadSearchQuery.call,
                   decoration: InputDecoration(
                     hintText: 'Search',
@@ -43,7 +44,8 @@ class LeadsView extends GetView<LeadsController> {
                   const SizedBox(height: 16),
                   const LeadFilters(),
                   const SizedBox(height: 16),
-                  LeadTable(),
+                  Container(width:double.infinity,
+                      child: LeadTable()),
                 ],
               ),
             ),

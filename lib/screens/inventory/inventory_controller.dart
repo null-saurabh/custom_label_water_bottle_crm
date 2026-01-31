@@ -124,6 +124,7 @@ class InventoryController extends GetxController {
 
 
   final stockSupplierSearchQuery = ''.obs;
+
   final TextEditingController stockSupplierSearchCtrl = TextEditingController();
 
 
@@ -588,7 +589,34 @@ final RxList<InventoryActivityModel> selectedItemActivities =
 
 // ===== SEARCH =====
   final itemSearchQuery = ''.obs;
+  final itemSearchCtrl = TextEditingController();
+  void setItemSearch(String v) {
+    itemSearchQuery.value = v;
+
+    if (itemSearchCtrl.text != v) {
+      itemSearchCtrl.value = itemSearchCtrl.value.copyWith(
+        text: v,
+        selection: TextSelection.collapsed(offset: v.length),
+        composing: TextRange.empty,
+      );
+    }
+  }
+
   final supplierSearchQuery = ''.obs;
+  final supplierSearchCtrl = TextEditingController();
+
+  void setSupplierSearch(String v) {
+    supplierSearchQuery.value = v;
+
+    if (supplierSearchCtrl.text != v) {
+      supplierSearchCtrl.value = supplierSearchCtrl.value.copyWith(
+        text: v,
+        selection: TextSelection.collapsed(offset: v.length),
+        composing: TextRange.empty,
+      );
+    }
+  }
+
 
   // ===== FILTERED ITEMS =====
   List<InventoryItemModel> get filteredItems {

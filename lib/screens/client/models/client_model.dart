@@ -430,18 +430,35 @@ class ClientActivity {
   });
 
   factory ClientActivity.fromDoc(Map<String, dynamic> data, String id) {
+    DateTime _dt(dynamic v) {
+      if (v is Timestamp) return v.toDate();
+      if (v is String) return DateTime.tryParse(v) ?? DateTime.now();
+      return DateTime.now();
+    }
+
+    // If you later add audit to client activities,
+    // createdByName/email/uid will exist. This keeps it backward-compatible.
+    final createdBy = (data['createdByName'] ??
+        data['createdByEmail'] ??
+        data['createdByUid'] ??
+        data['userName'] ??
+        'system')
+        .toString();
+
     return ClientActivity(
       id: id,
       type: ClientActivityType.values.firstWhere(
             (e) => e.name == data['type'],
         orElse: () => ClientActivityType.note,
       ),
-      title: data['title'] ?? '',
-      note: data['note'] ?? '',
-      userName: data['userName'] ?? '',
-      at: (data['at'] as Timestamp).toDate(),
+      title: (data['title'] ?? '').toString(),
+      note: (data['note'] ?? '').toString(),
+      userName: createdBy,
+      at: _dt(data['at']),
     );
   }
+
+
 
   factory ClientActivity.fromMap(Map<String, dynamic> d) {
     return ClientActivity(
@@ -477,8 +494,16 @@ class ClientActivity {
       type: mapped,
       title: (data['title'] ?? '').toString(),
       note: (data['description'] ?? '').toString(),
-      userName: (data['createdBy'] ?? 'system').toString(),
-      at: (data['activityDate'] as Timestamp).toDate(),
+      userName: (data['createdByName'] ??
+          data['createdByEmail'] ??
+          data['createdByUid'] ??
+          data['createdBy'] ??
+          'system')
+          .toString(),
+      at: (data['activityDate'] is Timestamp)
+          ? (data['activityDate'] as Timestamp).toDate()
+          : DateTime.tryParse(data['activityDate']?.toString() ?? '') ?? DateTime.now(),
+
     );
   }
 

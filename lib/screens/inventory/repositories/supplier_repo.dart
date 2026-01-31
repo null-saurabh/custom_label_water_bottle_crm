@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:clwb_crm/firebase/audit_activity.dart';
 import 'package:clwb_crm/screens/inventory/model/supplier_model.dart';
 
 class SupplierRepository {
@@ -16,22 +17,30 @@ class SupplierRepository {
           (d) => d.exists ? SupplierModel.fromDoc(d) : null,
     );
   }
-  Future<String> addSupplier(SupplierModel supplier) async {
-    final doc = _ref.doc(); // ✅ auto-generated ID
 
-    await doc.set(
-      supplier.copyWith(id: doc.id).toMap(),
-    );
+  Future<String> addSupplier(SupplierModel supplier) async {
+    final doc = _ref.doc();
+
+    await doc.set({
+      ...supplier.copyWith(id: doc.id).toMap(),
+      ...Audit.created(),
+    });
 
     return doc.id;
   }
 
   Future<void> updateSupplier(String id, Map<String, dynamic> data) {
-    return _ref.doc(id).update(data);
+    return _ref.doc(id).update({
+      ...data,
+      ...Audit.updated(),
+    });
   }
 
   Future<void> deactivateSupplier(String id) {
-    return _ref.doc(id).update({'isActive': false});
+    return _ref.doc(id).update({
+      'isActive': false,
+      ...Audit.updated(),
+    });
   }
 
   Future<void> deleteSupplier(String id) {

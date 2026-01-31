@@ -40,7 +40,7 @@ class AdminNotesController extends GetxController {
 
     isSaving.value = true;
     try {
-      await _repo.addNote(adminId: adminId, text: t, createdBy: 'admin');
+      await _repo.addNote(adminId: adminId, text: t,);
     } catch (e) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.snackbar('Error', 'Failed to add note: $e');

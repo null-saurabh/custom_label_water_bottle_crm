@@ -106,34 +106,72 @@ class _ActivityIcon extends StatelessWidget {
     Color color;
 
     switch (type) {
-      case LeadActivityType.call:
+      case LeadActivityType.callMade:
+      case LeadActivityType.callReceived:
         icon = Icons.call;
         color = Colors.green;
         break;
-      case LeadActivityType.whatsapp:
+
+      case LeadActivityType.whatsappSent:
+      case LeadActivityType.whatsappReceived:
         icon = Icons.chat;
         color = Colors.teal;
         break;
-      case LeadActivityType.visit:
+
+      case LeadActivityType.meetingScheduled:
+      case LeadActivityType.meetingCompleted:
+        icon = Icons.handshake_outlined;
+        color = Colors.indigo;
+        break;
+
+      case LeadActivityType.visitScheduled:
+      case LeadActivityType.visitCompleted:
         icon = Icons.location_on;
         color = Colors.orange;
         break;
-      case LeadActivityType.statusChanged:
-        icon = Icons.sync_alt;
-        color = Colors.blue;
-        break;
-      case LeadActivityType.followUp:
-        icon = Icons.schedule;
+
+      case LeadActivityType.sampleRequested:
+      case LeadActivityType.sampleDispatched:
+      case LeadActivityType.sampleDelivered:
+      case LeadActivityType.sampleFeedbackReceived:
+        icon = Icons.inventory_2_outlined;
         color = Colors.purple;
         break;
+
+      case LeadActivityType.priceShared:
+      case LeadActivityType.quotationSent:
+      case LeadActivityType.negotiationUpdate:
+        icon = Icons.currency_rupee;
+        color = Colors.blue;
+        break;
+
+      case LeadActivityType.followUpScheduled:
+      case LeadActivityType.followUpCompleted:
+        icon = Icons.schedule;
+        color = Colors.deepPurple;
+        break;
+
+      case LeadActivityType.statusChanged:
+        icon = Icons.sync_alt;
+        color = Colors.blueGrey;
+        break;
+
+      case LeadActivityType.assignedChanged:
+        icon = Icons.person_outline;
+        color = Colors.brown;
+        break;
+
       case LeadActivityType.created:
         icon = Icons.flag;
         color = Colors.indigo;
         break;
+
+      case LeadActivityType.internalNote:
       default:
         icon = Icons.notes;
         color = Colors.grey;
     }
+
 
     return CircleAvatar(
       radius: 16,

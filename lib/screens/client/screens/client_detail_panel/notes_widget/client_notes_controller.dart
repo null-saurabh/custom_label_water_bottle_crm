@@ -44,7 +44,6 @@ class ClientNotesController extends GetxController {
       await _repo.addNote(
         clientId: clientId,
         text: t,
-        createdBy: 'admin', // replace later with auth user
       );
     } catch (e) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

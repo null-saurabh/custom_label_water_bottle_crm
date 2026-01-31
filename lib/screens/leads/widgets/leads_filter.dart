@@ -1,10 +1,12 @@
 // lib/features/leads/widgets/lead_filters.dart
 import 'package:clwb_crm/screens/leads/add_lead_model.dart';
+import 'package:clwb_crm/screens/leads/leads_controller.dart';
 import 'package:clwb_crm/screens/leads/widgets/add_lead_dialog/add_lead_controller.dart';
 import 'package:clwb_crm/screens/leads/widgets/add_lead_dialog/add_lead_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../leads_controller.dart';
+
+
 
 class LeadFilters extends GetView<LeadsController> {
   const LeadFilters({super.key});
@@ -12,15 +14,23 @@ class LeadFilters extends GetView<LeadsController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final selected = controller.selectedFilter.value;
+      final selected = controller.selectedStage.value;
 
       final allCount = controller.leads.length;
+
       final newCount = controller.leads
-          .where((e) => e.status == LeadStatus.newLead)
+          .where((e) => e.stage == LeadStage.newInquiry)
           .length;
+
       final contactedCount = controller.leads
-          .where((e) => e.status == LeadStatus.contacted)
+          .where((e) => e.stage == LeadStage.contacted)
           .length;
+
+      final followUpCount = controller.leads.where((l) {
+        return l.nextFollowUpAt != null &&
+            l.nextFollowUpAt!.isBefore(DateTime.now()) &&
+            !l.isConverted;
+      }).length;
 
       return Row(
         children: [
@@ -28,51 +38,59 @@ class LeadFilters extends GetView<LeadsController> {
             label: 'All',
             count: allCount,
             icon: null,
-            selected: selected == null, // recommended: null means "All"
+            selected: selected == null,
             showChevronWhenSelected: true,
-            onTap: () => controller.selectedFilter.value = null,
+            onTap: () => controller.selectedStage.value = null,
           ),
           const SizedBox(width: 14),
 
           _FilterPill(
-            label: 'New Leads',
+            label: 'New Inquiry',
             count: newCount,
-            icon: Icons.group_outlined,
-            selected: selected == LeadStatus.newLead,
-            onTap: () => controller.selectedFilter.value = LeadStatus.newLead,
+            icon: Icons.inbox_outlined,
+            selected: selected == LeadStage.newInquiry,
+            onTap: () => controller.selectedStage.value = LeadStage.newInquiry,
           ),
           const SizedBox(width: 14),
 
           _FilterPill(
             label: 'Contacted',
             count: contactedCount,
-            icon: Icons.person_outline,
-            selected: selected == LeadStatus.contacted,
-            onTap: () => controller.selectedFilter.value = LeadStatus.contacted,
+            icon: Icons.phone_in_talk_outlined,
+            selected: selected == LeadStage.contacted,
+            onTap: () => controller.selectedStage.value = LeadStage.contacted,
+          ),
+          const SizedBox(width: 14),
+
+          _FilterPill(
+            label: 'Overdue',
+            count: followUpCount,
+            icon: Icons.event_busy_outlined,
+            selected: controller.showOnlyOverdue.value == true,
+            onTap: () {
+              // Overdue is a "view", not a stage
+              controller.showOnlyDueToday.value = false;
+              controller.showOnlyOverdue.toggle();
+              controller.selectedStage.value = null;
+            },
           ),
 
           const Spacer(),
 
           HeaderActionButton(
-             text: 'Add Lead', onTap: () {
+            text: 'Add Lead',
+            onTap: () {
+              // safer than lazyPut in dialog flow
+              if (Get.isRegistered<AddLeadController>()) {
+                Get.delete<AddLeadController>();
+              }
+              Get.put(AddLeadController(), permanent: false);
 
-            Get.lazyPut(() => AddLeadController());
-
-            Get.dialog(
-              const AddLeadDialog(),
-              barrierDismissible: false,
-            );
-
-            // .then((_) {
-            //   if (Get.isRegistered<AddLeadController>()) {
-            //     Get.delete<AddLeadController>();
-            //   }
-            // });
-
-
-
-
-          },
+              Get.dialog(
+                const AddLeadDialog(),
+                barrierDismissible: false,
+              );
+            },
           ),
         ],
       );
@@ -161,8 +179,7 @@ class _FilterPill extends StatelessWidget {
                 ),
               ),
               if (selected && showChevronWhenSelected) ...[
-               Spacer(),
-                // const SizedBox(width: 10),
+                const Spacer(),
                 Icon(Icons.chevron_right, size: 20, color: muted),
               ],
             ],
@@ -172,7 +189,6 @@ class _FilterPill extends StatelessWidget {
     );
   }
 }
-
 
 class HeaderActionButton extends StatelessWidget {
   final String text;
@@ -208,12 +224,12 @@ class HeaderActionButton extends StatelessWidget {
           alignment: Alignment.center,
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add,color: Colors.white,),
-              SizedBox(width: 8,),
+            children: const [
+              Icon(Icons.add, color: Colors.white),
+              SizedBox(width: 8),
               Text(
-                text,
-                style: const TextStyle(
+                'Add Lead',
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
@@ -221,56 +237,6 @@ class HeaderActionButton extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-
-
-class _AddLeadButton extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  const _AddLeadButton({required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF6F86FF), Color(0xFF4C6FFF)],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(22),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-        ),
-        icon: const Icon(Icons.add, color: Colors.white, size: 20),
-        label: const Text(
-          'Add Lead',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 14,
           ),
         ),
       ),

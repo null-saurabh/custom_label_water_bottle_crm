@@ -35,6 +35,7 @@ class InventorySupplierTable extends GetView<InventoryController> {
           const SizedBox(height: 16),
 
           SearchBox(
+            controller: controller.supplierSearchCtrl,
             hintText: 'Search Manufacturers...',
             onChanged: controller.supplierSearchQuery.call,
           ),

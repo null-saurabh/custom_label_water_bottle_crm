@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:clwb_crm/core/utils/model_helpers.dart';
 
 class SupplierModel {
   final String id;
@@ -37,8 +38,9 @@ class SupplierModel {
       email: data['email'],
       address: data['address'],
       isActive: data['isActive'] ?? true,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+      createdAt: asDateTime(data['createdAt']),
+      updatedAt: asDateTime(data['updatedAt']),
+
     );
   }
 
@@ -50,8 +52,9 @@ class SupplierModel {
       'email': email,
       'address': address,
       'isActive': isActive,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
+
     };
   }
 

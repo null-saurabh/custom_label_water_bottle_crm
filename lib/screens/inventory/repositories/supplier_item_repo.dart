@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:clwb_crm/firebase/audit_activity.dart';
 import 'package:clwb_crm/screens/inventory/model/supplier_item_model.dart';
 
 class SupplierItemRepository {
@@ -8,7 +9,7 @@ class SupplierItemRepository {
   /// 🔥 REQUIRED for inventory aggregation
   Stream<List<SupplierItemModel>> watchAll() {
     return _ref.snapshots().map(
-      (s) => s.docs.map((d) => SupplierItemModel.fromDoc(d)).toList(),
+          (s) => s.docs.map((d) => SupplierItemModel.fromDoc(d)).toList(),
     );
   }
 
@@ -40,25 +41,34 @@ class SupplierItemRepository {
         .map((s) => s.docs.map((d) => SupplierItemModel.fromDoc(d)).toList());
   }
 
-
   Future<String> addSupplierItem(SupplierItemModel model) async {
     final doc = _ref.doc();
 
-    await doc.set(
-      model.copyWith(id: doc.id).toMap(),
-    );
+    await doc.set({
+      ...model.copyWith(id: doc.id).toMap(),
+      ...Audit.created(),
+    });
 
     return doc.id;
   }
 
-
   Future<void> upsertSupplierItem(SupplierItemModel model) {
-    return _ref.doc(model.id).set(model.toMap(), SetOptions(merge: true));
-  }
-  Future<void> updatePrice(String id, double costPerUnit) {
-    return _ref.doc(id).update({'costPerUnit': costPerUnit});
+    // Ensure updated audit always changes when merge happens
+    return _ref.doc(model.id).set(
+      {
+        ...model.toMap(),
+        ...Audit.updated(),
+      },
+      SetOptions(merge: true),
+    );
   }
 
+  Future<void> updatePrice(String id, double costPerUnit) {
+    return _ref.doc(id).update({
+      'costPerUnit': costPerUnit,
+      ...Audit.updated(),
+    });
+  }
 
   Future<void> deleteSupplierItem(String id) {
     return _ref.doc(id).delete();

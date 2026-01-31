@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:clwb_crm/firebase/audit_activity.dart';
 import 'package:clwb_crm/screens/client/models/client_model.dart';
 
 class ClientActivityRepository {
@@ -14,11 +15,18 @@ class ClientActivityRepository {
         .collection('activities')
         .doc(activity.id)
         .set({
+      'id': activity.id,
       'type': activity.type.name,
       'title': activity.title,
       'note': activity.note,
       'userName': activity.userName,
       'at': Timestamp.fromDate(activity.at),
+      ...Audit.created(), // stamp who logged the activity
+    });
+
+    await _db.collection('clients').doc(clientId).update({
+      'lastActivityAt': FieldValue.serverTimestamp(),
+      ...Audit.updated(),
     });
   }
 
@@ -35,9 +43,6 @@ class ClientActivityRepository {
       at: DateTime.now(),
     );
 
-    await addActivity(
-      clientId: clientId,
-      activity: activity,
-    );
+    await addActivity(clientId: clientId, activity: activity);
   }
 }

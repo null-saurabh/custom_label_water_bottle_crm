@@ -22,7 +22,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Delete lead?'),
         content: Text(
-          'This will permanently delete "${lead.businessName.isNotEmpty ? lead.businessName : lead.contactName}" '
+          'This will permanently delete "${lead.businessName.isNotEmpty ? lead.businessName : lead.primaryContactName}" '
           'and all its activities.\n\nThis action cannot be undone.',
         ),
         actions: [
