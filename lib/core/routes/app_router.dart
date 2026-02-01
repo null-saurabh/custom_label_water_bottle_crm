@@ -9,12 +9,14 @@ import 'package:clwb_crm/screens/orders/repo/order_expense_repository.dart';
 import 'package:clwb_crm/screens/orders/repo/order_repo.dart';
 import 'package:clwb_crm/screens/sales/sales_controller.dart';
 import 'package:clwb_crm/screens/sales/sales_shell_screen.dart';
+import 'package:clwb_crm/screens/splash_screen/splash_screen.dart';
 import 'package:get/get.dart';
 import '../../screens/leads/leads_screen.dart';
 import '../layouts/shell_screen.dart';
 
 abstract class AppRoutes {
   static const shell = '/';
+  static const splash = '/splash';
   static const dashboard = '/dashboard';
   static const inventory = '/inventory';
   static const orders = '/orders';
@@ -25,6 +27,10 @@ abstract class AppRoutes {
 
 class AppPages {
   static final pages = [
+    GetPage(
+      name: AppRoutes.splash,
+      page: () => const SplashScreen(),
+    ),
     GetPage(
       name: AppRoutes.shell,
       page: () => const ShellView(),
