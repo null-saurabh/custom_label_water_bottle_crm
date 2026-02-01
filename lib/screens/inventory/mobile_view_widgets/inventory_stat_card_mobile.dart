@@ -78,48 +78,46 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        width: width ?? 160,
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: bgColor ?? Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 6.0),
-              child: Icon(icon, size: 22),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+    return Container(
+      width: width ?? 160,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: bgColor ?? Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 6.0),
+            child: Icon(icon, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  label,
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

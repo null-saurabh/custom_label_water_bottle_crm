@@ -230,28 +230,7 @@ class _MenuFooter extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(16),
         child: InkWell(
-          onTap: () async {
-            if (!controller.isAdmin) {
-              final result =
-              await FirebaseAuth.instance.signInWithPopup(
-                GoogleAuthProvider(),
-              );
-
-              if (result.user?.email != null) {
-                Get.snackbar(
-                  'Admin mode enabled',
-                  result.user!.email!,
-                );
-              }
-            } else {
-              await FirebaseAuth.instance.signOut();
-              Get.snackbar(
-                'Logged out',
-                'Read-only mode',
-              );
-            }
-            Get.back();
-          },
+          onTap: controller.handleAuthAction,
           child: Row(
             children: [
               Icon(

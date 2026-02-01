@@ -120,30 +120,8 @@ class AppSidebar extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.all(16),
             child: InkWell(
-                onTap: () async {
-
-                  if (!controller.isAdmin) {
-                    // 🔐 LOGIN
-                    final result = await FirebaseAuth.instance.signInWithPopup(
-                      GoogleAuthProvider(),
-                    );
-
-                    if (result.user?.email != null) {
-                      Get.snackbar(
-                        'Admin mode enabled',
-                        result.user!.email!,
-                      );
-                    }
-                  } else {
-                    // 🚪 LOGOUT
-                    await FirebaseAuth.instance.signOut();
-                    Get.snackbar(
-                      'Logged out',
-                      'Read-only mode',
-                    );
-                  }
-                },
-                child: _FooterItem(
+              onTap: controller.handleAuthAction,
+              child: _FooterItem(
                   icon: !controller.isAdmin ? Icons.login : Icons.logout,
                   label: !controller.isAdmin ? 'Admin Login' : 'Logout',
                 ),
