@@ -46,7 +46,7 @@ class DashboardKpiRow extends GetView<DashboardController> {
                 children: [
                   _KpiCard(
                     onTap: () => controller.app.selectMenu(SidebarMenu.inventory),
-                    title: 'IInventory',
+                    title: 'Inventory',
                     value: '$totalBottleStock',
                     suffix: 'Bottles',
                     icon: Icons.inventory_2_outlined,

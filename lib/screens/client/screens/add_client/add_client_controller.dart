@@ -32,7 +32,7 @@ class AddClientController extends GetxController {
   final phoneError = RxnString();
 
   bool validate() {
-    businessError.value = contactPersonCtrl.text.isEmpty
+    businessError.value = businessCtrl.text.trim().isEmpty
         ? 'Business name required'
         : null;
     phoneError.value = phoneCtrl.text.length < 10
@@ -78,7 +78,7 @@ class AddClientController extends GetxController {
             address: addressCtrl.text,
             googleMapsLink: '',
             city: cityCtrl.text,
-            area: '',
+            area: areaCtrl.text.trim(),
             isPrimary: true,
           ),
         ],
@@ -116,6 +116,10 @@ class AddClientController extends GetxController {
     emailCtrl.dispose();
     cityCtrl.dispose();
     addressCtrl.dispose();
+    contactPersonRoleCtrl.dispose();
+    noteCtrl.dispose();
+    areaCtrl.dispose();
+
     super.onClose();
   }
 }

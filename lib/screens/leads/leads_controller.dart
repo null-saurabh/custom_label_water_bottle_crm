@@ -120,7 +120,8 @@ class LeadsController extends GetxController {
     required LeadModel lead,
     required DateTime? nextAt,
     required String note,
-  }) async {
+  }) async
+  {
     if (isSavingFollowUp.value) return;
 
     try {

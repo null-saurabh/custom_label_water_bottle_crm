@@ -18,7 +18,7 @@ class StockPaymentDialog extends StatelessWidget {
       builder: (c) {
         return BaseDialog(
           footer: Obx(
-                () => PremiumButton(
+            () => PremiumButton(
               onTap: c.submit,
               text: "Save",
               isLoading: c.isSaving.value,
@@ -42,13 +42,13 @@ class StockPaymentDialog extends StatelessWidget {
               ),
 
               // Obx(() =>
-                  Padding(
+              Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Text(
                   'New Paid: ₹${c.newPaidAmount.toStringAsFixed(0)}  |  New Due: ₹${c.newDueAmount.toStringAsFixed(0)}',
                   style: const TextStyle(fontWeight: FontWeight.w700),
-
-              )),
+                ),
+              ),
 
               // Row(
               //   children: [

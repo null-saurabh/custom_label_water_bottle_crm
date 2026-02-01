@@ -677,12 +677,17 @@ final RxList<InventoryActivityModel> selectedItemActivities =
     final endOfWeek = startOfWeek.add(const Duration(days: 7));
 
     return orders
-        .where((o) =>
-    o.orderStatus != 'delivered' &&
-        o.expectedDeliveryDate!.isAfter(startOfWeek) &&
-        o.expectedDeliveryDate!.isBefore(endOfWeek))
-        .length; // or sum quantities if you want
+        .where((o) {
+      final d = o.expectedDeliveryDate;
+      if (d == null) return false;
+
+      return o.orderStatus != 'delivered' &&
+          d.isAfter(startOfWeek) &&
+          d.isBefore(endOfWeek);
+    })
+        .length;
   }
+
 
 
 

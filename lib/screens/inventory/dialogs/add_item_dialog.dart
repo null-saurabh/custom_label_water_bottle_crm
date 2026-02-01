@@ -74,6 +74,11 @@ class AddItemDialog extends StatelessWidget {
                     items: const ['Round', 'Square', 'Custom'],
                     onChanged: (v) => c.bottleShape.value = v ?? '',
                   ),
+                  Field(
+                    label: 'Weight',
+                    onChanged: (v) =>
+                    c.neckType.value = v,
+                  ),
                   Dropdown(
                     label: 'Neck Type',
                     items: const ['28mm', '30mm', 'Custom'],

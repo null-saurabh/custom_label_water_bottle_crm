@@ -184,16 +184,32 @@ class DashboardController extends GetxController {
         });
 
     // 4) Orders CREATED in selected orders-week
+    // _subOrdersCreatedWeek = repo
+    //     .watchOrdersCreatedBetween(start: ordersWeek.start, end: ordersWeek.end)
+    //     .listen((list) {
+    //       _ordersCreatedWeek.assignAll(list);
+    //       _recomputeDebounced(
+    //         day: day,
+    //         dueWeek: dueWeek,
+    //         ordersWeek: ordersWeek,
+    //       );
+    //     });
+
+    print("123123");
+    print( ordersWeek.start.toString());
+    print( ordersWeek.end.toString());
+
     _subOrdersCreatedWeek = repo
         .watchOrdersCreatedBetween(start: ordersWeek.start, end: ordersWeek.end)
         .listen((list) {
-          _ordersCreatedWeek.assignAll(list);
-          _recomputeDebounced(
-            day: day,
-            dueWeek: dueWeek,
-            ordersWeek: ordersWeek,
-          );
-        });
+          print(list.length);
+          print("1212");
+      _ordersCreatedWeek.assignAll(list);
+      _recomputeDebounced(day: day, dueWeek: dueWeek, ordersWeek: ordersWeek);
+    }, onError: (e) {
+      debugPrint('❌ watchOrdersCreatedBetween error: $e');
+    });
+
 
     // 5) Recurring orders (not paged)
     _subRecurring = repo.watchRecurringOrders().listen((list) {
@@ -328,7 +344,10 @@ class DashboardController extends GetxController {
     // 3) OrdersThisWeekCard (selected orders week)
     // =========================
 
-    weekNewOrders.value = _ordersCreatedWeek.length;
+    print(_ordersCreatedWeek.length);
+    print("1111");
+    weekNewOrders.value = _ordersCreatedWeek.where((o) => o.isActive).length;
+
 
     final scheduledOrdersWeek = _ordersDueOrdersWeek.where((o) {
       if (o.isActive == false) return false;

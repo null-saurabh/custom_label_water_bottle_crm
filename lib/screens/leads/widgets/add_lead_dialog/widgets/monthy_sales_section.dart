@@ -13,7 +13,7 @@ class MonthlyQuantitySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       '100 packs',
-      '5x00 packs',
+      '500 packs',
       '1,000 packs',
       '5,000 packs',
       '10,000+ packs',

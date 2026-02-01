@@ -28,21 +28,24 @@ class DashboardRepository {
   }
 
   // Orders created between (for weekly "new orders" count)
+// Orders created between (for weekly "new orders" count)
   Stream<List<OrderModel>> watchOrdersCreatedBetween({
     required DateTime start,
     required DateTime end,
     int limit = 600,
   }) {
+
+    print("in repo 1212");
+
     return _orders
-        .where('isActive', isEqualTo: true)
-        .where('createdAt',
-        isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+        .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
         .where('createdAt', isLessThan: Timestamp.fromDate(end))
         .orderBy('createdAt', descending: true)
         .limit(limit)
         .snapshots()
         .map((s) => s.docs.map((d) => OrderModel.fromDoc(d)).toList());
   }
+
 
   // Recurring orders
   Stream<List<OrderModel>> watchRecurringOrders({int limit = 80}) {
