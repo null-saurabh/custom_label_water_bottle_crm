@@ -1,3 +1,5 @@
+import 'package:clwb_crm/screens/orders/dialog/open_order_detail_dialog.dart';
+import 'package:clwb_crm/screens/orders/models/order_model.dart';
 import 'package:clwb_crm/screens/orders/order_controller.dart';
 import 'package:clwb_crm/screens/orders/widgets/order_detail_panel/order_detail_panel.dart';
 import 'package:clwb_crm/screens/orders/widgets/orders_filters_bar.dart';
@@ -49,7 +51,10 @@ class OrdersPage extends GetView<OrdersController> {
 
                       return OrdersTable(
                         selectedId: controller.selectedOrderId.value,
-                        onOrderTap: controller.selectOrder,
+                        onOrderTap: (order) {
+                          controller.selectOrder(order);
+                          openOrderDetailDialog(context, order); // ✅ UI handles UI
+                        },
                       );
 
                     }),
@@ -59,24 +64,12 @@ class OrdersPage extends GetView<OrdersController> {
             ),
           ),
 
-          // RIGHT PANEL
-
-          Obx(() {
-            final selected = controller.selectedOrder;
-
-            if (selected == null) {
-              return const SizedBox.shrink();
-            }
-
-            return OrdersDetailPanel(
-              order: selected,
-              onClose: controller.clearSelection,
-            );
-          }),
-
-
         ],
       );
     });
   }
 }
+
+
+
+

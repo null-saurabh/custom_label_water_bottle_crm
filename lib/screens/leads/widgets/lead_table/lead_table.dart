@@ -150,7 +150,7 @@ class LeadTable extends GetView<LeadsController> {
                                         ),
                                     isSaving: controller.isSavingFollowUp,
                                   ),
-                                  barrierDismissible: false,
+                                  barrierDismissible: true,
                                 );
                               },
                       ),
@@ -210,7 +210,7 @@ class LeadTable extends GetView<LeadsController> {
                               controller: controller,
                               lead: l,
                             ),
-                            barrierDismissible: false,
+                            barrierDismissible: true,
                           );
                         },
                       ),
@@ -256,7 +256,7 @@ class _StageDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 36,
+      height: 44  ,
       child: DropdownButtonHideUnderline(
         child: DropdownButton<LeadStage>(
           value: stage,

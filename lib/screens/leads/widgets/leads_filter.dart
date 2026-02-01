@@ -34,7 +34,7 @@ class LeadFilters extends GetView<LeadsController> {
 
       return Row(
         children: [
-          _FilterPill(
+          FilterPill(
             label: 'All',
             count: allCount,
             icon: null,
@@ -44,7 +44,7 @@ class LeadFilters extends GetView<LeadsController> {
           ),
           const SizedBox(width: 14),
 
-          _FilterPill(
+          FilterPill(
             label: 'New Inquiry',
             count: newCount,
             icon: Icons.inbox_outlined,
@@ -53,7 +53,7 @@ class LeadFilters extends GetView<LeadsController> {
           ),
           const SizedBox(width: 14),
 
-          _FilterPill(
+          FilterPill(
             label: 'Contacted',
             count: contactedCount,
             icon: Icons.phone_in_talk_outlined,
@@ -62,7 +62,7 @@ class LeadFilters extends GetView<LeadsController> {
           ),
           const SizedBox(width: 14),
 
-          _FilterPill(
+          FilterPill(
             label: 'Overdue',
             count: followUpCount,
             icon: Icons.event_busy_outlined,
@@ -88,7 +88,7 @@ class LeadFilters extends GetView<LeadsController> {
 
               Get.dialog(
                 const AddLeadDialog(),
-                barrierDismissible: false,
+                barrierDismissible: true,
               );
             },
           ),
@@ -98,7 +98,7 @@ class LeadFilters extends GetView<LeadsController> {
   }
 }
 
-class _FilterPill extends StatelessWidget {
+class FilterPill extends StatelessWidget {
   final String label;
   final int count;
   final IconData? icon;
@@ -106,7 +106,7 @@ class _FilterPill extends StatelessWidget {
   final bool showChevronWhenSelected;
   final VoidCallback onTap;
 
-  const _FilterPill({
+  const FilterPill({super.key,
     required this.label,
     required this.count,
     required this.selected,

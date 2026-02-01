@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:clwb_crm/core/utils/responsive.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/supplier_detail_panel/widgets/supplier_overview_tab/supplier_overview_tab.dart';
 import 'package:clwb_crm/screens/inventory/supplier_detail_panel/widgets/supplier_overview_tab/supplier_recent_table.dart';
@@ -18,8 +21,10 @@ class SupplierDetailPanel extends GetView<InventoryController> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final panelWidth = width * 0.38;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final double panelWidth =
+    math.max(360.0, screenWidth * 0.38).toDouble();
 
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 280),
@@ -61,13 +66,13 @@ class SupplierDetailPanel extends GetView<InventoryController> {
                     switch (tab) {
                       case SupplierDetailTab.overview:
                         return SingleChildScrollView(
-                          padding: const EdgeInsets.all(20),
+                          padding:  EdgeInsets.all(context.isMobile? 2 :20),
                           child: SupplierOverviewTab(item: supplier),
                         );
 
                       case SupplierDetailTab.transactions:
                         return SingleChildScrollView(
-                          padding: const EdgeInsets.all(20),
+                          padding:  EdgeInsets.all(context.isMobile? 2 :20),
                           child: SupplierRecentTable(supplierId: supplier.id),
                         );
                     }

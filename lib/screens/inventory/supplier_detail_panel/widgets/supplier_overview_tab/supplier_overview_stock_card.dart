@@ -1,3 +1,4 @@
+import 'package:clwb_crm/core/utils/responsive.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/model/supplier_model.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ class SupplierOverviewStockCard extends GetView<InventoryController> {
                 valueColor: Colors.red,
                 titleColor: Colors.red,
               ),
-              const SizedBox(width: 16),
+               SizedBox(width:  context.isMobile? 8 :16),
               _ValueCard(
                 title: 'Stock Purchases',
                 value: purchaseCount.toString(),
@@ -65,9 +66,9 @@ class SupplierOverviewStockCard extends GetView<InventoryController> {
                 value: '₹${totalBusiness.toStringAsFixed(0)}',
                 sub: 'Lifetime',
               ),
-              const SizedBox(width: 16),
+               SizedBox(width:  context.isMobile? 8 :16),
               _ValueCard(
-                title: 'Outstanding Amount',
+                title: 'Amount Due',
                 value: '₹${dueAmount.toStringAsFixed(0)}',
                 sub: 'Payment Due',
               ),
@@ -97,12 +98,6 @@ class SupplierOverviewStockCard extends GetView<InventoryController> {
 }
 
 
-
-
-
-
-
-
 class _ValueCard extends StatelessWidget {
   final String title;
   final String value;
@@ -115,7 +110,9 @@ class _ValueCard extends StatelessWidget {
     required this.title,
     required this.value,
     required this.sub,
-    this.editable = false, this.valueColor, this.titleColor,
+    this.editable = false,
+    this.valueColor,
+    this.titleColor,
   });
 
   @override
@@ -132,28 +129,106 @@ class _ValueCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(title,
-                    style: TextStyle(color: valueColor ?? Colors.grey.shade600)),
+                Expanded( // ✅ constrains Text so ellipsis can work
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
+                    style: TextStyle(
+                      color: titleColor ?? Colors.grey.shade600, // ✅ use titleColor
+                    ),
+                  ),
+                ),
+
                 if (editable) ...[
-                  const Spacer(),
+                  const SizedBox(width: 8),
                   const Icon(Icons.edit, size: 16),
-                ]
+                ],
               ],
             ),
             const SizedBox(height: 8),
             Text(
               value,
+              maxLines: 1, // optional safety
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: valueColor
+                color: valueColor,
               ),
             ),
-            // const SizedBox(height: 4),
-            // Text(sub, style: TextStyle(color: Colors.grey.shade600)),
           ],
         ),
       ),
     );
   }
 }
+
+
+
+
+
+
+// class _ValueCard extends StatelessWidget {
+//   final String title;
+//   final String value;
+//   final String sub;
+//   final Color? titleColor;
+//   final Color? valueColor;
+//   final bool editable;
+//
+//   const _ValueCard({
+//     required this.title,
+//     required this.value,
+//     required this.sub,
+//     this.editable = false, this.valueColor, this.titleColor,
+//   });
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Expanded(
+//       child: Container(
+//         padding: const EdgeInsets.all(18),
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(16),
+//           color: Colors.grey.shade50,
+//         ),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Row(
+//               children: [
+//                 Text(
+//                   title,
+//                   maxLines: 1,
+//                   overflow: TextOverflow.ellipsis,
+//                   softWrap: false,
+//                   style: TextStyle(
+//                     color: valueColor ?? Colors.grey.shade600,
+//                   ),
+//                 ),
+//
+//                 if (editable) ...[
+//                   const Spacer(),
+//                   const Icon(Icons.edit, size: 16),
+//                 ]
+//               ],
+//             ),
+//             const SizedBox(height: 8),
+//             Text(
+//               value,
+//               style: TextStyle(
+//                 fontSize: 20,
+//                 fontWeight: FontWeight.bold,
+//                 color: valueColor
+//               ),
+//             ),
+//             // const SizedBox(height: 4),
+//             // Text(sub, style: TextStyle(color: Colors.grey.shade600)),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

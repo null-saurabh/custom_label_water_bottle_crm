@@ -17,13 +17,13 @@ class OrdersTableRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         gradient: isHigh
-        ? LinearGradient(
-        colors: [
-        const Color(0xFFF7F9FF),
-    const Color(0xFFEFF3FF),
-    ],
-    )
-        : null,),
+            ? LinearGradient(
+          colors: [
+            const Color(0xFFF7F9FF),
+            const Color(0xFFEFF3FF),
+          ],
+        )
+            : null,),
       child: Padding(
         padding:  EdgeInsets.symmetric(horizontal:  isHigh ?32:16, vertical: isHigh ?8:8),
         child: Container(

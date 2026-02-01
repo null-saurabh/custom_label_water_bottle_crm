@@ -16,14 +16,6 @@ class InventoryActionBar extends GetView<InventoryController> {
           icon: Icons.inventory_2_outlined,
           label: 'Add Stock',
           isPrimary: true,
-          // onTap: () async {
-          //   await seedDummyOrders();
-          //   Get.snackbar(
-          //     'Done',
-          //     'Dummy inventory data added',
-          //     snackPosition: SnackPosition.BOTTOM,
-          //   );
-          // },
           onTap: controller.openAddStockDialog,
         ),
 

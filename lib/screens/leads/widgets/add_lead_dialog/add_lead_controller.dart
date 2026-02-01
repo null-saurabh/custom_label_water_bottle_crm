@@ -36,6 +36,16 @@ class AddLeadController extends GetxController {
   final qtyError = RxnString();
   final bottleError = RxnString();
 
+
+  @override
+  void onInit() {
+    super.onInit();
+    ever<List<String>>(bottleSizes, (_) {
+      if (bottleSizes.isNotEmpty) bottleError.value = null;
+    });
+  }
+
+
   bool validate() {
     businessError.value =
     contactCtrl.text.trim().isEmpty ? 'Contact person required' : null;

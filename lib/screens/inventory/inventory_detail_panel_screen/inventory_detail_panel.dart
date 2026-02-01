@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:clwb_crm/core/utils/responsive.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/detail_panel_header.dart';
 import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/detail_panel_tab_switcher.dart';
@@ -19,8 +22,10 @@ class InventoryDetailPanel extends GetView<InventoryController> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final panelWidth = width * 0.38;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final double panelWidth =
+    math.max(360.0, screenWidth * 0.38).toDouble();
 
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 280),
@@ -66,13 +71,13 @@ class InventoryDetailPanel extends GetView<InventoryController> {
                     switch (tab) {
                       case InventoryDetailTab.overview:
                         return SingleChildScrollView(
-                          padding: const EdgeInsets.all(20),
+                          padding:  EdgeInsets.all( context.isMobile? 2 :20),
                           child: InventoryOverviewTab(detail: detail),
                         );
 
                       case InventoryDetailTab.transactions:
                         return SingleChildScrollView(
-                          padding: const EdgeInsets.all(20),
+                          padding:  EdgeInsets.all(context.isMobile? 2 :20),
                           child: OverviewStockFlowTable(itemId: item.id),
                         );
                     }

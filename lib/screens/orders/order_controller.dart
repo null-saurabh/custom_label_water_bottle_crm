@@ -435,7 +435,11 @@ class OrdersController extends GetxController {
     if (Get.isRegistered<OrderDetailController>()) {
       Get.find<OrderDetailController>().bindOrder(order.id);
     }
+
+    // _openOrderDetailDialog(order);
   }
+
+
 
 
   void clearSelection() {

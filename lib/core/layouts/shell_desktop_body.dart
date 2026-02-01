@@ -9,16 +9,12 @@ class ShellDesktopBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Row(
-      children: [
-        const AppSidebar(), // 🔒 EXACT SAME SIDEBAR
-        Expanded(
-          child: GetRouterOutlet(
-            initialRoute: AppRoutes.dashboard,
-          ),
-        ),
-      ],
-    ),
+      body: Row(
+        children: [
+          const AppSidebar(), // 🔒 EXACT SAME SIDEBAR
+          Expanded(child: GetRouterOutlet(initialRoute: AppRoutes.dashboard)),
+        ],
+      ),
     );
   }
 }

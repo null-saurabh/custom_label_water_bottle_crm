@@ -5,6 +5,7 @@ import 'package:clwb_crm/screens/dashboard/dashboard_screen.dart';
 import 'package:clwb_crm/screens/dashboard/dashboard_shell_screen.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/inventory_screen.dart';
+import 'package:clwb_crm/screens/orders/order_shell_screen.dart';
 import 'package:clwb_crm/screens/orders/orders_binding.dart';
 import 'package:clwb_crm/screens/orders/orders_screen.dart';
 import 'package:clwb_crm/screens/orders/repo/order_delivery_repository.dart';
@@ -41,7 +42,7 @@ class AppPages {
         ),
         GetPage(
           name: AppRoutes.orders,
-          page: () => OrdersPage(),
+          page: () => OrdersShellScreen(),
           binding: OrdersBinding(),
         ),
 

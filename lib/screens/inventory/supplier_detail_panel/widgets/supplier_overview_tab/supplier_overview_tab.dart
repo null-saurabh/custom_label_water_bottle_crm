@@ -1,3 +1,4 @@
+import 'package:clwb_crm/core/utils/responsive.dart';
 import 'package:clwb_crm/screens/inventory/model/supplier_model.dart';
 import 'package:clwb_crm/screens/inventory/supplier_detail_panel/widgets/supplier_overview_tab/supplier_items_section.dart';
 import 'package:clwb_crm/screens/inventory/supplier_detail_panel/widgets/supplier_overview_tab/supplier_overview_header.dart';
@@ -22,18 +23,18 @@ class SupplierOverviewTab extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding:  EdgeInsets.symmetric(horizontal: context.isMobile? 8 :16),
           child: SupplierOverviewHeader(item: item),
         ),
         const SizedBox(height: 20),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding:  EdgeInsets.symmetric(horizontal: context.isMobile? 8 :16),
           child: SupplierOverviewStockCard(item: item),
         ),
         const SizedBox(height: 20),
 
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding:  EdgeInsets.symmetric(horizontal:context.isMobile? 8 : 16),
           child: SupplierItemsSection(supplier: item),
         ),
 

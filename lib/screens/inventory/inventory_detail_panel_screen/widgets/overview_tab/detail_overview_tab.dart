@@ -1,3 +1,4 @@
+import 'package:clwb_crm/core/utils/responsive.dart';
 import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/overview_tab/item_supplier_section.dart';
 import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/overview_tab/low_stock_warning.dart';
 import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/overview_tab/overview_header.dart';
@@ -26,24 +27,24 @@ class InventoryOverviewTab extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: context.isMobile? 8 :16),
           child: OverviewHeader(detail: detail)
         ),
         const SizedBox(height: 20),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding:  EdgeInsets.symmetric(horizontal: context.isMobile? 8 :16),
           child: OverviewStockCards(item: detail.item),
         ),
         const SizedBox(height: 16),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding:  EdgeInsets.symmetric(horizontal: context.isMobile? 8 :16),
           child: OverviewWarning(item: detail.item),
         ),
 
         const SizedBox(height: 24),
 
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding:  EdgeInsets.symmetric(horizontal:context.isMobile? 8 : 16),
           child: ItemSuppliersSection(
             itemId: detail.item.id,
           ),

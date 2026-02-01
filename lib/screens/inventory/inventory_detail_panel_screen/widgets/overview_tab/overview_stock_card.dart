@@ -1,3 +1,4 @@
+import 'package:clwb_crm/core/utils/responsive.dart';
 import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class OverviewStockCards extends GetView<InventoryController> {
                 value: item.stock.toString(),
                 sub: 'Units Available',
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: context.isMobile? 8 :16),
               _ValueCard(
                 title: 'Total Purchased',
                 value: '₹${totalPurchased.toStringAsFixed(0)}',
@@ -54,7 +55,7 @@ class OverviewStockCards extends GetView<InventoryController> {
                 value: '₹${totalPaid.toStringAsFixed(0)}',
                 sub: 'To Suppliers',
               ),
-              const SizedBox(width: 16),
+               SizedBox(width: context.isMobile? 8 :16),
               _ValueCard(
                 title: 'Payment Due',
                 value: '₹${due.toStringAsFixed(0)}',

@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class BottleSizeSection extends StatelessWidget {
-  final List<String> selected;
-  final ValueChanged<List<String>> onChanged;
-
+  final RxList<String> selected; // ✅ RxList
   const BottleSizeSection({
     super.key,
     required this.selected,
-    required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    final sizes = ['250 ml', '500 ml', '1 L', 'Not sure'];
+    const sizes = ['250 ml', '500 ml', '1 L', 'Not sure'];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,47 +25,50 @@ class BottleSizeSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
 
-        Wrap(
-          spacing: 24,
-          runSpacing: 12,
-          children: ['250 ml', '500 ml', '1 L', 'Not sure'].map((size) {
-            final isSelected = selected.contains(size);
+        Obx(() {
+          return Wrap(
+            spacing: 24,
+            runSpacing: 12,
+            children: sizes.map((size) {
+              final isSelected = selected.contains(size);
 
-            return InkWell(
-              onTap: () {
-                final updated = List<String>.from(selected);
-
-                if (isSelected) {
-                  updated.remove(size);
-                } else {
-                  updated.add(size);
+              void toggle() {
+                // special rule: "Not sure" should be exclusive (optional)
+                if (size == 'Not sure') {
+                  if (isSelected) {
+                    selected.remove(size);
+                  } else {
+                    selected.assignAll(['Not sure']);
+                  }
+                  return;
                 }
 
-                onChanged(updated);
-              },
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Checkbox(
-                    value: isSelected,
-                    onChanged: (_) {
-                      final updated = List<String>.from(selected);
+                // if selecting a real size, remove "Not sure"
+                selected.remove('Not sure');
 
-                      if (isSelected) {
-                        updated.remove(size);
-                      } else {
-                        updated.add(size);
-                      }
+                if (isSelected) {
+                  selected.remove(size);
+                } else {
+                  selected.add(size);
+                }
+              }
 
-                      onChanged(updated);
-                    },
-                  ),
-                  Text(size),
-                ],
-              ),
-            );
-          }).toList(),
-        ),
+              return InkWell(
+                onTap: toggle,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Checkbox(
+                      value: isSelected,
+                      onChanged: (_) => toggle(),
+                    ),
+                    Text(size),
+                  ],
+                ),
+              );
+            }).toList(),
+          );
+        }),
       ],
     );
   }

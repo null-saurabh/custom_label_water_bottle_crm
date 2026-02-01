@@ -36,7 +36,7 @@ class ClientListPanel extends GetView<ClientsController> {
 
                 Get.dialog(
                   const AddClientDialog(),
-                  barrierDismissible: false,
+                  barrierDismissible: true,
                 );
 
 

@@ -1,6 +1,5 @@
+import 'package:clwb_crm/core/utils/responsive.dart';
 import 'package:clwb_crm/screens/inventory/dialogs/edit_supplier_dialog.dart';
-import 'package:clwb_crm/screens/inventory/model/bottle_config.dart';
-import 'package:clwb_crm/screens/inventory/model/inventory_item_model.dart';
 import 'package:clwb_crm/screens/inventory/model/supplier_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,6 +19,7 @@ class SupplierOverviewHeader extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if(!context.isMobile)
         Container(
           height: 120,
           width: 80,
@@ -27,10 +27,9 @@ class SupplierOverviewHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             color: Colors.blue.shade50,
           ),
-          child: const Icon(
-            Icons.local_drink,
-            size: 48,
-            color: Colors.blue,
+          child: Image.asset(
+            'assets/icons/main_logo.png',
+            height: 42,
           ),
         ),
         const SizedBox(width: 24),

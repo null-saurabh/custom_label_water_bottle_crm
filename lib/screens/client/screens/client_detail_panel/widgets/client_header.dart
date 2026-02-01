@@ -40,7 +40,7 @@ class ClientHeader extends StatelessWidget {
                     EditClientDialog(
                       client: client, // 👈 pass client
                     ),
-                    barrierDismissible: false,
+                    barrierDismissible: true,
                   );
                 }, icon: Icon(Icons.edit,color: Colors.grey,size: 20,))
               ],

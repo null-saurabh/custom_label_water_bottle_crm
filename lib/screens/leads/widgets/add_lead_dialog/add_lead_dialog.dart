@@ -10,27 +10,20 @@ import 'package:clwb_crm/screens/leads/widgets/add_lead_dialog/widgets/monthy_sa
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class AddLeadDialog extends GetView<AddLeadController> {
-   const AddLeadDialog({super.key});
-
+  const AddLeadDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       insetPadding: const EdgeInsets.all(24),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 600),
         child: SingleChildScrollView(
           child: Container(
             // margin: const EdgeInsets.symmetric(vertical: 60),
-            padding: EdgeInsets.symmetric(
-              horizontal: 40,
-              vertical: 40,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: 40, vertical: 40),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
@@ -56,103 +49,116 @@ class AddLeadDialog extends GetView<AddLeadController> {
                         color: Color(0xFF1F2A44),
                       ),
                     ),
-                    IconButton(onPressed: (){
-                      Get.back();
-                    }, icon: Icon(Icons.close,size: 28,))
-
+                    IconButton(
+                      onPressed: () {
+                        Get.back();
+                      },
+                      icon: Icon(Icons.close, size: 28),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                const Divider(color: Color(0xFFE6EDF3), thickness: 1, height: 24),
+                const Divider(
+                  color: Color(0xFFE6EDF3),
+                  thickness: 1,
+                  height: 24,
+                ),
                 const SizedBox(height: 16),
 
-            Obx(() =>LeadInfoSection(
-                  businessCtrl: controller.businessCtrl,
-                  contactCtrl: controller.contactCtrl,
-                  phoneCtrl: controller.phoneCtrl,
-                  emailCtrl: controller.emailCtrl,
-                  businessNameError: controller.businessError.value,
-                  phoneError: controller.phoneError.value,
-                )),
+                Obx(
+                  () => LeadInfoSection(
+                    businessCtrl: controller.businessCtrl,
+                    contactCtrl: controller.contactCtrl,
+                    phoneCtrl: controller.phoneCtrl,
+                    emailCtrl: controller.emailCtrl,
+                    businessNameError: controller.businessError.value,
+                    phoneError: controller.phoneError.value,
+                  ),
+                ),
                 const SizedBox(height: 28),
 
-            Obx(() =>Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    BusinessTypeChips(
-                      selected: controller.selectedBusinessType.value,
-                      onChanged: (value) {
-                        controller.selectedBusinessType.value = value;
-                        controller.typeError.value = null; // clear error on change
-                      },
-                    ),
-                    if (controller.typeError.value != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6, left: 4),
-                        child: Text(
-                          controller.typeError.value!,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.redAccent,
+                Obx(
+                  () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BusinessTypeChips(
+                        selected: controller.selectedBusinessType.value,
+                        onChanged: (value) {
+                          controller.selectedBusinessType.value = value;
+                          controller.typeError.value =
+                              null; // clear error on change
+                        },
+                      ),
+                      if (controller.typeError.value != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6, left: 4),
+                          child: Text(
+                            controller.typeError.value!,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.redAccent,
+                            ),
                           ),
                         ),
-                      ),
-                  ],
-                )),
+                    ],
+                  ),
+                ),
 
                 const SizedBox(height: 20),
 
-            Obx(() =>Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    MonthlyQuantitySection(
-                      value: controller.monthlyQuantity.value,
-                      onChanged: (val) {
+                Obx(
+                  () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      MonthlyQuantitySection(
+                        value: controller.monthlyQuantity.value,
+                        onChanged: (val) {
                           controller.monthlyQuantity.value = val;
                           controller.qtyError.value = null;
-                      },
-                    ),
+                        },
+                      ),
 
-                    if (controller.qtyError.value != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6, left: 4),
-                        child: Text(
-                          controller.qtyError.value!,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.redAccent,
+                      if (controller.qtyError.value != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6, left: 4),
+                          child: Text(
+                            controller.qtyError.value!,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.redAccent,
+                            ),
                           ),
                         ),
-                      ),
-                  ],
-                )),
+                    ],
+                  ),
+                ),
 
                 SizedBox(height: 20),
 
-            Obx(() => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    BottleSizeSection(
-                      selected: controller.bottleSizes,
-                      onChanged: (val) {
-                        controller.bottleSizes.value = val;
-                        controller.bottleError.value = null;
-                      },
-                    ),
+                Obx(
+                  () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BottleSizeSection(
+                        selected: controller.bottleSizes,
+                      ),
 
-                    if (controller.bottleError.value != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6, left: 4),
-                        child: Text(
-                          controller.bottleError.value!,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.redAccent,
+
+
+                      if (controller.bottleError.value != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6, left: 4),
+                          child: Text(
+                            controller.bottleError.value!,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.redAccent,
+                            ),
                           ),
                         ),
-                      ),
-                  ],
-                )),
+                    ],
+                  ),
+                ),
 
                 //
                 SizedBox(height: 12),
@@ -165,15 +171,27 @@ class AddLeadDialog extends GetView<AddLeadController> {
                 ),
                 const SizedBox(height: 12),
 
-                const Divider(color: Color(0xFFE6EDF3), thickness: 1, height: 24),
+                const Divider(
+                  color: Color(0xFFE6EDF3),
+                  thickness: 1,
+                  height: 24,
+                ),
 
-            Obx(() =>PremiumButton(
-                  text: 'Submit',
-                  onTap: (){controller.submit();},
-                  isLoading: controller.isSubmitting.value,
-                )),
+                Obx(
+                  () => PremiumButton(
+                    text: 'Submit',
+                    onTap: () {
+                      controller.submit();
+                    },
+                    isLoading: controller.isSubmitting.value,
+                  ),
+                ),
 
-                const Divider(color: Color(0xFFE6EDF3), thickness: 1, height: 24),
+                const Divider(
+                  color: Color(0xFFE6EDF3),
+                  thickness: 1,
+                  height: 24,
+                ),
               ],
             ),
           ),
@@ -182,24 +200,6 @@ class AddLeadDialog extends GetView<AddLeadController> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //  String? monthlyQuantity; // dropdown value
 //

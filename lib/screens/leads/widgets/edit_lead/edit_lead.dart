@@ -118,10 +118,6 @@ class EditLeadDialog extends GetView<EditLeadController> {
                   children: [
                     BottleSizeSection(
                       selected: controller.bottleSizes,
-                      onChanged: (val) {
-                        controller.bottleSizes.assignAll(val);
-                        controller.bottleError.value = null;
-                      },
                     ),
                     if (controller.bottleError.value != null)
                       Padding(
