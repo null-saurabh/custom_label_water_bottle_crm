@@ -1,42 +1,42 @@
-import 'package:clwb_crm/firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:html' as html; // web only
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
+
+import 'firebase_options.dart';
 import 'core/routes/app_router.dart';
+import 'firebase/fcm_token_service.dart';
 
-Future<void> initWebFcm() async {
-  final messaging = FirebaseMessaging.instance;
+/// Detect iOS Safari / iOS WebView
+bool get _isIOSWeb {
+  if (!kIsWeb) return false;
+  final ua = html.window.navigator.userAgent.toLowerCase();
+  return ua.contains('iphone') ||
+      ua.contains('ipad') ||
+      ua.contains('ipod');
+}
 
-  // Ask permission (web only)
-  final settings = await messaging.requestPermission(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-
-  if (settings.authorizationStatus != AuthorizationStatus.authorized) {
-    print('🔕 Notification permission not granted');
+/// Initialize Web FCM (DESKTOP + ANDROID WEB ONLY)
+Future<void> _initWebFcmSafely() async {
+  if (!kIsWeb) return;
+  if (_isIOSWeb) {
+    debugPrint('🍎 iOS Web detected → skipping Web FCM init');
     return;
   }
 
-  final token = await messaging.getToken();
-  print('🔥 WEB FCM TOKEN: $token');
+  await FcmTokenService.initWebPermissions();
 }
 
-
-
-
-
-
-void main() async{
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // setupForegroundNotifications();
-  await initWebFcm();
+  // 🚫 NEVER touch FirebaseMessaging on iOS Safari
+  await _initWebFcmSafely();
 
   runApp(const MyApp());
 }
@@ -44,13 +44,11 @@ void main() async{
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Custom Label Water Bottle Crm',
+      title: 'Ink & Drink CRM',
       debugShowCheckedModeBanner: false,
-      // initialBinding: InitialBinding(),
       initialRoute: AppRoutes.splash,
       getPages: AppPages.pages,
       defaultTransition: Transition.fade,
