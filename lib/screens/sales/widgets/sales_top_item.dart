@@ -20,6 +20,8 @@ class SalesTopItems extends StatelessWidget {
       child: entries.isEmpty
           ? const SalesEmptyState('No item sales yet.')
           : ListView.separated(
+        shrinkWrap: true, // ✅ REQUIRED here
+        physics: const BouncingScrollPhysics(),
         itemCount: entries.length.clamp(0, 8),
         separatorBuilder: (_, __) => const Divider(height: 1),
         itemBuilder: (_, i) {

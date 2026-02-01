@@ -1,4 +1,6 @@
+import 'package:clwb_crm/core/utils/responsive.dart';
 import 'package:clwb_crm/screens/client/client_controller.dart';
+import 'package:clwb_crm/screens/client/mobile_widgets/client_detail_mobile_screen.dart';
 import 'package:clwb_crm/screens/client/models/client_model.dart';
 import 'package:clwb_crm/screens/client/screens/add_client/add_client_dialog.dart';
 import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_stat_widget/client_status_card.dart';
@@ -38,20 +40,6 @@ class ClientListPanel extends GetView<ClientsController> {
                   const AddClientDialog(),
                   barrierDismissible: true,
                 );
-
-
-                  // try {
-                  //   await ClientsSeedService.uploadDummyClients();
-                  //
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     const SnackBar(content: Text('Dummy clients uploaded')),
-                  //   );
-                  // } catch (e) {
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     SnackBar(content: Text('Upload failed: $e')),
-                  //   );
-                  // }
-
 
 
               }, icon: const Icon(Icons.add,color: Colors.blue,)),
@@ -110,7 +98,15 @@ class ClientListPanel extends GetView<ClientsController> {
           return _ClientTile(
             client: client,
             isSelected: selectedId == client.id,
-            onTap: () => controller.selectClient(client.id),
+            onTap: () {
+              controller.selectClient(client.id);
+
+              // 🔥 MOBILE: open detail full screen
+              if (context.isMobile) {
+                Get.to(() => const ClientDetailMobileScreen());
+              }
+            },
+
           );
         },
       );

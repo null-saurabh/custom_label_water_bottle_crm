@@ -21,6 +21,8 @@ class SalesDeliveriesTable extends StatelessWidget {
       child: list.isEmpty
           ? const SalesEmptyState('No deliveries found.')
           : ListView.separated(
+        shrinkWrap: true, // ✅ REQUIRED here
+        physics: const BouncingScrollPhysics(),
         itemCount: list.length,
         separatorBuilder: (_, __) => const Divider(height: 1),
         itemBuilder: (_, i) {

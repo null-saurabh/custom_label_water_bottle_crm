@@ -60,25 +60,3 @@ class InitialBinding extends Bindings {
 }
 
 
-
-
-// class InitialBinding extends Bindings {
-//   @override
-//   void dependencies() {
-//     Get.put(AppController(), permanent: true);
-//     Get.put(ClientsController(), permanent: true);
-//
-//     // 🔥 MAKE INVENTORY GLOBAL
-//     Get.put(
-//       InventoryController(
-//         SupplierItemRepository(),
-//         OrdersRepository(),
-//         itemRepo: InventoryItemRepository(),
-//         supplierRepo: SupplierRepository(),
-//         stockRepo: InventoryStockRepository(),
-//         activityRepo: InventoryActivityRepository(),
-//       ),
-//       permanent: true,
-//     );
-//   }
-// }

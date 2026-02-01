@@ -1,20 +1,15 @@
-import 'package:clwb_crm/screens/client/client_controller.dart';
-import 'package:clwb_crm/screens/client/client_split_screen.dart';
+import 'package:clwb_crm/screens/client/client_shell_page.dart';
 import 'package:clwb_crm/screens/dashboard/dashboard_binding.dart';
-import 'package:clwb_crm/screens/dashboard/dashboard_screen.dart';
 import 'package:clwb_crm/screens/dashboard/dashboard_shell_screen.dart';
-import 'package:clwb_crm/screens/inventory/inventory_controller.dart';
 import 'package:clwb_crm/screens/inventory/inventory_screen.dart';
 import 'package:clwb_crm/screens/orders/order_shell_screen.dart';
 import 'package:clwb_crm/screens/orders/orders_binding.dart';
-import 'package:clwb_crm/screens/orders/orders_screen.dart';
 import 'package:clwb_crm/screens/orders/repo/order_delivery_repository.dart';
 import 'package:clwb_crm/screens/orders/repo/order_expense_repository.dart';
 import 'package:clwb_crm/screens/orders/repo/order_repo.dart';
 import 'package:clwb_crm/screens/sales/sales_controller.dart';
-import 'package:clwb_crm/screens/sales/sales_screen.dart';
+import 'package:clwb_crm/screens/sales/sales_shell_screen.dart';
 import 'package:get/get.dart';
-import '../../screens/leads/leads_controller.dart';
 import '../../screens/leads/leads_screen.dart';
 import '../layouts/shell_screen.dart';
 
@@ -54,7 +49,7 @@ class AppPages {
 
         GetPage(
           name: AppRoutes.clients,
-          page: () => const ClientsSplitScreen(),
+          page: () => const ClientShellPage(),
         ),
 
         GetPage(
@@ -64,7 +59,7 @@ class AppPages {
         ),
         GetPage(
           name: AppRoutes.sales,
-          page: () => SalesScreen(),
+          page: () => SalesShellScreen(),
           binding: BindingsBuilder(() {
             Get.put(
               SalesController(

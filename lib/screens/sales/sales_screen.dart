@@ -36,33 +36,35 @@ class SalesScreen extends GetView<SalesController> {
               const SizedBox(height: 18),
 
               Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 6,
-                      child: Column(
-                        children: [
-                          Expanded(child: TrendCard(controller)),
-                          const SizedBox(height: 18),
-                          Expanded(child: SalesDeliveriesTable(controller)),
-                        ],
+                child: SingleChildScrollView(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 6,
+                        child: Column(
+                          children: [
+                            TrendCard(controller),
+                            const SizedBox(height: 18),
+                            SalesDeliveriesTable(controller),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 18),
-                    Expanded(
-                      flex: 4,
-                      child: Column(
-                        children: [
-                          Expanded(child: TopClients(controller)),
-                          const SizedBox(height: 18),
-                          Expanded(child: SalesTopItems(controller)),
-                          const SizedBox(height: 18),
-                          Expanded(child: SalesTopOrders(controller)),
-                        ],
+                      const SizedBox(width: 18),
+                      Expanded(
+                        flex: 4,
+                        child: Column(
+                          children: [
+                            TopClients(controller),
+                            const SizedBox(height: 18),
+                            SalesTopItems(controller),
+                            const SizedBox(height: 18),
+                            SalesTopOrders(controller),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

@@ -1,3 +1,4 @@
+import 'package:clwb_crm/core/utils/responsive.dart';
 import 'package:clwb_crm/screens/client/models/client_model.dart';
 import 'package:clwb_crm/screens/client/models/client_note_model.dart';
 import 'package:clwb_crm/screens/client/screens/client_detail_panel/client_stat_widget/stat_card.dart';
@@ -23,7 +24,7 @@ class NotesCard extends StatelessWidget {
     );
 
     return StatCard(
-      height: 299,
+      height: context.isMobile ? 500 :299,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
