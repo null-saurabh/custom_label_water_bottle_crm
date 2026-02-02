@@ -121,8 +121,7 @@ class AddInventoryItemController extends GetxController {
         id: '',
         name: name.value,
         description: null,
-        // category: InventoryCategory.values
-        //     .firstWhere((e) => e.name == category.value),
+
         category: category.value!,
         stock: 0,
         reorderLevel: reorderLevel.value,

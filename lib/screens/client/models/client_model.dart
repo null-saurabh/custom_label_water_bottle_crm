@@ -282,12 +282,7 @@ class ClientModel {
 
       'products': [],
 
-      'media': {
-        'logoUrl': media.businessPhotos,
-        'brandImages': media.finalizedLabelImage,
-        'visitingCardUrl': media.draftLabelImages,
-      },
-
+      'media': media.toMap(),
       'lastOrderDate': lastOrderDate,
       'nextDeliveryDate': nextDeliveryDate,
       'contractEndDate': contractEndDate,

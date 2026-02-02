@@ -6,7 +6,6 @@ import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets
 import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/detail_panel_tab_switcher.dart';
 import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/overview_tab/detail_overview_tab.dart';
 import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/overview_tab/overview_recent_flow_table.dart';
-import 'package:clwb_crm/screens/inventory/inventory_detail_panel_screen/widgets/overview_tab/overview_recent_table.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
