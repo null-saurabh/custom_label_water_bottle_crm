@@ -172,20 +172,6 @@ class _ClientTile extends StatelessWidget {
     );
   }
 
-  //   Widget _statusChip(bool isActive) {
-  //     return Container(
-  //       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-  //       decoration: BoxDecoration(
-  //         color: isActive
-  //             ? const Color(0xFFD1FAE5)
-  //             : const Color(0xFFFEE2E2),
-  //         borderRadius: BorderRadius.circular(12),
-  //       ),
-  //       child: Text(
-  //         isActive ? 'Active' : 'Inactive',
-  //         style: const TextStyle(fontSize: 12),
-  //       ),
-  //     );
-  //   }
+
 }
 

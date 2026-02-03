@@ -25,7 +25,7 @@ class ClientMediaDialog extends StatelessWidget {
             return Row(
               children: [
                 _TabButton(
-                  label: 'Labels',
+                  label: 'Label',
                   active: c.activeTab.value == ClientMediaTab.labels,
                   onTap: () => c.switchTab(ClientMediaTab.labels),
                 ),
@@ -51,7 +51,11 @@ class ClientMediaDialog extends StatelessWidget {
               );
             }
 
-            return GridView.builder(
+            return
+
+
+
+              GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: list.length,
@@ -66,13 +70,38 @@ class ClientMediaDialog extends StatelessWidget {
                     c.finalized != null &&
                     c.finalized!.path == img.path;
 
-                return _Thumb(
+                return MediaThumb(
                   img: img,
-                  isFinal: isFinal,
+                  // isFinal: isFinal,
                   onOpen: () => c.openImage(img),
                   onDelete: () => c.deleteImage(img),
-                  onSetFinal: isLabels ? () => c.setAsFinalized(img) : null,
+                  onMakePrimary: isLabels ? () => c.setAsFinalized(img) : null,
                 );
+
+
+                // Expanded(
+                //   child: GridView.builder(
+                //     padding: const EdgeInsets.all(16),
+                //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                //       crossAxisCount: 4, // adjust
+                //       crossAxisSpacing: 12,
+                //       mainAxisSpacing: 12,
+                //       childAspectRatio: 1,
+                //     ),
+                //     itemCount: images.length,
+                //     itemBuilder: (_, i) {
+                //       final img = images[i];
+                //       return MediaThumb(
+                //         img: img,
+                //         onOpen: () => c.openInNewTab(img.url),
+                //         onDelete: () => c.deleteImage(img),
+                //         onMakePrimary: () => c.setFinalized(img.url),
+                //       );
+                //     },
+                //   ),
+                // )
+
+
               },
             );
           }),
@@ -81,6 +110,83 @@ class ClientMediaDialog extends StatelessWidget {
     );
   }
 }
+
+
+
+
+class MediaThumb extends StatelessWidget {
+  final ClientMediaImage img;
+  final VoidCallback onOpen;
+  final VoidCallback? onDelete;
+  final VoidCallback? onMakePrimary;
+
+  const MediaThumb({
+    super.key,
+    required this.img,
+    required this.onOpen,
+    this.onDelete,
+    this.onMakePrimary,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Debug: confirm URL is fine
+    // ignore: avoid_print
+    print('thumb url: ${img.url}');
+
+    return AspectRatio(
+      aspectRatio: 1, // ✅ forces a square tile size
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: InkWell(
+              onTap: onOpen,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  img.url,
+                  fit: BoxFit.cover,
+                  // ✅ helps on web: shows while loading
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) return child;
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                  errorBuilder: (_, e, __) {
+                    // ignore: avoid_print
+                    print('Image error: $e');
+                    return const Center(child: Icon(Icons.broken_image));
+                  },
+                ),
+              ),
+            ),
+          ),
+
+          // top-right actions
+          Positioned(
+            right: 6,
+            top: 6,
+            child: Row(
+              children: [
+                IconButton(
+                  tooltip: 'Make primary',
+                  onPressed: onMakePrimary,
+                  icon: const Icon(Icons.star_border),
+                ),
+                IconButton(
+                  tooltip: 'Delete',
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete_outline),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
 
 class _TabButton extends StatelessWidget {
   final String label;
@@ -103,76 +209,76 @@ class _TabButton extends StatelessWidget {
   }
 }
 
-class _Thumb extends StatelessWidget {
-  final ClientMediaImage img;
-  final bool isFinal;
-  final VoidCallback onOpen;
-  final VoidCallback onDelete;
-  final VoidCallback? onSetFinal;
-
-  const _Thumb({
-    required this.img,
-    required this.isFinal,
-    required this.onOpen,
-    required this.onDelete,
-    this.onSetFinal,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        InkWell(
-          onTap: onOpen,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              img.url,
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity,
-              errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.broken_image)),
-            ),
-          ),
-        ),
-
-        Positioned(
-          right: 4,
-          top: 4,
-          child: Row(
-            children: [
-              if (onSetFinal != null)
-                IconButton(
-                  tooltip: 'Set as final',
-                  onPressed: onSetFinal,
-                  icon: Icon(isFinal ? Icons.star : Icons.star_border, size: 18),
-                ),
-              IconButton(
-                tooltip: 'Delete',
-                onPressed: onDelete,
-                icon: const Icon(Icons.delete_outline, size: 18),
-              ),
-            ],
-          ),
-        ),
-
-        if (isFinal)
-          Positioned(
-            left: 8,
-            bottom: 8,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.7),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Text(
-                'FINAL',
-                style: TextStyle(color: Colors.white, fontSize: 11),
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-}
+// class _Thumb extends StatelessWidget {
+//   final ClientMediaImage img;
+//   final bool isFinal;
+//   final VoidCallback onOpen;
+//   final VoidCallback onDelete;
+//   final VoidCallback? onSetFinal;
+//
+//   const _Thumb({
+//     required this.img,
+//     required this.isFinal,
+//     required this.onOpen,
+//     required this.onDelete,
+//     this.onSetFinal,
+//   });
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Stack(
+//       children: [
+//         InkWell(
+//           onTap: onOpen,
+//           child: ClipRRect(
+//             borderRadius: BorderRadius.circular(12),
+//             child: Image.network(
+//               img.url,
+//               fit: BoxFit.cover,
+//               width: double.infinity,
+//               height: double.infinity,
+//               errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.broken_image)),
+//             ),
+//           ),
+//         ),
+//
+//         Positioned(
+//           right: 4,
+//           top: 4,
+//           child: Row(
+//             children: [
+//               if (onSetFinal != null)
+//                 IconButton(
+//                   tooltip: 'Set as final',
+//                   onPressed: onSetFinal,
+//                   icon: Icon(isFinal ? Icons.star : Icons.star_border, size: 18),
+//                 ),
+//               IconButton(
+//                 tooltip: 'Delete',
+//                 onPressed: onDelete,
+//                 icon: const Icon(Icons.delete_outline, size: 18),
+//               ),
+//             ],
+//           ),
+//         ),
+//
+//         if (isFinal)
+//           Positioned(
+//             left: 8,
+//             bottom: 8,
+//             child: Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+//               decoration: BoxDecoration(
+//                 color: Colors.black.withValues(alpha: 0.7),
+//                 borderRadius: BorderRadius.circular(10),
+//               ),
+//               child: const Text(
+//                 'FINAL',
+//                 style: TextStyle(color: Colors.white, fontSize: 11),
+//               ),
+//             ),
+//           ),
+//       ],
+//     );
+//   }
+// }
