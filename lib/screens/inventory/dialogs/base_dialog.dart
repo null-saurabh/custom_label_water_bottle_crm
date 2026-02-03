@@ -1,16 +1,15 @@
 import 'package:clwb_crm/core/widgets/premium_button.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 
 
 
-class BaseDialog extends StatelessWidget {
+class OldBaseDialog extends StatelessWidget {
   final String title;
   final Widget child;
   final Widget? footer; // 👈 NEW (optional)
 
-  const BaseDialog({
+  const OldBaseDialog({
     super.key,
     required this.title,
     required this.child,
@@ -63,8 +62,10 @@ class BaseDialog extends StatelessWidget {
               const Divider(height: 24),
 
               /// BODY
-              Flexible(
-                child: SingleChildScrollView(child: child),
+              Expanded(
+                child: SingleChildScrollView(
+                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                     child: child),
               ),
 
               const SizedBox(height: 24),
@@ -82,6 +83,8 @@ class BaseDialog extends StatelessWidget {
     );
   }
 }
+
+
 class Field extends StatelessWidget {
   final String label;
   final int maxLines;
@@ -153,8 +156,6 @@ class Dropdown extends StatelessWidget {
     );
   }
 }
-
-
 
 
 class SectionTitle extends StatelessWidget {

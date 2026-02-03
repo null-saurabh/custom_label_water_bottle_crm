@@ -10,7 +10,7 @@ class EditMapsLinkDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BaseDialog(
+    return OldBaseDialog(
       title: 'Google Maps Link',
       footer: Obx(
             () => PremiumButton(

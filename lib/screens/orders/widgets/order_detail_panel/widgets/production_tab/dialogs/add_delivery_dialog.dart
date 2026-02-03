@@ -17,7 +17,7 @@ class _AddDeliveryDialogState extends State<AddDeliveryDialog> {
   Widget build(BuildContext context) {
     final controller = Get.find<ProductionController>();
 
-    return BaseDialog(
+    return OldBaseDialog(
       title: 'Add Delivery',
       footer: PremiumButton(
         text: 'Save Delivery',

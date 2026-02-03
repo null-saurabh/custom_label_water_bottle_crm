@@ -1,5 +1,4 @@
 import 'dart:html' as html; // web only
-import 'package:clwb_crm/core/routes/bindings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

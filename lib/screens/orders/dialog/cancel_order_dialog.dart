@@ -11,7 +11,7 @@ class CancelOrderDialog extends GetView<CancelOrderController> {
   Widget build(BuildContext context) {
     final o = controller.order;
 
-    return BaseDialog(
+    return OldBaseDialog(
       title: 'Cancel Order',
 
       footer: Obx(

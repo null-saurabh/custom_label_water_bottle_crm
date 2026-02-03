@@ -1,3 +1,4 @@
+import 'package:clwb_crm/core/widgets/new_base_dialog.dart';
 import 'package:clwb_crm/screens/inventory/dialogs/base_dialog.dart';
 import 'package:clwb_crm/screens/orders/dialog/controller/add_order_controller.dart';
 import 'package:flutter/material.dart';
@@ -152,10 +153,6 @@ class AddOrderDialog extends GetView<AddOrderController> {
     );
   }
 }
-
-// =====================
-// SMALL HELPER WIDGET
-// =====================
 
 class _ResolvedRow extends StatelessWidget {
   final String label;

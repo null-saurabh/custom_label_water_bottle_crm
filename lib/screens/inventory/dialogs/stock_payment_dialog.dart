@@ -16,7 +16,7 @@ class StockPaymentDialog extends StatelessWidget {
     return GetBuilder<StockPaymentController>(
       init: StockPaymentController(entry),
       builder: (c) {
-        return BaseDialog(
+        return OldBaseDialog(
           footer: Obx(
             () => PremiumButton(
               onTap: c.submit,

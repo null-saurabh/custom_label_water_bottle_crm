@@ -15,7 +15,7 @@ class ReceiveStockDialog extends StatelessWidget {
     return GetBuilder<ReceiveStockController>(
       init: ReceiveStockController(entry),
       builder: (c) {
-        return BaseDialog(
+        return OldBaseDialog(
           footer: Obx(
             () => PremiumButton(
               onTap: c.submit,

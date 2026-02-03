@@ -11,7 +11,7 @@ class AddExpenseDialog extends GetView<ProductionController> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseDialog(
+    return OldBaseDialog(
       title: 'Add Expense',
 
       footer: Obx(() {

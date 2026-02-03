@@ -1,3 +1,4 @@
+import 'package:clwb_crm/core/widgets/new_base_dialog.dart';
 import 'package:clwb_crm/core/widgets/premium_button.dart';
 import 'package:clwb_crm/screens/inventory/dialogs/base_dialog.dart';
 import 'package:clwb_crm/screens/inventory/dialogs/controller/edit_inventory_item_controller.dart';

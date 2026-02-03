@@ -11,7 +11,7 @@ class AddClientPaymentDialog
 
   @override
   Widget build(BuildContext context) {
-    return BaseDialog(
+    return OldBaseDialog(
       title: 'Add Client Payment',
 
       footer: Obx(() {

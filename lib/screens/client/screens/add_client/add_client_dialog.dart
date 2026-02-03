@@ -61,7 +61,9 @@ class AddClientDialog extends GetView<AddClientController> {
 
 
               const SizedBox(height: 20),
-              Flexible(child: SingleChildScrollView(
+              Expanded(child: SingleChildScrollView(
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+
                 child: Column(
                   children: [
                     _BasicInfoSection(),

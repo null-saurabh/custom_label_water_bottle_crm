@@ -11,7 +11,7 @@ class ClientMediaDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BaseDialog(
+    return OldBaseDialog(
       title: 'Client Media',
       footer: Obx(
             () => PremiumButton(
@@ -72,7 +72,7 @@ class ClientMediaDialog extends StatelessWidget {
 
                 return MediaThumb(
                   img: img,
-                  // isFinal: isFinal,
+                  isFinal: isFinal,
                   onOpen: () => c.openImage(img),
                   onDelete: () => c.deleteImage(img),
                   onMakePrimary: isLabels ? () => c.setAsFinalized(img) : null,
@@ -119,13 +119,15 @@ class MediaThumb extends StatelessWidget {
   final VoidCallback onOpen;
   final VoidCallback? onDelete;
   final VoidCallback? onMakePrimary;
+  final bool isFinal;
+
 
   const MediaThumb({
     super.key,
     required this.img,
     required this.onOpen,
     this.onDelete,
-    this.onMakePrimary,
+    this.onMakePrimary, required this.isFinal,
   });
 
   @override
@@ -170,7 +172,7 @@ class MediaThumb extends StatelessWidget {
                 IconButton(
                   tooltip: 'Make primary',
                   onPressed: onMakePrimary,
-                  icon: const Icon(Icons.star_border),
+                  icon: isFinal ? const Icon(Icons.star) : const Icon(Icons.star_border),
                 ),
                 IconButton(
                   tooltip: 'Delete',
@@ -209,76 +211,76 @@ class _TabButton extends StatelessWidget {
   }
 }
 
-// class _Thumb extends StatelessWidget {
-//   final ClientMediaImage img;
-//   final bool isFinal;
-//   final VoidCallback onOpen;
-//   final VoidCallback onDelete;
-//   final VoidCallback? onSetFinal;
-//
-//   const _Thumb({
-//     required this.img,
-//     required this.isFinal,
-//     required this.onOpen,
-//     required this.onDelete,
-//     this.onSetFinal,
-//   });
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Stack(
-//       children: [
-//         InkWell(
-//           onTap: onOpen,
-//           child: ClipRRect(
-//             borderRadius: BorderRadius.circular(12),
-//             child: Image.network(
-//               img.url,
-//               fit: BoxFit.cover,
-//               width: double.infinity,
-//               height: double.infinity,
-//               errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.broken_image)),
-//             ),
-//           ),
-//         ),
-//
-//         Positioned(
-//           right: 4,
-//           top: 4,
-//           child: Row(
-//             children: [
-//               if (onSetFinal != null)
-//                 IconButton(
-//                   tooltip: 'Set as final',
-//                   onPressed: onSetFinal,
-//                   icon: Icon(isFinal ? Icons.star : Icons.star_border, size: 18),
-//                 ),
-//               IconButton(
-//                 tooltip: 'Delete',
-//                 onPressed: onDelete,
-//                 icon: const Icon(Icons.delete_outline, size: 18),
-//               ),
-//             ],
-//           ),
-//         ),
-//
-//         if (isFinal)
-//           Positioned(
-//             left: 8,
-//             bottom: 8,
-//             child: Container(
-//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-//               decoration: BoxDecoration(
-//                 color: Colors.black.withValues(alpha: 0.7),
-//                 borderRadius: BorderRadius.circular(10),
-//               ),
-//               child: const Text(
-//                 'FINAL',
-//                 style: TextStyle(color: Colors.white, fontSize: 11),
-//               ),
-//             ),
-//           ),
-//       ],
-//     );
-//   }
-// }
+class _Thumb extends StatelessWidget {
+  final ClientMediaImage img;
+  final bool isFinal;
+  final VoidCallback onOpen;
+  final VoidCallback onDelete;
+  final VoidCallback? onSetFinal;
+
+  const _Thumb({
+    required this.img,
+    required this.isFinal,
+    required this.onOpen,
+    required this.onDelete,
+    this.onSetFinal,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        InkWell(
+          onTap: onOpen,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              img.url,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.broken_image)),
+            ),
+          ),
+        ),
+
+        Positioned(
+          right: 4,
+          top: 4,
+          child: Row(
+            children: [
+              if (onSetFinal != null)
+                IconButton(
+                  tooltip: 'Set as final',
+                  onPressed: onSetFinal,
+                  icon: Icon(isFinal ? Icons.star : Icons.star_border, size: 18),
+                ),
+              IconButton(
+                tooltip: 'Delete',
+                onPressed: onDelete,
+                icon: const Icon(Icons.delete_outline, size: 18),
+              ),
+            ],
+          ),
+        ),
+
+        if (isFinal)
+          Positioned(
+            left: 8,
+            bottom: 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.7),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Text(
+                'FINAL',
+                style: TextStyle(color: Colors.white, fontSize: 11),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}

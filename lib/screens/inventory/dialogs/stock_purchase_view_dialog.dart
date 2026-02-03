@@ -15,7 +15,7 @@ class StockPurchaseViewDialog extends StatelessWidget {
     return GetBuilder<StockPurchaseViewController>(
       init: StockPurchaseViewController(entry),
       builder: (c) {
-        return BaseDialog(
+        return OldBaseDialog(
           title: 'Stock Purchase Details',
           child: Obx(() {
             final df = DateFormat('d MMM yyyy, hh:mm a');

@@ -19,7 +19,7 @@ class _AddProductionDialogState extends State<AddProductionDialog> {
   Widget build(BuildContext context) {
     final controller = Get.find<ProductionController>();
 
-    return BaseDialog(
+    return OldBaseDialog(
       title: 'Add Production',
       footer: Obx(() {
         return PremiumButton(
